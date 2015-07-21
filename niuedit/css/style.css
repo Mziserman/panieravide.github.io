@@ -1,0 +1,62 @@
+/*
+	This file is part of NiuEdit.
+
+	NiuEdit is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	any later version.
+
+	NiuEdit is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with NiuEdit.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
+	NiuEdit
+	Web thematic and simple OpenStreetMap editor.
+	Author: Adrien PAVIE
+
+	Main stylesheet
+*/
+
+/***********
+ * General *
+ ***********/
+
+body {
+	padding-top: 50px;
+}
+
+/******************
+ * Theme selector *
+ ******************/
+
+.theme {
+	border: 1px solid red;
+	text-align: center;
+	margin: 2em;
+}
+
+.theme .icon {
+	display: block;
+}
+
+.theme .icon img {
+	vertical-align: middle;
+	height: 5em;
+	max-width: 5em;
+}
+
+.theme .name {
+	display: inline-block;
+	font-size: 110%;
+}
+
+.theme .description {
+	display: inline-block;
+	font-size: 70%;
+}

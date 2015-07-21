@@ -1,0 +1,107 @@
+<!DOCTYPE html5>
+<html>
+<!--
+	This file is part of NiuEdit.
+
+	NiuEdit is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	any later version.
+
+	NiuEdit is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with NiuEdit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+	NiuEdit
+	Web thematic and simple OpenStreetMap editor.
+	Author: Adrien PAVIE
+	
+	Main page
+-->
+<head>
+	<!-- General definitions -->
+	<title>NiuEdit</title>
+	<meta charset="utf-8" />
+	<meta name="description" content="The OpenStreetMap thematic editor." />
+	<meta name="keywords" content="niuedit, openstreetmap, osm, editor, map, theme, thematic, edit" />
+	<meta name="author" content="Adrien PAVIE (PanierAvide)" />
+	<meta name="copyright" content="&copy; Adrien PAVIE 2015, under GPL v3" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<!--link rel="icon" type="image/jpg" href="img/favicon.jpg" /-->
+	
+	<!-- Leaflet includes -->
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+
+	<!-- jQuery includes -->
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	
+	<!-- Bootstrap includes -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	
+	<!-- NiuEdit includes -->
+	<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<!-- Header -->
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">NiuEdit</a>
+			</div>
+
+			<div id="navbar" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="#about">About</a></li>
+					<li><a href="mailto:panieravide@riseup.net">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+	<!-- Jumbotron -->
+	<div class="jumbotron">
+		<div class="container">
+			<h1>NiuEdit</h1>
+			<p>Interested in a particular theme and in OpenStreetMap ? Try NiuEdit, the fastest way to add details on OpenStreetMap objects. Just choose a theme and start mapping !</p>
+		</div>
+	</div>
+
+
+	<!-- Theme selector -->
+	<div class="container">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+			<div class="theme">
+				<span class="icon"><img src="img/icon_wheelchair.svg" /></span>
+				<span class="name">Wheelchair</span>
+				<span class="description">Accessibility for handicaped people</span>
+			</div>
+		</div>
+		<div class="theme col-xs-12 col-sm-6 col-md-4 col-lg-3">
+			Block 2
+		</div>
+		<div class="theme col-xs-12 col-sm-6 col-md-4 col-lg-3">
+			Block 3
+		</div>
+		<div class="theme col-xs-12 col-sm-6 col-md-4 col-lg-3">
+			Block 4
+		</div>
+	</div>
+</body>
+</html>
