@@ -66,14 +66,15 @@
 
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li><a href="#">Themes</a></li>
-					<li><a href="#about">About</a></li>
-					<li><a href="mailto:panieravide@riseup.net">Contact</a></li>
+					<li><a href="index.html"><span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> Themes</a></li>
+					<li class="active"><a href="#">Wheelchair</a></li>
 				</ul>
 				<form class="navbar-form navbar-right">
-					<button type="button" class="btn btn-success">Save</button>
-					<button type="button" class="btn btn-danger">Cancel</button>
-					<button type="button" class="btn btn-default">Options</button>
+					<button type="button" class="btn btn-default"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Options</button>
+				</form>
+				<form class="navbar-form navbar-right">
+					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save <span class="badge">42</span></button>
+					<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Cancel</button>
 				</form>
 			</div>
 		</div>
@@ -131,6 +132,151 @@
 	</div>
 
 
+	<!-- Object edit modal -->
+	<div id="modal-edit-object" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Edit <small>Collège du Point du Jour</small></h4>
+				</div>
+				<div class="modal-body">
+					<!-- Tabs -->
+					<div class="tab-content clearfix">
+						<!-- Thematic tab -->
+						<div class="tab-pane active" id="tab-theme">
+							<form class="form-horizontal">
+								<div class="form-group has-success">
+									<label for="inputAttr1" class="col-sm-3 control-label">Attribute #1</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control" id="inputAttr1" placeholder="Undefined" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="inputAttr2" class="col-sm-3 control-label">Attribute #2</label>
+									<div class="col-sm-9">
+										<input type="number" class="form-control" id="inputAttr2" placeholder="Undefined" />
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-offset-4 col-xs-offset-1 checkbox">
+										<label>
+											<input type="checkbox"> Attribute #4
+										</label>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="inputAttr4" class="col-sm-3 control-label">Attribute #4</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="inputAttr4">
+											<option value="1">Value 1</option>
+											<option value="2">Value 2</option>
+											<option value="3">Value 3</option>
+										</select>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Edit</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Account needed modal -->
+	<div id="modal-account" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">OpenStreetMap account</h4>
+				</div>
+				<div class="modal-body">
+					<p class="text-primary">In order to edit map data, you should have an OpenStreetMap account.</p><p class="text-info">Create one or log-in with your existing account to start editing.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login</button>
+					<a href="https://www.openstreetmap.org/user/new" target="_blank" role="button" class="btn btn-primary"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> Register</a>
+					<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Save changeset modal -->
+	<div id="modal-save-changeset" class="modal fade modal-wide">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Save changes</h4>
+				</div>
+				<div class="modal-body">
+					<p class="text-primary">You must save your map edits to make them publicly available, otherwise they will be lost.</p>
+					
+					<table class="table table-hover table-condensed hidden-xs">
+						<caption>List of your edits</caption>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Attr #1</th>
+								<th>Attr #2</th>
+								<th>Attr #3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Collège Le Point du Jour</td>
+								<td>Yes</td>
+								<td>No</td>
+								<td>Maybe</td>
+							</tr>
+							<tr>
+								<td>Collège Le Point du Jour</td>
+								<td>Yes</td>
+								<td>No</td>
+								<td>Maybe</td>
+							</tr>
+							<tr>
+								<td>Collège Le Point du Jour</td>
+								<td>Yes</td>
+								<td>No</td>
+								<td>Maybe</td>
+							</tr>
+							<tr>
+								<td>Collège Le Point du Jour</td>
+								<td>Yes</td>
+								<td>No</td>
+								<td>Maybe</td>
+							</tr>
+							<tr>
+								<td>Collège Le Point du Jour</td>
+								<td>Yes</td>
+								<td>No</td>
+								<td>Maybe</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<label class="control-label" for="inputChangesetComment">Comment</label>
+					<input type="text" id="inputChangesetComment" class="form-control" aria-describedby="helpChangesetComment" />
+					<span id="helpChangesetComment" class="help-block">This comment helps other users to understand what you have done.</span>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save changes</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Back to edit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 	<!-- Init code -->
 	<script type="text/javascript">
 		var map = L.map('map').setView([46, 2], 7);
@@ -138,6 +284,9 @@
 			attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
 			maxZoom: 18
 		}).addTo(map);
+		$(document).ready(function(){
+			$("#modal-save-changeset").modal('show');
+		});
 	</script>
 </body>
 </html>

@@ -46,7 +46,7 @@ body.index {
 	border: 1px solid red;
 }
 
-/** Full width fluid container **/
+/** Full width for container **/
 .no-padding {
 	padding: 0px;
 }
@@ -134,6 +134,14 @@ body.index {
 /* Main content with sidebar */
 .main .page-header {
 	margin-top: 0;
+}
+
+/*********
+ * Modal *
+ *********/
+
+.modal-wide .modal-dialog {
+	width: 90%;
 }
 
 /**********
