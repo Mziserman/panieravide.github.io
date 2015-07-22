@@ -43,10 +43,14 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	
+	<!-- Leaflet includes -->
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+	
 	<!-- NiuEdit includes -->
 	<link rel="stylesheet" href="css/style.css" />
 </head>
-<body class="index">
+<body>
 	<!-- Header -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
@@ -57,73 +61,83 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">NiuEdit</a>
+				<a class="navbar-brand" href="index.html">NiuEdit</a>
 			</div>
 
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Themes</a></li>
+					<li><a href="#">Themes</a></li>
 					<li><a href="#about">About</a></li>
 					<li><a href="mailto:panieravide@riseup.net">Contact</a></li>
 				</ul>
+				<form class="navbar-form navbar-right">
+					<button type="button" class="btn btn-success">Save</button>
+					<button type="button" class="btn btn-danger">Cancel</button>
+					<button type="button" class="btn btn-default">Options</button>
+				</form>
 			</div>
 		</div>
 	</nav>
 
 
-	<!-- Jumbotron -->
-	<div class="jumbotron">
-		<div class="container">
-			<h1>NiuEdit</h1>
-			<p>Interested in a particular theme and in OpenStreetMap ? Try NiuEdit, the fastest way to add details on OpenStreetMap objects. Just choose a theme and start mapping !</p>
+	<!-- Page content -->
+	<div class="container-fluid">
+		<div class="row">
+
+			<!-- Sidebar -->
+			<div id="options" class="col-xs-12 col-sm-4 col-md-3 sidebar">
+				<h3>Filters</h3>
+				<form>
+					<div class="form-group">
+						<label class="control-label" for="inputFilterKey">Filter on attribute</label>
+						<select id="inputFilterKey" class="form-control">
+							<option value="none">No filter</option>
+							<option value="key">Attribute #1</option>
+						</select>
+					</div>
+					<div id="filter-values">
+						<label class="control-label">Values</label>
+						<div class="form-group">
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox1" value="option1"> Value #1
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox2" value="option2"> Value #2
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #3
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #4
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #5
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #6
+							</label>
+						</div>
+					</div>
+				</form>
+			</div>
+
+
+			<!-- Map -->
+			<div class="col-xs-12 col-sm-8 col-sm-offset-4 col-md-9 col-md-offset-3 main no-padding">
+				<div id="map"></div>
+			</div>
+
 		</div>
 	</div>
 
 
-	<!-- Theme selector -->
-	<div class="container">
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-			<a href="map.html" title="Start mapping wheelchair theme">
-				<span class="theme">
-					<span class="icon"><img src="img/icon_wheelchair.svg" /></span>
-					<span class="name">Wheelchair</span>
-					<span class="description">Accessibility for handicapped people</span>
-				</span>
-			</a>
-		</div>
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-			<a href="map.html" title="Start mapping wheelchair theme">
-				<span class="theme">
-					<span class="icon"><img src="img/icon_wheelchair.svg" /></span>
-					<span class="name">Wheelchair</span>
-					<span class="description">Accessibility for handicapped people</span>
-				</span>
-			</a>
-		</div>
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-			<a href="map.html" title="Start mapping wheelchair theme">
-				<span class="theme">
-					<span class="icon"><img src="img/icon_wheelchair.svg" /></span>
-					<span class="name">Wheelchair</span>
-					<span class="description">Accessibility for handicapped people</span>
-				</span>
-			</a>
-		</div>
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-			<a href="map.html" title="Start mapping wheelchair theme">
-				<span class="theme">
-					<span class="icon"><img src="img/icon_wheelchair.svg" /></span>
-					<span class="name">Wheelchair</span>
-					<span class="description">Accessibility for handicapped people</span>
-				</span>
-			</a>
-		</div>
-	</div>
-
-
-	<!-- Footer -->
-	<footer>
-		<p>&copy; <a href="http://adrien.pavie.info">Adrien PAVIE</a> 2015</p>
-	</footer>
+	<!-- Init code -->
+	<script type="text/javascript">
+		var map = L.map('map').setView([46, 2], 7);
+		L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+			maxZoom: 18
+		}).addTo(map);
+	</script>
 </body>
 </html>
