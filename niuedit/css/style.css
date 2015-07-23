@@ -51,6 +51,14 @@ body.index {
 	padding: 0px;
 }
 
+.container-full-height {
+	height: 100%;
+}
+
+.container-full-height .row {
+	height: 100%;
+}
+
 /*************
  * Jumbotron *
  *************/
@@ -98,6 +106,29 @@ body.index {
 	font-size: 80%;
 }
 
+/**********************
+ * Map page structure *
+ **********************/
+
+#page-content {
+	display: table;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+}
+
+.page-content-row {
+	display: table-row;
+}
+
+.page-content-row  > div {
+	display: table-cell;
+}
+
+#page-content-map {
+	height: 100%;
+}
+
 /*******
  * Map *
  *******/
@@ -108,32 +139,12 @@ body.index {
 }
 
 /***********
- * Sidebar *
+ * Options *
  ***********/
 
-/* Hide for mobile, show later */
-.sidebar {
-	z-index: 1000;
-	display: block;
-	overflow-x: hidden;
-	overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-	background-color: #f5f5f5;
-	border-right: 1px solid #eee;
-}
-
-@media (min-width: 768px) {
-	.sidebar {
-		position: fixed;
-		top: 51px;
-		bottom: 0;
-		left: 0;
-		padding: 20px;
-	}
-}
-
-/* Main content with sidebar */
-.main .page-header {
-	margin-top: 0;
+#options {
+	padding: 0 20px;
+	background-color: #F7F7F9;
 }
 
 /*********

@@ -44,6 +44,8 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	
 	<!-- NiuEdit includes -->
+	<script src="js/controller.js"></script>
+	<script src="js/view.js"></script>
 	<link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="index">
@@ -79,7 +81,7 @@
 
 
 	<!-- Theme selector -->
-	<div class="container">
+	<div id="themes" class="container">
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 			<a href="map.html" title="Start mapping wheelchair theme">
 				<span class="theme">
@@ -121,7 +123,40 @@
 
 	<!-- Footer -->
 	<footer>
-		<p>&copy; <a href="http://adrien.pavie.info">Adrien PAVIE</a> 2015 | <a href="#">About</a> | <a href="mailto:panieravide@riseup.net">Contact</a></p>
+		<p>&copy; <a href="http://adrien.pavie.info">Adrien PAVIE</a> 2015 | <a id="link-about" href="#">About</a> | <a href="mailto:panieravide@riseup.net">Contact</a></p>
 	</footer>
+
+
+	<!-- About modal -->
+	<div id="modal-about" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">About</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						NiuEdit is a web viewer and editor for the <a href="http://openstreetmap.org/">OpenStreetMap</a> project.
+						This tool allows you to edit rapidly the OpenStreetMap data without any knowledge (except the information you will edit).
+						<br />
+						If you want to know more about NiuEdit, check out the <a href="https://github.com/PanierAvide/panieravide.github.io/tree/master/niuedit">GitHub repository</a>.
+						<br />
+						For more details about me, check <a href="http://adrien.pavie.info">my website</a> or <a href="mailto:panieravide.riseup.net">contact me</a>.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Init code -->
+	<script type="text/javascript">
+		var ctrl = new NiuEdit.ctrl.ThemesController();
+		ctrl.init();
+	</script>
+
 </body>
 </html>

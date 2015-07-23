@@ -1,0 +1,148 @@
+{
+	"themes": [
+		{
+			"title": "Wheelchair",
+			"subtitle": "Accessibility to the object for disabled people",
+			"style": {
+				"icon": "wheelchair.svg",
+				"background": "#049dd1",
+				"text": "white"
+			},
+			"potential_objects": [
+				{ "amenity": "*" },
+				{ "shop": "*" },
+				{ "public_transport": "*" }
+			],
+			"editable_tags": [
+				{
+					"key": "wheelchair",
+					"description": "Access for wheelchair",
+					"values": {
+						"type": "list",
+						"multiplicity": "1",
+						"list": [
+							{ "val": "yes",	"desc": "Fully accessible" },
+							{ "val": "limited", "desc": "Limited access" },
+							{ "val": "no", "desc": "No access" }
+						]
+					}
+				}
+			]
+		},
+		{
+			"title": "Levels",
+			"subtitle": "Floor of objects inside a building",
+			"style": {
+				"icon": "levels.png",
+				"background": "#7c7c7c",
+				"text": "white"
+			},
+			"potential_objects": [
+				{ "amenity": "*" },
+				{ "shop": "*" },
+				{ "room": "*" },
+				{ "highway": "corridor|elevator" },
+				{ "highway": "footway|steps", "indoor": "*" },
+				{ "highway": "footway|steps", "buildingpart": "*" },
+			],
+			"editable_tags": [
+				{
+					"key": "level",
+					"description": "Floor(s) of the object",
+					"values": {
+						"type": "float",
+						"multiplicity": "1+"
+					}
+				}
+			]
+		},
+		{
+			"title": "Maxspeed",
+			"subtitle": "Maximal legal speed limit",
+			"style": {
+				"icon": "maxspeed.svg",
+				"background": "#e85d53",
+				"text": "white"
+			},
+			"potential_objects": [
+				{ "highway": "residential|unclassified|tertiary|secondary|primary|trunk|motorway|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link" },
+			],
+			"editable_tags": [
+				{
+					"key": "maxspeed",
+					"description": "Maximal authorized speed",
+					"values": {
+						"type": "int",
+						"multiplicity": "1",
+						"conditions": "positive",
+						"units": [
+							{ "default": true, "unit": "km/h", "val": "" },
+							{ "unit": "m/h", "val": "mph" },
+							{ "unit": "knots", "val": "knots" }
+						]
+					}
+				}
+			]
+		},
+		{
+			"title": "Parking",
+			"subtitle": "Details for car parkings",
+			"style": {
+				"icon": "parking.svg",
+				"background": "#3c66fc",
+				"text": "white"
+			},
+			"potential_objects": [
+				{ "amenity": "parking" },
+			],
+			"editable_tags": [
+				{
+					"key": "parking",
+					"description": "Kind of parking",
+					"values": {
+						"type": "list",
+						"multiplicity": "1",
+						"list": [
+							{ "val": "surface", "desc": "One level of parking on the ground" },
+							{ "val": "underground", "desc": "One level of parking in the basement" },
+							{ "val": "multi-storey", "desc": "Two or more levels of parking decks in a building structure" },
+							{ "val": "rooftop", "desc": "One level of a parking deck on top of the building" }
+							{ "val": "garage_boxes", "desc": "One level buildings with individual brick or metal boxes for one car" }
+						]
+					}
+				},
+				{
+					"key": "access",
+					"description": "Accessibility",
+					"values": {
+						"type": "list",
+						"multiplicity": "1",
+						"list": [
+							{ "val": "yes", "desc": "Open to everyone" },
+							{ "val": "customers", "desc": "Open to associated-facility customers only" },
+							{ "val": "private", "desc": "Closed to everyone except inhabitants/workers" }
+						]
+					}
+				},
+				{
+					"key": "capacity",
+					"description": "# of parking spaces",
+					"values": {
+						"type": "int",
+						"multiplicity": "1",
+						"conditions": "positive"
+					}
+				},
+				{
+					"key": "capacity:disabled",
+					"description": "# of parking spaces for disabled",
+					"values": {
+						"type": "int",
+						"multiplicity": "1",
+						"conditions": "positive"
+					}
+				}
+			]
+		}
+	]
+}

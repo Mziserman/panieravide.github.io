@@ -82,52 +82,57 @@
 
 
 	<!-- Page content -->
-	<div class="container-fluid">
+	<div class="container-fluid container-full-height">
 		<div class="row">
-
-			<!-- Sidebar -->
-			<div id="options" class="col-xs-12 col-sm-4 col-md-3 sidebar">
-				<h3>Filters</h3>
-				<form>
-					<div class="form-group">
-						<label class="control-label" for="inputFilterKey">Filter on attribute</label>
-						<select id="inputFilterKey" class="form-control">
-							<option value="none">No filter</option>
-							<option value="key">Attribute #1</option>
-						</select>
+			<div id="page-content" class="col-xs-12">
+			
+				<div class="page-content-row">
+					<!-- Sidebar -->
+					<div id="options" class="page-content-cell">
+						<h3>Filters</h3>
+						<form>
+							<div class="form-group">
+								<label class="control-label" for="inputFilterKey">Filter on attribute</label>
+								<select id="inputFilterKey" class="form-control">
+									<option value="none">No filter</option>
+									<option value="key">Attribute #1</option>
+								</select>
+							</div>
+							<div id="filter-values">
+								<label class="control-label">Values</label>
+								<div class="form-group">
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox1" value="option1"> Value #1
+									</label>
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox2" value="option2"> Value #2
+									</label>
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #3
+									</label>
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #4
+									</label>
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #5
+									</label>
+									<label class="checkbox-inline">
+										<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #6
+									</label>
+								</div>
+							</div>
+						</form>
 					</div>
-					<div id="filter-values">
-						<label class="control-label">Values</label>
-						<div class="form-group">
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox1" value="option1"> Value #1
-							</label>
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox2" value="option2"> Value #2
-							</label>
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #3
-							</label>
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #4
-							</label>
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #5
-							</label>
-							<label class="checkbox-inline">
-								<input type="checkbox" id="inlineCheckbox3" value="option3"> Value #6
-							</label>
-						</div>
+				</div>
+			
+				<div id="page-content-map" class="page-content-row">
+					<!-- Map -->
+					<div class="page-content-cell">
+						<div id="map"></div>
 					</div>
-				</form>
+				</div>
+
 			</div>
-
-
-			<!-- Map -->
-			<div class="col-xs-12 col-sm-8 col-sm-offset-4 col-md-9 col-md-offset-3 main no-padding">
-				<div id="map"></div>
-			</div>
-
 		</div>
 	</div>
 
@@ -285,7 +290,7 @@
 			maxZoom: 18
 		}).addTo(map);
 		$(document).ready(function(){
-			$("#modal-save-changeset").modal('show');
+			$("#modal-edit-object").modal('show');
 		});
 	</script>
 </body>
