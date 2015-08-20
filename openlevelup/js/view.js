@@ -23,307 +23,245 @@
  * View JS classes
  */
 
-OLvlUp.view = {
-// ====== CONSTANTS ======
-/** The minimal zoom to display cluster data on map, should be less than DATA_MIN_ZOOM **/
-CLUSTER_MIN_ZOOM: 5,
-
-/** The minimal zoom to display actual data on map **/
-DATA_MIN_ZOOM: 18,
-
-/** The maximal zoom of map **/
-MAX_ZOOM: 24,
-
-/** The minimal tiles opacity (between 0 and 1) **/
-TILES_MIN_OPACITY: 0.1,
-
-/** The maximal tiles opacity (between 0 and 1) **/
-TILES_MAX_OPACITY: 0.3,
-
-/** The icon size for objects **/
-ICON_SIZE: 24,
-
-/** The folder containing icons **/
-ICON_FOLDER: "img",
-
-/** The available tile layers (IDs must be integers and constant in time) **/
-TILE_LAYERS:
-	{
-		0: {
-			name: "OpenStreetMap",
-			URL: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-			attribution: 'Tiles <a href="http://openstreetmap.org/">OSM</a>',
-			minZoom: 1,
-			maxZoom: 19
-		},
-		1: {
-			name: "OpenStreetMap FR",
-			URL: "http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",
-			attribution: 'Tiles <a href="http://tile.openstreetmap.fr/">OSMFR</a>',
-			minZoom: 1,
-			maxZoom: 20
-		},
-		2: {
-			name: "Stamen Toner",
-			URL: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',
-			attribution: 'Tiles <a href="http://maps.stamen.com/">Stamen Toner</a>',
-			minZoom: 1,
-			maxZoom: 20
-		},
-		3: {
-			name: "Cadastre FR",
-			URL: "http://tms.cadastre.openstreetmap.fr/*/tout/{z}/{x}/{y}.png",
-			attribution: 'Cadastre (DGFiP)',
-			minZoom: 1,
-			maxZoom: 20
-		},
-		4: {
-			name: "MapQuest",
-			URL: "http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg",
-			attribution: 'Tiles <a href="http://open.mapquest.com/">MapQuest</a>',
-			minZoom: 1,
-			maxZoom: 19,
-			subdomains: '1234'
-		}
-	},
-
-/** The default attribution, refering to OSM data **/
-ATTRIBUTION: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-
-
-// ======= CLASSES =======
 /**
  * The main view class.
  * It handles the index page, and contains links to sub-components.
  */
-MainView: function(ctrl, mobile) {
+var MainView = function(ctrl, mobile) {
 //ATTRIBUTES
 	/** The main controller **/
-	var _ctrl = ctrl;
+	this._ctrl = ctrl;
 	
 	/** Is the user using a mobile device ? **/
-	var _isMobile = mobile || false;
+	this._isMobile = mobile || false;
 	
 	/** Is the user using a WebGL capable browser ? **/
-	var _hasWebGL = Detector.webgl;
-	
-	/** The current object **/
-	var _self = this;
+	this._hasWebGL = Detector.webgl;
 	
 	/*
 	 * The view components
 	 */
 	/** The loading component **/
-	var _cLoading = new OLvlUp.view.LoadingView();
+	this._cLoading = new LoadingView();
 	
 	/** The about component **/
-	var _cAbout = new OLvlUp.view.AboutView();
+	this._cAbout = new AboutView();
 	
 	/** The messages stack component **/
-	var _cMessages = new OLvlUp.view.MessagesView();
+	this._cMessages = new MessagesView();
 	
 	/** The URL component **/
-	var _cUrl = null;
+	this._cUrl = null;
 	
 	/** The options component **/
-	var _cOptions = new OLvlUp.view.OptionsView();
+	this._cOptions = new OptionsView();
 	
 	/** The export component **/
-	var _cExport = null;
+	this._cExport = null;
 	
 	/** The names component **/
-	var _cNames = null;
+	this._cNames = null;
 	
 	/** The images component **/
-	var _cImages = null;
+	this._cImages = null;
 	
 	/** The levels component **/
-	var _cLevel = null;
+	this._cLevel = null;
 	
+	/** The tags component **/
+	this._cTags = null;
+
 	/** The map component **/
-	var _cMap = null;
+	this._cMap = null;
 
 //CONSTRUCTOR
-	function _init() {
-		_cUrl = new OLvlUp.view.URLView(_self);
-		_cMap = new OLvlUp.view.MapView(_self);
-		_cNames = new OLvlUp.view.NamesView(_self);
-		_cImages = new OLvlUp.view.ImagesView(_self);
-		_cLevel = new OLvlUp.view.LevelView(_self);
-		_cExport = new OLvlUp.view.ExportView(_self);
-		
-		_cExport.hideButton();
-		_cNames.hideButton();
-		_cLevel.disable();
-		
-		//Link on logo
-		$("#logo-link").click(function() {
-			controller.getView().getMapView().resetView();
-		});
-	};
+	this._cUrl = new URLView(this);
+	this._cMap = new MapView(this);
+	this._cNames = new NamesView(this);
+	this._cImages = new ImagesView(this);
+	this._cLevel = new LevelView(this);
+	this._cExport = new ExportView(this);
+	this._cTags = new TagsView(this);
+	
+	this._cExport.hideButton();
+	this._cNames.hideButton();
+	this._cLevel.disable();
+	
+	//Link on logo
+	$("#logo-link").click(function() {
+		controller.getView().getMapView().resetView();
+	});
+};
 
 //ACCESSORS
 	/**
 	 * @return True if the application is viewed in a mobile device
 	 */
-	this.isMobile = function() {
-		return _isMobile;
+	MainView.prototype.isMobile = function() {
+		return this._isMobile;
 	};
 	
 	/**
 	 * @return True if the browser is WebGL capable
 	 */
-	this.hasWebGL = function() {
-		return _hasWebGL;
+	MainView.prototype.hasWebGL = function() {
+		return this._hasWebGL;
 	};
 	
 	/**
 	 * @return The URL component
 	 */
-	this.getUrlView = function() {
-		return _cUrl;
+	MainView.prototype.getUrlView = function() {
+		return this._cUrl;
 	};
 	
 	/**
 	 * @return The map component
 	 */
-	this.getMapView = function() {
-		return _cMap;
+	MainView.prototype.getMapView = function() {
+		return this._cMap;
 	};
 	
 	/**
 	 * @return The messages stack component
 	 */
-	this.getMessagesView = function() {
-		return _cMessages;
+	MainView.prototype.getMessagesView = function() {
+		return this._cMessages;
 	};
 	
 	/**
 	 * @return The options component
 	 */
-	this.getOptionsView = function() {
-		return _cOptions;
+	MainView.prototype.getOptionsView = function() {
+		return this._cOptions;
 	};
 	
 	/**
 	 * @return The loading component
 	 */
-	this.getLoadingView = function() {
-		return _cLoading;
+	MainView.prototype.getLoadingView = function() {
+		return this._cLoading;
 	};
 	
 	/**
 	 * @return The images component
 	 */
-	this.getImagesView = function() {
-		return _cImages;
+	MainView.prototype.getImagesView = function() {
+		return this._cImages;
 	};
 	
 	/**
 	 * @return The level component
 	 */
-	this.getLevelView = function() {
-		return _cLevel;
+	MainView.prototype.getLevelView = function() {
+		return this._cLevel;
+	};
+	
+	/**
+	 * @return The tags component
+	 */
+	MainView.prototype.getTagsView = function() {
+		return this._cTags;
 	};
 	
 	/**
 	 * @return The map data from the controller
 	 */
-	this.getData = function() {
-		return _ctrl.getData();
+	MainView.prototype.getData = function() {
+		return this._ctrl.getData();
 	};
 	
 	/**
 	 * @return The cluster data from the controller
 	 */
-	this.getClusterData = function() {
-		return _ctrl.getClusterData();
+	MainView.prototype.getClusterData = function() {
+		return this._ctrl.getClusterData();
 	};
 
 //OTHER METHODS
 	/**
 	 * Updates the view when map moves or zoom changes
 	 */
-	this.updateMapMoved = function() {
-		var zoom = _cMap.get().getZoom();
-		var oldZoom = _cMap.getOldZoom();
+	MainView.prototype.updateMapMoved = function() {
+		var zoom = this._cMap.get().getZoom();
+		var oldZoom = this._cMap.getOldZoom();
 		
 		//Check new zoom value
-		if(zoom >= OLvlUp.view.DATA_MIN_ZOOM) {
+		if(zoom >= CONFIG.view.map.data_min_zoom) {
 			//Update levels
-			_cLevel.update();
+			this._cLevel.update();
 			
 			//Add names and export buttons if needed
-			if(oldZoom == null || oldZoom < OLvlUp.view.DATA_MIN_ZOOM) {
-				_cExport.showButton();
-				_cNames.showButton();
-				_cLevel.enable();
-				_cOptions.enable();
-				_cMap.update();
+			if(oldZoom == null || oldZoom < CONFIG.view.map.data_min_zoom) {
+				this._cExport.showButton();
+				this._cNames.showButton();
+				this._cLevel.enable();
+				this._cOptions.enable();
+				this._cMap.update();
 			}
 		}
-		else if(zoom >= OLvlUp.view.CLUSTER_MIN_ZOOM) {
+		else if(zoom >= CONFIG.view.map.cluster_min_zoom) {
 			//Remove names and export buttons if needed
-			if(oldZoom == null || oldZoom >= OLvlUp.view.DATA_MIN_ZOOM) {
-				_cExport.hideButton();
-				_cNames.hideButton();
-				_cLevel.disable();
-				_cOptions.disable();
+			if(oldZoom == null || oldZoom >= CONFIG.view.map.data_min_zoom) {
+				this._cExport.hideButton();
+				this._cNames.hideButton();
+				this._cLevel.disable();
+				this._cOptions.disable();
 			}
 			
-			if(oldZoom == null || oldZoom >= OLvlUp.view.DATA_MIN_ZOOM || oldZoom < OLvlUp.view.CLUSTER_MIN_ZOOM) {
-				_cMap.update();
+			if(oldZoom == null || oldZoom >= CONFIG.view.map.data_min_zoom || oldZoom < CONFIG.view.map.cluster_min_zoom) {
+				this._cMap.update();
 			}
 		}
 		else {
-			_cMessages.displayMessage("Zoom in to see more information", "info");
+			this._cMessages.displayMessage("Zoom in to see more information", "info");
 			
 			//Remove names and export buttons if needed
-			if(oldZoom == null || oldZoom >= OLvlUp.view.DATA_MIN_ZOOM) {
-				_cExport.hideButton();
-				_cNames.hideButton();
-				_cLevel.disable();
-				_cOptions.disable();
+			if(oldZoom == null || oldZoom >= CONFIG.view.map.data_min_zoom) {
+				this._cExport.hideButton();
+				this._cNames.hideButton();
+				this._cLevel.disable();
+				this._cOptions.disable();
 			}
 			
 			//Reset map
-			if(oldZoom == null || oldZoom >= OLvlUp.view.CLUSTER_MIN_ZOOM) {
-				_cMap.update();
+			if(oldZoom == null || oldZoom >= CONFIG.view.map.cluster_min_zoom) {
+				this._cMap.update();
 			}
 		}
 		
-		_cUrl.mapUpdated();
-		_cNames.update();
+		this._cUrl.mapUpdated();
+		this._cNames.update();
 	};
 	
 	/**
 	 * Updates the view when level changes
 	 */
-	this.updateLevelChanged = function() {
-		_cMap.update();
-		_cUrl.levelChanged();
+	MainView.prototype.updateLevelChanged = function() {
+		this._cMap.update();
+		this._cUrl.levelChanged();
 	};
 	
 	/**
 	 * Updates the view when an option changes
 	 */
-	this.updateOptionChanged = function() {
-		_cMap.update();
-		_cUrl.optionsChanged();
+	MainView.prototype.updateOptionChanged = function() {
+		this._cMap.update();
+		this._cUrl.optionsChanged();
 	};
 	
 	/**
 	 * Updates the view when photos are added
 	 */
-	this.updatePhotosAdded = function() {
-		_cMap.update();
+	MainView.prototype.updatePhotosAdded = function() {
+		this._cMap.update();
 	};
 	
 	/**
 	 * Displays the given central panel
 	 * @param id The panel ID
 	 */
-	this.showCentralPanel = function(id) {
+	MainView.prototype.showCentralPanel = function(id) {
 		if(!$("#"+id).is(":visible")) {
 			$("#central .part").hide();
 			$("#"+id).show();
@@ -332,201 +270,185 @@ MainView: function(ctrl, mobile) {
 			$("#central-close").click(controller.getView().hideCentralPanel);
 		}
 		else {
-			_self.hideCentralPanel();
+			this.hideCentralPanel();
 		}
 	};
 	
 	/**
 	 * Hides the central panel
 	 */
-	this.hideCentralPanel = function() {
+	MainView.prototype.hideCentralPanel = function() {
 		$("#central .part").hide();
 		$("#central-close").hide();
 		$("#central-close").off("click");
 		$("#main-buttons").removeClass("opened");
 	};
-	
-//INIT
-	_init();
-},
 
 
 
 /**
  * The map component, based on Leaflet library
  */
-MapView: function(main) {
+var MapView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
+	this._mainView = main;
 	
 	/** The map object **/
-	var _map = null;
+	this._map = null;
+	
+	/** The tile layers objects **/
+	this._tileLayers = null;
 	
 	/** The current tile layer **/
-	var _tileLayer = null;
+	this._tileLayer = null;
+	
+	/** The opacity for tiles to use **/
+	this._tileOpacity = 1;
 	
 	/** The current data layer **/
-	var _dataLayer = null;
+	this._dataLayer = null;
 	
 	/** The feature popups **/
-	var _dataPopups = {};
+	this._dataPopups = {};
 	
 	/** The previous zoom value **/
-	var _oldZoom = null;
-	
-	/** The current object **/
-	var _self = this;
+	this._oldZoom = null;
 
 //CONSTRUCTOR
-	function _init() {
-		var isMobile = _mainView.isMobile();
+	var isMobile = this._mainView.isMobile();
+	
+	//Get URL values to restore
+	var url = this._mainView.getUrlView();
+	var lat = (url.getLatitude() != undefined) ? url.getLatitude() : 47;
+	var lon = (url.getLongitude() != undefined) ? url.getLongitude() : 2;
+	var zoom = (url.getZoom() != undefined) ? url.getZoom() : 6;
+	var bbox = url.getBBox();
+	var tiles = url.getTiles();
+	
+	//Init map center and zoom
+	this._map = L.map('map', {minZoom: 1, maxZoom: CONFIG.view.map.max_zoom, zoomControl: false});
+	if(bbox != undefined) {
+		//Get latitude and longitude information from BBox string
+		var coordinates = bbox.split(',');
 		
-		//Get URL values to restore
-		var url = _mainView.getUrlView();
-		var lat = (url.getLatitude() != undefined) ? url.getLatitude() : 47;
-		var lon = (url.getLongitude() != undefined) ? url.getLongitude() : 2;
-		var zoom = (url.getZoom() != undefined) ? url.getZoom() : 6;
-		var bbox = url.getBBox();
-		var tiles = url.getTiles();
-		
-		//Init map center and zoom
-		_map = L.map('map', {minZoom: 1, maxZoom: OLvlUp.view.MAX_ZOOM, zoomControl: false});
-		if(bbox != undefined) {
-			//Get latitude and longitude information from BBox string
-			var coordinates = bbox.split(',');
-			
-			if(coordinates.length == 4) {
-				var sw = L.latLng(coordinates[1], coordinates[0]);
-				var ne = L.latLng(coordinates[3], coordinates[2]);
-				var bounds = L.latLngBounds(sw, ne);
-				_map.fitBounds(bounds);
-			}
-			else {
-				_mainView.getMessagesView().displayMessage("Invalid bounding box", "alert");
-				_map.setView([lat, lon], zoom);
-			}
+		if(coordinates.length == 4) {
+			var sw = L.latLng(coordinates[1], coordinates[0]);
+			var ne = L.latLng(coordinates[3], coordinates[2]);
+			var bounds = L.latLngBounds(sw, ne);
+			this._map.fitBounds(bounds);
 		}
 		else {
-			_map.setView([lat, lon], zoom);
+			this._mainView.getMessagesView().displayMessage("Invalid bounding box", "alert");
+			this._map.setView([lat, lon], zoom);
 		}
-		
-		if(!isMobile) {
-			L.control.zoom({ position: "topright" }).addTo(_map);
-		}
-		
-		//Add search bar
-		//TODO Remove mobile condition, only to get to time to solve search bar bug
-		if(!isMobile) {
-			var search = L.Control.geocoder({ position: "topright" });
-			//Limit max zoom in order to avoid having no tiles in background for small objects
-			var minimalMaxZoom = OLvlUp.view.TILE_LAYERS[0].maxZoom;
-			for(var i in OLvlUp.view.TILE_LAYERS) {
-				if(OLvlUp.view.TILE_LAYERS[i].maxZoom < minimalMaxZoom) {
-					minimalMaxZoom = OLvlUp.view.TILE_LAYERS[i].maxZoom;
-				}
-			}
-			//Redefine markGeocode to avoid having an icon for the result
-			search.markGeocode = function (result) {
-				_map.fitBounds(result.bbox, { maxZoom: minimalMaxZoom });
-				return this;
-			};
-			search.addTo(_map);
-		}
-		
-		if(isMobile) {
-			L.control.zoom({ position: "topright" }).addTo(_map);
-		}
-		
-		//Create tile layers
-		var tileLayers = new Array();
-		var firstLayer = true;
-		
-		for(var l in OLvlUp.view.TILE_LAYERS) {
-			var currentLayer = OLvlUp.view.TILE_LAYERS[l];
-			var tileOptions = {
-				minZoom: currentLayer.minZoom,
-				maxZoom: currentLayer.maxZoom,
-				attribution: currentLayer.attribution+" | "+OLvlUp.view.ATTRIBUTION,
-			};
-			if(currentLayer.subdomains != undefined) {
-				tileOptions.subdomains = currentLayer.subdomains;
-			}
-			
-			tileLayers[currentLayer.name] = new L.TileLayer(
-				currentLayer.URL,
-				tileOptions
-			);
-			
-			if(firstLayer && tiles == undefined) {
-				_map.addLayer(tileLayers[currentLayer.name]);
-				firstLayer = false;
-				_tileLayer = l;
-			}
-			else if(l == tiles) {
-				_map.addLayer(tileLayers[currentLayer.name]);
-				_tileLayer = l;
+	}
+	else {
+		this._map.setView([lat, lon], zoom);
+	}
+	
+	if(!isMobile) {
+		L.control.zoom({ position: "topright" }).addTo(this._map);
+	}
+	
+	//Add search bar
+	//TODO Remove mobile condition, only to get to time to solve search bar bug
+	if(!isMobile) {
+		var search = L.Control.geocoder({ position: "topright" });
+		//Limit max zoom in order to avoid having no tiles in background for small objects
+		var minimalMaxZoom = CONFIG.tiles[0].maxZoom;
+		for(var i=0; i < CONFIG.tiles.length; i++) {
+			if(CONFIG.tiles[i].maxZoom < minimalMaxZoom) {
+				minimalMaxZoom = CONFIG.tiles[i].maxZoom;
 			}
 		}
-		L.control.layers(tileLayers).addTo(_map);
+		//Redefine markGeocode to avoid having an icon for the result
+		search.markGeocode = function (result) {
+			this._map.fitBounds(result.bbox, { maxZoom: minimalMaxZoom });
+			return this;
+		};
+		search.addTo(this._map);
+	}
+	
+	if(isMobile) {
+		L.control.zoom({ position: "topright" }).addTo(this._map);
+	}
+	
+	//Create tile layers
+	this._tileLayers = [];
+	var tileLayers = [];
+	var firstLayer = true;
+	
+	for(var l=0; l < CONFIG.tiles.length; l++) {
+		var currentLayer = CONFIG.tiles[l];
+		var tileOptions = {
+			minZoom: currentLayer.minZoom,
+			maxZoom: currentLayer.maxZoom,
+			attribution: currentLayer.attribution+" | "+CONFIG.osm.attribution,
+		};
+		if(currentLayer.subdomains != undefined) {
+			tileOptions.subdomains = currentLayer.subdomains;
+		}
 		
-		//Trigger for map events
-		_map.on('moveend', function(e) { controller.onMapUpdate(); });
-		_map.on("baselayerchange", controller.onMapLayerChange);
-		_map.on("layeradd", controller.onMapLayerAdd);
-	};
+		tileLayers[currentLayer.name] = new L.TileLayer(
+			currentLayer.URL,
+			tileOptions
+		);
+		this._tileLayers.push(tileLayers[currentLayer.name]);
+		
+		if(firstLayer && tiles == undefined) {
+			this._map.addLayer(tileLayers[currentLayer.name]);
+			firstLayer = false;
+			this._tileLayer = l;
+		}
+		else if(l == tiles) {
+			this._map.addLayer(tileLayers[currentLayer.name]);
+			this._tileLayer = l;
+		}
+	}
+	L.control.layers(tileLayers).addTo(this._map);
+	
+	//Trigger for map events
+	this._map.on('moveend', function(e) { controller.onMapUpdate(); });
+	this._map.on("baselayerchange", controller.onMapLayerChange);
+	this._map.on("layeradd", controller.onMapLayerAdd);
+};
 
 //ACCESSORS
 	/**
 	 * @return The map object
 	 */
-	this.get = function() {
-		return _map;
+	MapView.prototype.get = function() {
+		return this._map;
 	};
 	
 	/**
 	 * @return The currently shown tile layer
 	 */
-	this.getTileLayer = function() {
-		return _tileLayer;
+	MapView.prototype.getTileLayer = function() {
+		return this._tileLayer;
 	};
 	
 	/**
 	 * @return The previous zoom value
 	 */
-	this.getOldZoom = function() {
-		return _oldZoom;
+	MapView.prototype.getOldZoom = function() {
+		return this._oldZoom;
 	};
 
 //MODIFIERS
 	/**
 	 * Resets some variables
 	 */
-	this.resetVars = function() {
-		_oldZoom = null;
+	MapView.prototype.resetVars = function() {
+		this._oldZoom = null;
 	};
 	
 	/**
 	 * Zoom and set center on default position
 	 */
-	this.resetView = function() {
-		_map.setView(L.latLng(47, 2), 6);
-	};
-	
-	/**
-	 * Updates the popup for the given feature
-	 * @param ftId The feature ID
-	 * @return True if popup found and updated
-	 */
-	this.updatePopup = function(ftId) {
-		var result = false;
-		if(_dataPopups[ftId] != undefined) {
-			var ftViewTmp = new OLvlUp.view.FeatureView(_mainView, _mainView.getData().getFeature(ftId));
-			var popup = ftViewTmp.createPopup();
-			var featureViewLayer = _dataPopups[ftId].bindPopup(popup);
-			result = true;
-		}
-		return result;
+	MapView.prototype.resetView = function() {
+		this._map.setView(L.latLng(47, 2), 6);
 	};
 
 //OTHER METHODS
@@ -534,75 +456,80 @@ MapView: function(main) {
 	 * Event handler for map movement or level change
 	 * Refreshes data on map
 	 */
-	this.update = function() {
+	MapView.prototype.update = function() {
+		var timeStart = new Date().getTime();
+		
 		//Delete previous data
-		if(_dataLayer != null) {
-			_map.removeLayer(_dataLayer);
-			_dataLayer = null;
-			_dataPopups = {};
+		if(this._dataLayer != null) {
+			this._map.removeLayer(this._dataLayer);
+			this._dataLayer = null;
+			this._dataPopups = {};
 		}
 		
 		//Create data (specific to level)
-		var zoom = _map.getZoom();
+		var zoom = this._map.getZoom();
 		
-		if(zoom >= OLvlUp.view.DATA_MIN_ZOOM) {
-			var fullData = _createFullData();
+		if(zoom >= CONFIG.view.map.data_min_zoom) {
+			var fullData = this._createFullData();
 			
 			//Add data to map
 			if(fullData != null) {
 				//Create data layer
-				_dataLayer = L.layerGroup();
-				_dataLayer.addTo(_map);
+				this._dataLayer = L.layerGroup();
+				this._dataLayer.addTo(this._map);
 				
 				//Order layers
 				var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
-				for(var i in featureLayersKeys) {
+				for(var i=0; i < featureLayersKeys.length; i++) {
 					var featureLayerGroup = fullData[featureLayersKeys[i]];
-					_dataLayer.addLayer(featureLayerGroup);
+					this._dataLayer.addLayer(featureLayerGroup);
 				}
 			}
 			else {
-				_mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
+				this._mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
 			}
 		}
-		else if(zoom >= OLvlUp.view.CLUSTER_MIN_ZOOM) {
-			_dataLayer = _createClusterData();
+		else if(zoom >= CONFIG.view.map.cluster_min_zoom) {
+			this._dataLayer = this._createClusterData();
 			
 			//Add data to map
-			if(_dataLayer != null) {
-				_dataLayer.addTo(_map);
+			if(this._dataLayer != null) {
+				this._dataLayer.addTo(this._map);
 			}
 			else {
-				_mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
+				this._mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
 			}
 		}
 		
 		//Change old zoom value
-		_oldZoom = _map.getZoom();
+		this._oldZoom = this._map.getZoom();
 		
-		_self.changeTilesOpacity();
+		this.changeTilesOpacity();
+		
+		console.log("[Time] View update: "+((new Date().getTime()) - timeStart));
 	};
 	
 	/**
 	 * Changes the currently shown tile layer
 	 * @param name The tile layer name
 	 */
-	this.setTileLayer = function(name) {
-		for(var i in OLvlUp.view.TILE_LAYERS) {
-			if(OLvlUp.view.TILE_LAYERS[i].name == name) {
-				_tileLayer = i;
+	MapView.prototype.setTileLayer = function(name) {
+		for(var i=0; i < CONFIG.tiles.length; i++) {
+			if(CONFIG.tiles[i].name == name) {
+				this._tileLayer = i;
 				break;
 			}
 		}
-		_mainView.getUrlView().tilesChanged();
+		this._tileLayers[this._tileLayer].setOpacity(this._tileOpacity);
+		this._mainView.getUrlView().tilesChanged();
 	};
 
 	/**
 	 * Create data for detailled levels
 	 * @return The data layers for leaflet
 	 */
-	function _createFullData() {
-		var features = _mainView.getData().getFeatures();
+	MapView.prototype._createFullData = function() {
+		var features = this._mainView.getData().getFeatures();
 		var result = null;
 		
 		if(features != null) {
@@ -613,7 +540,7 @@ MapView: function(main) {
 			for(var featureId in features) {
 				try {
 					var feature = features[featureId];
-					var featureView = new OLvlUp.view.FeatureView(_mainView, feature);
+					var featureView = new FeatureView(this._mainView, feature);
 					
 					if(featureView.getLayer() != null) {
 						var relLayer = featureView.getRelativeLayer().toString();
@@ -626,14 +553,14 @@ MapView: function(main) {
 						//Add to feature layers
 						featureLayers[relLayer].addLayer(featureView.getLayer());
 						if(featureView.hasPopup()) {
-							_dataPopups[featureId] = featureView.getLayer();
+							this._dataPopups[featureId] = featureView.getLayer();
 						}
 						
 						dispayableFeatures++;
 					}
 				}
 				catch(e) {
-					console.error("[View] "+e);
+					console.error(e);
 				}
 			}
 			
@@ -649,8 +576,8 @@ MapView: function(main) {
 	 * Create data for cluster levels
 	 * @return The data layer for leaflet
 	 */
-	function _createClusterData() {
-		var data = _mainView.getClusterData().get();
+	MapView.prototype._createClusterData = function() {
+		var data = this._mainView.getClusterData().get();
 		var result = null;
 		
 		if(data != null) {
@@ -668,11 +595,11 @@ MapView: function(main) {
 	/**
 	 * Changes the tiles opacity, depending of shown level
 	 */
-	this.changeTilesOpacity = function() {
-		var newOpacity = 1;
+	MapView.prototype.changeTilesOpacity = function() {
+		this._tileOpacity = 1;
 		
-		if(_map.getZoom() >= OLvlUp.view.DATA_MIN_ZOOM && _mainView.getData() != null) {
-			var levelsArray = _mainView.getData().getLevels();
+		if(this._map.getZoom() >= CONFIG.view.map.data_min_zoom && this._mainView.getData() != null) {
+			var levelsArray = this._mainView.getData().getLevels();
 			
 			//Find level 0 index in levels array
 			var levelZero = levelsArray.indexOf(0);
@@ -683,62 +610,57 @@ MapView: function(main) {
 			var levelsPositive = levelsArray.slice(midLevel+1);
 			
 			//Calculate new opacity, depending of level position in levels array
-			var currentLevel = _mainView.getLevelView().get();
+			var currentLevel = this._mainView.getLevelView().get();
 			if(currentLevel != null) {
 				var idNeg = levelsNegative.indexOf(currentLevel);
 				var idPos = levelsPositive.indexOf(currentLevel);
 				if(idNeg >= 0) {
-					var coef = idNeg / levelsNegative.length * (OLvlUp.view.TILES_MAX_OPACITY - OLvlUp.view.TILES_MIN_OPACITY);
-					newOpacity = OLvlUp.view.TILES_MIN_OPACITY + coef;
+					var coef = idNeg / levelsNegative.length * (CONFIG.view.map.tiles_max_opacity - CONFIG.view.map.tiles_min_opacity);
+					this._tileOpacity = CONFIG.view.map.tiles_min_opacity + coef;
 				}
 				else if(idPos >= 0) {
-					var coef = (levelsPositive.length - 1 - idPos) / levelsPositive.length * (OLvlUp.view.TILES_MAX_OPACITY - OLvlUp.view.TILES_MIN_OPACITY);
-					newOpacity = OLvlUp.view.TILES_MIN_OPACITY + coef;
+					var coef = (levelsPositive.length - 1 - idPos) / levelsPositive.length * (CONFIG.view.map.tiles_max_opacity - CONFIG.view.map.tiles_min_opacity);
+					this._tileOpacity = CONFIG.view.map.tiles_min_opacity + coef;
 				}
 				else {
-					newOpacity = OLvlUp.view.TILES_MAX_OPACITY;
+					this._tileOpacity = CONFIG.view.map.tiles_max_opacity;
 				}
 			}
 		}
 		
 		//Update tiles opacity
-		_map.eachLayer(function(layer) {
-			if(layer instanceof L.TileLayer) {
-				layer.setOpacity(newOpacity);
-			}
-		});
-	}
+		this._tileLayers[this._tileLayer].setOpacity(this._tileOpacity);
+	};
 	
 	/**
 	 * This functions makes map go to given coordinates, at given level
 	 * @param ftId The feature ID
 	 * @param lvl The level
 	 */
-	this.goTo = function(ftId, lvl) {
+	MapView.prototype.goTo = function(ftId, lvl) {
 		//Change level
-		_mainView.getLevelView().set(lvl);
-		_mainView.updateLevelChanged();
+		this._mainView.getLevelView().set(lvl);
+		this._mainView.updateLevelChanged();
 		
 		//Retrieve feature
-		var feature = _mainView.getData().getFeature(ftId);
+		var feature = this._mainView.getData().getFeature(ftId);
 		
 		//Zoom on feature
-		var centroid = feature.getGeometry().getCentroid();
-		var centroidLatLng = L.latLng(centroid[1], centroid[0]);
-		_map.setView(centroidLatLng, 21);
+		var centroidLatLng = feature.getGeometry().getCentroid();
+		this._map.setView(centroidLatLng, 21);
 		
 		//Open popup
 		setTimeout(function() {
-			if(_mainView.getLoadingView().isLoading()) {
+			if(this._mainView.getLoadingView().isLoading()) {
 				$(document).bind("loading_done", function() {
-					_dataPopups[ftId].openPopup(centroidLatLng);
+					this._dataPopups[ftId].openPopup(centroidLatLng);
 					$(document).unbind("loading_done");
-				});
+				}.bind(this));
 			}
 			else {
-				_dataPopups[ftId].openPopup(centroidLatLng);
+				this._dataPopups[ftId].openPopup(centroidLatLng);
 			}
-		},
+		}.bind(this),
 		300);
 	};
 
@@ -746,210 +668,240 @@ MapView: function(main) {
  	 * Changes the currently shown popup tab
 	 * @param id The ID of the tab to show (for exemple "general")
 	 */
-	this.changePopupTab = function(id) {
+	MapView.prototype.changePopupTab = function(id) {
 		$(".popup-nav .item:visible").removeClass("selected");
 		$(".popup-tab:visible").hide();
 		$(".leaflet-popup:visible #popup-tab-"+id).show();
 		$("#item-"+id).addClass("selected");
 	};
 
-//INIT
-	_init();
-},
-
 
 
 /**
  * The component for a single feature
  */
-FeatureView: function(main, feature) {
+var FeatureView = function(main, feature) {
 //ATTRIBUTES
 	/** The feature layer **/
-	var _layer = null;
+	this._layer = null;
 	
 	/** Does this object has a popup ? **/
-	var _hasPopup = false;
+	this._hasPopup = false;
 	
 	/** The main view **/
-	var _mainView = main;
+	this._mainView = main;
 	
-	/** This object **/
-	var _self = this;
+	/** The feature **/
+	this._feature = feature;
 
 //CONSTRUCTOR
-	/**
-	 * Creates the layer for the given feature
-	 */
-	function _init() {
-		if(_isDisplayable(feature)) {
-			var style = feature.getStyle().get();
-			var geom = feature.getGeometry();
-			var geomType = geom.getType();
-			_layer = L.featureGroup();
-			
-			//Init layer object, depending of geometry type
+	if(this._isDisplayable(this._feature)) {
+		var style = this._feature.getStyle().get();
+		var geom = this._feature.getGeometry();
+		var geomType = geom.getType();
+		var hasIcon = style.icon != undefined;
+		var geomLatLng = geom.getLatLng();
+		this._layer = L.featureGroup();
+		
+		//Init layer object, depending of geometry type
+		switch(geomType) {
+			case "Point":
+				var marker = this._createMarker(geomLatLng);
+				if(marker != null) {
+					this._layer.addLayer(marker);
+					hasIcon = true;
+					
+					marker = null;
+				}
+				break;
+				
+			case "LineString":
+				this._layer.addLayer(L.polyline(geomLatLng, style));
+				break;
+				
+			case "Polygon":
+				this._layer.addLayer(L.polygon(geomLatLng, style));
+				break;
+				
+			case "MultiPolygon":
+				this._layer.addLayer(L.multiPolygon(geomLatLng, style));
+				break;
+				
+			default:
+				console.log("Unknown geometry type: "+geomType);
+		}
+		
+		//Look for an icon or a label
+		var labelizable = this._labelizable();
+		var hasPhoto = this._mainView.getOptionsView().showPhotos() && (this._feature.getImages().hasValidImages() || (this._mainView.hasWebGL() && !this._mainView.isMobile() && this._feature.getImages().hasValidSpherical()));
+		
+		if(hasIcon || labelizable || hasPhoto) {
 			switch(geomType) {
 				case "Point":
-					var marker = _createMarker(geom.getLatLng());
-					if(marker != null) {
-						_layer.addLayer(marker);
+					//Labels
+					if(labelizable) {
+						this._layer.addLayer(this._createLabel(geomLatLng, hasIcon));
+					}
+					
+					if(hasPhoto) {
+						this._layer.addLayer(this._createPhotoIcon(geomLatLng));
 					}
 					break;
 					
 				case "LineString":
-					_layer.addLayer(L.polyline(geom.getLatLng(), style));
+					var ftGeomJSON = geom.get();
+					var nbSegments = ftGeomJSON.coordinates.length - 1;
+					
+					//For each segment, add an icon
+					var coord1, coord2, coordMid, angle, coord, marker;
+					for(var i=0; i < nbSegments; i++) {
+						coord1 = ftGeomJSON.coordinates[i];
+						coord2 = ftGeomJSON.coordinates[i+1];
+						coordMid = [ (coord1[0] + coord2[0]) / 2, (coord1[1] + coord2[1]) / 2 ];
+						angle = azimuth({lat: coord1[1], lng: coord1[0], elv: 0}, {lat: coord2[1], lng: coord2[0], elv: 0}).azimuth;
+						coord = L.latLng(coordMid[1], coordMid[0]);
+						
+						if(hasIcon) {
+							if(style.rotateIcon) {
+								marker = this._createMarker(coord, angle);
+								if(marker != null) {
+									this._layer.addLayer(marker);
+								}
+							}
+							else {
+								marker = this._createMarker(coord);
+								if(marker != null) {
+									this._layer.addLayer(marker);
+								}
+							}
+						}
+						
+						//Labels
+						if(labelizable) {
+							this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
+						}
+						
+						if(hasPhoto) {
+							this._layer.addLayer(this._createPhotoIcon(coord));
+						}
+					}
+					
+					//Clear tmp objects
+					coord1 = null;
+					coord2 = null;
+					coordMid = null;
+					angle = null;
+					coord = null;
+					marker = null;
+					
 					break;
 					
 				case "Polygon":
-					_layer.addLayer(L.polygon(geom.getLatLng(), style));
-					break;
+					var coord = geom.getCentroid();
 					
+					if(hasIcon) {
+						var marker = this._createMarker(coord);
+						if(marker != null) {
+							this._layer.addLayer(marker);
+						}
+					}
+					
+					//Labels
+					if(labelizable) {
+						this._layer.addLayer(this._createLabel(coord, hasIcon));
+					}
+					
+					if(hasPhoto) {
+						this._layer.addLayer(this._createPhotoIcon(coord));
+					}
+					
+					//Clear tmp objects
+					coord = null;
+					
+					break;
+				
 				case "MultiPolygon":
-					_layer.addLayer(L.multiPolygon(geom.getLatLng(), style));
+					var ftGeomJSON = geom.get();
+					var nbPolygons = ftGeomJSON.coordinates.length;
+					
+					//For each polygon, add an icon
+					var coordMid, coordsPolygon, length, coord, marker;
+					for(var i=0; i < nbPolygons; i++) {
+						coordMid = [0, 0];
+						coordsPolygon = ftGeomJSON.coordinates[i];
+						length = coordsPolygon[0].length;
+						for(var j=0; j < length; j++) {
+							if(j < length - 1) {
+								coordMid[0] += coordsPolygon[0][j][0];
+								coordMid[1] += coordsPolygon[0][j][1];
+							}
+						}
+						
+						coordMid[0] = coordMid[0] / (length -1);
+						coordMid[1] = coordMid[1] / (length -1);
+						coord = L.latLng(coordMid[1], coordMid[0]);
+						
+						if(hasIcon) {
+							marker = this._createMarker(coord);
+							if(marker != null) {
+								this._layer.addLayer(marker);
+							}
+						}
+						
+						//Labels
+						if(labelizable) {
+							this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
+						}
+						
+						if(hasPhoto) {
+							this._layer.addLayer(this._createPhotoIcon(coord));
+						}
+					}
+					
+					//Clear tmp objects
+					ftGeomJSON = null;
+					nbPolygons = null;
+					coordMid = null;
+					coordsPolygon = null;
+					length = null;
+					coord = null;
+					marker = null;
+					
 					break;
 					
 				default:
 					console.log("Unknown geometry type: "+geomType);
 			}
-			
-			//Look for an icon or a label
-			var hasIcon = style.icon != undefined;
-			var labelizable = _labelizable();
-			var hasPhoto = _mainView.getOptionsView().showPhotos() && (feature.getImages().hasValidImages() || (_mainView.hasWebGL() && !_mainView.isMobile() && feature.getImages().hasValidSpherical()));
-			
-			if(hasIcon || labelizable || hasPhoto) {
-				switch(geomType) {
-					case "Point":
-						//Labels
-						if(labelizable) {
-							_layer.addLayer(_createLabel(geom.getLatLng(), hasIcon));
-						}
-						
-						if(hasPhoto) {
-							_layer.addLayer(_createPhotoIcon(geom.getLatLng()));
-						}
-						break;
-						
-					case "LineString":
-						var ftGeomJSON = geom.get();
-						var nbSegments = ftGeomJSON.coordinates.length - 1;
-						
-						//For each segment, add an icon
-						for(var i=0; i < nbSegments; i++) {
-							var coord1 = ftGeomJSON.coordinates[i];
-							var coord2 = ftGeomJSON.coordinates[i+1];
-							var coordMid = [ (coord1[0] + coord2[0]) / 2, (coord1[1] + coord2[1]) / 2 ];
-							var angle = azimuth({lat: coord1[1], lng: coord1[0], elv: 0}, {lat: coord2[1], lng: coord2[0], elv: 0}).azimuth;
-							var coord = L.latLng(coordMid[1], coordMid[0]);
-							
-							if(hasIcon) {
-								if(style.rotateIcon) {
-									var marker = _createMarker(coord, angle);
-									if(marker != null) {
-										_layer.addLayer(marker);
-									}
-								}
-								else {
-									var marker = _createMarker(coord);
-									if(marker != null) {
-										_layer.addLayer(marker);
-									}
-								}
-							}
-							
-							//Labels
-							if(labelizable) {
-								_layer.addLayer(_createLabel(coord, hasIcon, angle));
-							}
-							
-							if(hasPhoto) {
-								_layer.addLayer(_createPhotoIcon(coord));
-							}
-						}
-						break;
-						
-					case "Polygon":
-						var centroid = geom.getCentroid();
-						var coord = L.latLng(centroid[1], centroid[0]);
-						
-						if(hasIcon) {
-							var marker = _createMarker(coord);
-							if(marker != null) {
-								_layer.addLayer(marker);
-							}
-						}
-						
-						//Labels
-						if(labelizable) {
-							_layer.addLayer(_createLabel(coord, hasIcon));
-						}
-						
-						if(hasPhoto) {
-							_layer.addLayer(_createPhotoIcon(coord));
-						}
-						break;
-					
-					case "MultiPolygon":
-						var ftGeomJSON = geom.get();
-						var nbPolygons = ftGeomJSON.coordinates.length;
-						
-						//For each polygon, add an icon
-						for(var i=0; i < nbPolygons; i++) {
-							var coordMid = [0, 0];
-							var coordsPolygon = ftGeomJSON.coordinates[i];
-							for(var i in coordsPolygon[0]) {
-								if(i < coordsPolygon[0].length - 1) {
-									coordMid[0] += coordsPolygon[0][i][0];
-									coordMid[1] += coordsPolygon[0][i][1];
-								}
-							}
-							
-							coordMid[0] = coordMid[0] / (coordsPolygon[0].length -1);
-							coordMid[1] = coordMid[1] / (coordsPolygon[0].length -1);
-							var coord = L.latLng(coordMid[1], coordMid[0]);
-							
-							if(hasIcon) {
-								var marker = _createMarker(coord);
-								if(marker != null) {
-									_layer.addLayer(marker);
-								}
-							}
-							
-							//Labels
-							if(labelizable) {
-								_layer.addLayer(_createLabel(coord, hasIcon, angle));
-							}
-							
-							if(hasPhoto) {
-								_layer.addLayer(_createPhotoIcon(coord));
-							}
-						}
-						break;
-						
-					default:
-						console.log("Unknown geometry type: "+geomType);
-				}
-			}
-			
-			//Add popup if needed
-			if(style.popup == undefined || style.popup == "yes") {
-				_layer.bindPopup(_self.createPopup());
-				_hasPopup = true;
-			}
 		}
-	};
+		
+		//Add popup if needed
+		if(style.popup == undefined || style.popup == "yes") {
+			this._layer.bindPopup(this.createPopup());
+			this._hasPopup = true;
+		}
+		
+		//Clear tmp objects
+		style = null;
+		geom = null;
+		geomType = null;
+		hasIcon = null;
+		geomLatLng = null;
+		labelizable = null;
+		hasPhoto = null;
+	}
+};
 
 //ACCESSORS
 	/**
 	 * @return The relative layer to overlay object on map
 	 */
-	this.getRelativeLayer = function() {
+	FeatureView.prototype.getRelativeLayer = function() {
 		//Determine relative layer
-		var relLayer = feature.getStyle().get().layer;
+		var relLayer = this._feature.getStyle().get().layer;
 		if(relLayer != undefined) {
 			relLayer = parseFloat(relLayer);
 			if(!isNaN(relLayer)) {
-				_relLayer = relLayer;
+				this._relLayer = relLayer;
 			}
 		}
 		else {
@@ -961,15 +913,15 @@ FeatureView: function(main, feature) {
 	/**
 	 * @return The leaflet layer
 	 */
-	this.getLayer = function() {
-		return _layer;
+	FeatureView.prototype.getLayer = function() {
+		return this._layer;
 	};
 	
 	/**
 	 * @return True if this view has an associated popup
 	 */
-	this.hasPopup = function() {
-		return _hasPopup;
+	FeatureView.prototype.hasPopup = function() {
+		return this._hasPopup;
 	};
 	
 //OTHER METHODS
@@ -977,11 +929,10 @@ FeatureView: function(main, feature) {
 	 * Should the given feature be shown, regarding to view context ?
 	 * @return True if yes
 	 */
-	function _isDisplayable() {
-		var ftGeom = feature.getGeometry();
-		var ftTags = feature.getTags();
-		var ftLevels = feature.onLevels();
-		var options = _mainView.getOptionsView();
+	FeatureView.prototype._isDisplayable = function() {
+		var ftTags = this._feature.getTags();
+		var ftLevels = this._feature.onLevels();
+		var options = this._mainView.getOptionsView();
 		
 		var addObject = false;
 		
@@ -991,10 +942,10 @@ FeatureView: function(main, feature) {
 
 			addObject = nbTags > 0
 					&& (nbTags > 1 || ftTags.area == undefined)
-					&& feature.isOnLevel(_mainView.getLevelView().get())
+					&& this._feature.isOnLevel(this._mainView.getLevelView().get())
 					&& (options.showTranscendent() || ftLevels.length == 1)
 					&& (!options.showBuildingsOnly() || ftTags.building != undefined)
-					&& (options.showUnrendered() || Object.keys(feature.getStyle().get()).length > 0);
+					&& (options.showUnrendered() || Object.keys(this._feature.getStyle().get()).length > 0);
 		}
 		//Objects without levels
 		else {
@@ -1010,7 +961,7 @@ FeatureView: function(main, feature) {
 		}
 
 //		if(!addObject) {
-//			console.log("Unrendered object: "+feature.getId());
+//			console.log("Unrendered object: "+this._feature.getId());
 //			console.log(ftTags);
 //		}
 		
@@ -1023,32 +974,30 @@ FeatureView: function(main, feature) {
 	 * @param angle The rotation angle (default: 0)
 	 * @return The leaflet marker, or null
 	 */
-	function _createMarker(latlng, angle) {
+	FeatureView.prototype._createMarker = function(latlng, angle) {
 		var result = null;
 		var iconUrl = null;
-		var style = feature.getStyle().get();
+		var style = this._feature.getStyle().get();
 		angle = angle || null;
 		
-		if(style.icon != undefined && style.icon != null && style.icon != '') {
-			var tmpUrl = feature.getStyle().getIconUrl();
-			
-			if(tmpUrl != null) {
-				iconUrl = OLvlUp.view.ICON_FOLDER+'/'+tmpUrl;
-			}
-			else if(style.showMissingIcon == undefined || style.showMissingIcon) {
-				iconUrl = OLvlUp.view.ICON_FOLDER+'/default.png';
-			}
+		var tmpUrl = this._feature.getStyle().getIconUrl();
+		
+		if(tmpUrl != null) {
+			iconUrl = CONFIG.view.icons.folder+'/'+tmpUrl;
 		}
 		else if(style.showMissingIcon == undefined || style.showMissingIcon) {
+			iconUrl = CONFIG.view.icons.folder+'/icon_default.png';
+		}
+		else if(this._feature.getGeometry().getType() == "Point") {
 			result = L.circleMarker(latlng, style);
 		}
 		
 		if(iconUrl != null) {
 			var myIcon = L.icon({
 				iconUrl: iconUrl,
-				iconSize: [OLvlUp.view.ICON_SIZE, OLvlUp.view.ICON_SIZE],
-				iconAnchor: [OLvlUp.view.ICON_SIZE/2, OLvlUp.view.ICON_SIZE/2],
-				popupAnchor: [0, -OLvlUp.view.ICON_SIZE/2]
+				iconSize: [CONFIG.view.icons.size, CONFIG.view.icons.size],
+				iconAnchor: [CONFIG.view.icons.size/2, CONFIG.view.icons.size/2],
+				popupAnchor: [0, -CONFIG.view.icons.size/2]
 			});
 			
 			if(angle != null) {
@@ -1058,9 +1007,6 @@ FeatureView: function(main, feature) {
 				result = L.marker(latlng, {icon: myIcon});
 			}
 		}
-//		else {
-//			result = L.circleMarker(latlng, { opacity: 0, fillOpacity: 0 });
-//		}
 			
 		return result;
 	}
@@ -1070,14 +1016,14 @@ FeatureView: function(main, feature) {
 	 * @param latlng The coordinates as leaflet LatLng
 	 * @return The marker as leaflet layer
 	 */
-	function _createPhotoIcon(latlng) {
-		var size = feature.getImages().countImages();
+	FeatureView.prototype._createPhotoIcon = function(latlng) {
+		var size = this._feature.getImages().countImages();
 		
 		return L.circleMarker(latlng,{
 			color: "green",
 			fill: false,
 			opacity: 0.7,
-			radius: OLvlUp.view.ICON_SIZE/2 + size,
+			radius: CONFIG.view.icons.size/2 + size,
 			weight: 1 + size
 		})
 	};
@@ -1086,10 +1032,10 @@ FeatureView: function(main, feature) {
 	 * Creates the popup for a given feature
 	 * @return The popup object
 	 */
-	this.createPopup = function() {
-		var name = feature.getName();
-		var style = feature.getStyle().get();
-		var isMobile = _mainView.isMobile();
+	FeatureView.prototype.createPopup = function() {
+		var style = this._feature.getStyle().get();
+		var isMobile = this._mainView.isMobile();
+		var iconUrl = this._feature.getStyle().getIconUrl();
 		
 		/*
 		 * Title
@@ -1097,184 +1043,52 @@ FeatureView: function(main, feature) {
 		var text = '<h1 class="popup">';
 		
 		//Add icon in title
-		if(style.icon != undefined) {
-			var iconUrl = feature.getStyle().getIconUrl();
-			if(iconUrl != null) {
-				text += '<img class="icon" src="'+OLvlUp.view.ICON_FOLDER+'/'+iconUrl+'" /> ';
-			}
+		if(iconUrl != null) {
+			text += '<img class="icon" src="'+CONFIG.view.icons.folder+'/'+iconUrl+'" /> ';
 		}
 		
 		//Object name (its name tag or its type)
-		text += (feature.getTag("name") != undefined) ? feature.getTag("name") : name;
+		text += this._feature.getName();
 		
 		//Add up and down icons if levelup property == true
-		var ftLevels = feature.onLevels();
+		var ftLevels = this._feature.onLevels();
 		if(style.levelup && ftLevels.length > 0 && !isMobile) {
 			//Able to go up ?
-			var levelId = ftLevels.indexOf(_mainView.getLevelView().get());
+			var levelId = ftLevels.indexOf(this._mainView.getLevelView().get());
 			if(levelId < ftLevels.length -1) {
-				text += ' <a onclick="controller.toLevel('+ftLevels[levelId+1]+')" href="#"><img src="'+OLvlUp.view.ICON_FOLDER+'/arrow_up.png" title="Go up" alt="Up!" /></a>';
+				text += ' <a onclick="controller.toLevel('+ftLevels[levelId+1]+')" href="#"><img src="'+CONFIG.view.icons.folder+'/arrow_up_3.png" title="Go up" alt="Up!" /></a>';
 			}
 			//Able to go down ?
 			if(levelId > 0) {
-				text += ' <a onclick="controller.toLevel('+ftLevels[levelId-1]+')" href="#"><img src="'+OLvlUp.view.ICON_FOLDER+'/arrow_down.png" title="Go down" alt="Down!" /></a>';
+				text += ' <a onclick="controller.toLevel('+ftLevels[levelId-1]+')" href="#"><img src="'+CONFIG.view.icons.folder+'/arrow_down_3.png" title="Go down" alt="Down!" /></a>';
 			}
 		}
-		
-		//End title
-		text += '</h1>';
-		
-		//Navigation bar
-		if(!isMobile) {
-			text += '<div class="popup-nav"><div class="row">';
-			text += '<div class="item selected" id="item-general"><a href="#" onclick="controller.getView().getMapView().changePopupTab(\'general\');">General</a></div>';
-			text += '<div class="item" id="item-technical"><a href="#" onclick="controller.getView().getMapView().changePopupTab(\'technical\');">Technical</a></div>';
-			text += '<div class="item" id="item-tags"><a href="#" onclick="controller.getView().getMapView().changePopupTab(\'tags\');">Tags</a></div>';
-			text += '</div></div>';
-		}
-		
-		/*
-		 * Tab 1 : general information
-		 */
-		text += '<div class="popup-tab" id="popup-tab-general">';
-		generalTxt = '';
-		generalTxt += _addFormatedTag("vending", "Selling", removeUscore);
-		generalTxt += _addFormatedTag("information", "Type", removeUscore);
-		generalTxt += _addFormatedTag("artwork_type", "Type", removeUscore);
-		generalTxt += _addFormatedTag("access", "Access");
-		generalTxt += _addFormatedTag("artist", "Creator");
-		generalTxt += _addFormatedTag("artist_name", "Creator");
-		generalTxt += _addFormatedTag("architect", "Architect");
-		generalTxt += _addFormatedTag("opening_hours", "Opening hours");
-		generalTxt += _addFormatedTag("start_date", "Created in");
-		generalTxt += _addFormatedTag("historic:era", "Era", removeUscore);
-		generalTxt += _addFormatedTag("historic:period", "Period", removeUscore);
-		generalTxt += _addFormatedTag("historic:civilization", "Civilization", removeUscore);
-		generalTxt += _addFormatedTag("website", "Website", asWebLink);
-		generalTxt += _addFormatedTag("contact:website", "Website", asWebLink);
-		generalTxt += _addFormatedTag("phone", "Phone");
-		generalTxt += _addFormatedTag("contact:phone", "Phone");
-		generalTxt += _addFormatedTag("email", "E-mail");
-		generalTxt += _addFormatedTag("contact:email", "E-mail");
-		generalTxt += _addFormatedTag("fee", "Fee");
-		generalTxt += _addFormatedTag("atm", "With ATM");
-		generalTxt += _addFormatedTag("payment:coins", "Pay with coins");
-		generalTxt += _addFormatedTag("payment:credit_cards", "Pay with credit cards");
-		generalTxt += _addFormatedTag("currency:EUR", "Pay in €");
-		generalTxt += _addFormatedTag("currency:USD", "Pay in US $");
-		generalTxt += _addFormatedTag("female", "For women");
-		generalTxt += _addFormatedTag("male", "For men");
-		generalTxt += _addFormatedTag("bicycle", "For bicycle");
-		generalTxt += _addFormatedTag("foot", "On foot");
-		generalTxt += _addFormatedTag("wheelchair", "For wheelchair");
-		generalTxt += _addFormatedTag("seats", "Seats");
-		generalTxt += _addFormatedTag("waste", "Waste",removeUscore);
-		generalTxt += _addFormatedTag("cuisine", "Cuisine", removeUscore);
-		
-		generalTxt += _addFormatedTag("description", "Details");
-		
-		//Image rendering
-		if(feature.getImages().hasValidImages() || (_mainView.hasWebGL() && !_mainView.isMobile() && feature.getImages().hasValidSpherical())) {
-			generalTxt += '<p class="popup-txt centered"><a href="#" id="images-open" onclick="controller.getView().getImagesView().open(\''+feature.getId()+'\')">See related images</a></p>';
-		}
-		
-		if(generalTxt == '' && !isMobile) { generalTxt = "No general information (look at tags)"; }
-		text += generalTxt;
-		
-		text += '</div>';
-		
-		/*
-		 * Tab 2 : technical information
-		 */
-		if(!isMobile) {
-			text += '<div class="popup-tab hidden" id="popup-tab-technical">';
-			
-			technicalTxt = '';
-			technicalTxt += _addFormatedTag("width", "Width", addDimensionUnit);
-			technicalTxt += _addFormatedTag("height", "Height", addDimensionUnit);
-			technicalTxt += _addFormatedTag("length", "Length", addDimensionUnit);
-			technicalTxt += _addFormatedTag("direction", "Direction", orientationValue);
-			technicalTxt += _addFormatedTag("camera:direction", "Direction (camera)", orientationValue);
-			technicalTxt += _addFormatedTag("operator", "Operator");
-			technicalTxt += _addFormatedTag("ref", "Reference");
-			technicalTxt += _addFormatedTag("material", "Made of");
-			
-			if(technicalTxt == '') { technicalTxt = "No technical information (look at tags)"; }
-			text += technicalTxt;
-			
-			text += '</div>';
-		}
-		
-		/*
-		 * Tab 3 : tags
-		 */
-		if(!isMobile) {
-			text += '<div class="popup-tab hidden" id="popup-tab-tags">';
-			
-			//List all tags
-			text += '<p class="popup-txt">';
-			var ftTags = feature.getTags();
-			for(i in ftTags) {
-				//Render specific tags
-				//URLs
-				var urlTags = ["image", "website", "contact:website", "url"];
-				if(urlTags.indexOf(i) >= 0) {
-					text += i+' = <a href="'+correctWebLink(ftTags[i])+'">'+ftTags[i]+'</a>';
-				}
-				//Wikimedia commons
-				else if(i == "wikimedia_commons") {
-					text += i+' = <a href="https://commons.wikimedia.org/wiki/'+ftTags[i]+'">'+ftTags[i]+'</a>';
-				}
-				else {
-					text += i+" = "+ftTags[i];
-				}
-				text += "<br />";
-			}
 
-			//text += feature.properties.style.getStyle().layer;
-			text += "</p>";
-			
-			text += '</div>';
-		}
-		
 		/*
-		 * Footer
+		 * Links
 		 */
-		//Link to osm.org object
-		text += '<p class="popup-txt centered"><a href="http://www.openstreetmap.org/'+feature.getId()+'">See this on OSM.org</a></p>';
+		text += '</h1><div class="popup-footer">';
 		
-		coords = feature.getGeometry().getCentroid();
-		
-		var options = (isMobile) ? { autoPan: false } : {};
-		
-		return L.popup(options).setContent(text).setLatLng(L.latLng(coords[1], coords[0]));
-	}
-	
-	/**
-	 * Creates a formated tag display
-	 * @param key The OSM key to display
-	 * @param cleanName The clean name to display
-	 * @param tagCleaner The function that will clean the tag value (for example, add proper unit for dimensions), optional
-	 * @return The formated tag, or empty string if not found
-	 */
-	function _addFormatedTag(key, cleanName, tagCleaner) {
-		var text = '';
-		if(tagCleaner == undefined) { tagCleaner = function(v) { return v; }; }
-		
-		if(feature.getTag(key) != undefined) {
-			text = '<b>'+cleanName+':</b> '+tagCleaner(feature.getTag(key))+'<br />';
+		//Picture link
+		if(this._feature.getImages().hasValidImages() || (this._mainView.hasWebGL() && !this._mainView.isMobile() && this._feature.getImages().hasValidSpherical())) {
+			text += '<a href="#" id="images-open" title="Related pictures" onclick="controller.getView().getImagesView().open(\''+this._feature.getId()+'\')"><img src="img/icon_picture_2.svg" alt="Pictures" /></a> ';
 		}
 		
-		return text;
+		//Tags and OSM links
+		text += '<a href="#" id="tags-open" title="Tags" onclick="controller.getView().getTagsView().open(\''+this._feature.getId()+'\')"><img src="img/icon_tags.svg" alt="Tags" /></a><a href="http://www.openstreetmap.org/'+this._feature.getId()+'" title="See this on OSM.org" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a></div>';
+		
+		var options = (isMobile) ? { autoPan: false } : { };
+		
+		return L.popup(options).setContent(text);
 	}
 	
 	/**
 	 * Should the feature receive a label ?
 	 * @return True if it should have a label
 	 */
-	function _labelizable() {
-		var ftStyle = feature.getStyle().get();
-		return ftStyle.label != undefined && ftStyle.label != null && feature.getTag(ftStyle.label) != undefined;
+	FeatureView.prototype._labelizable = function() {
+		var ftStyle = this._feature.getStyle().get();
+		return ftStyle.label != undefined && ftStyle.label != null && this._feature.hasTag(ftStyle.label);
 	};
 	
 	/**
@@ -1284,8 +1098,8 @@ FeatureView: function(main, feature) {
 	 * @param angle The rotation angle for label (default: 0)
 	 * @return The label as a leaflet marker
 	 */
-	function _createLabel(coordinates, hasMarker, angle) {
-		var styleRules = feature.getStyle().get();
+	FeatureView.prototype._createLabel = function(coordinates, hasMarker, angle) {
+		var styleRules = this._feature.getStyle().get();
 		var angle = angle || false;
 		if(angle != false) {
 			angle = (angle >= 90) ? angle - 90 : angle + 270;
@@ -1293,8 +1107,8 @@ FeatureView: function(main, feature) {
 		}
 		
 		var classes = (styleRules.labelStyle != undefined) ? ' '+styleRules.labelStyle : '';
-		var text = feature.getTag(styleRules.label);
-		var iconAnchor = (hasMarker) ? [ null, -OLvlUp.view.ICON_SIZE/2] : [ null, OLvlUp.view.ICON_SIZE/2 ];
+		var text = this._feature.getTag(styleRules.label);
+		var iconAnchor = (hasMarker) ? [ null, -CONFIG.view.icons.size/2] : [ null, CONFIG.view.icons.size/2 ];
 		var rotation = (angle) ? ' style="transform: rotate('+angle+'deg);"' : '';
 		
 		var label = L.marker(coordinates, {
@@ -1311,38 +1125,242 @@ FeatureView: function(main, feature) {
 		return label;
 	};
 
-//INIT
-	_init();
-},
-
 
 
 /**
- * The levels component
+ * The tags overlay component
  */
-LevelView: function(main) {
+var TagsView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
+	this._mainView = main;
+
+//CONSTRUCTOR
+	$("#tags-close").click(function() {
+		$("#op-tags").removeClass("show");
+		$("#op-tags").addClass("hide");
+	});
+};
+
+//OTHER METHODS
+	/**
+	* Opens and set tags for the given feature
+	* @param ftId The feature ID
+	*/
+	TagsView.prototype.open = function(ftId) {
+		//Retrieve feature
+		var ft = this._mainView.getData().getFeature(ftId);
+		
+		var tagList = "";
+		var detailsTxt = '';
+		var tags = ft.getTags();
+		var first = true;
+		var val, detail, link, icon, tagValue, vInt, v, vOk;
+		var regex = /\$\{(\w+)\}/;
+		var txtVals = {
+			N: "North", NNE: "North North-east", NE:"North-east", ENE: "East North-east",
+			E: "East", ESE: "East South-east", SE: "South-east", SSE: "South South-east",
+			S: "South", SSW: "South South-west", SW: "South-west", WSW:"West South-west",
+			W: "West", WNW: "West North-west", NW: "North-west", NNW: "North North-west",
+			north: "North", south: "South", east: "East", west: "West"
+		};
+		
+		for(var k in tags) {
+			/*
+			 * List tags
+			 */
+			if(!first) {
+				tagList += ' + ';
+			}
+			else {
+				first = false;
+			}
+			
+			val = tags[k];
+			tagList += '<span class="osm-tag"><a href="http://wiki.openstreetmap.org/wiki/Key:'+k+'" target="_blank" class="osm-key">'+k+'</a>=<span class="osm-val">'+val+'</span></span>';
+			
+			/*
+			 * Details about the feature
+			 */
+			detail = STYLE.details[k];
+			if(detail != undefined) {
+				detailsTxt += '<span class="detail"><span class="label">';
+				
+				//Label
+				if(detail.img != undefined) {
+					detailsTxt += '<img src="'+CONFIG.view.icons.folder+'/'+detail.img+'" title="'+k+'" />';
+				}
+				else if(detail.name != undefined) {
+					detailsTxt += detail.name;
+				}
+				else {
+					detailsTxt += k;
+				}
+				
+				detailsTxt += '</span><span class="value">';
+				
+				//Value
+				switch(detail.values) {
+					case "icons":
+						if(detail.icons != undefined) {
+							//Replace tag value in icon URL
+							icon = detail.icons;
+							if(regex.test(icon)) {
+								//If an alias exists for the given value, replace
+								if(detail.iconsAlias != undefined && detail.iconsAlias[val] != undefined) {
+									icon = icon.replace(regex, detail.iconsAlias[val]);
+								}
+								else {
+									icon = icon.replace(regex, val);
+								}
+								
+								//Check if icon file exists (to avoid exotic values)
+								if(!contains(STYLE.images, icon)) {
+									console.warn("[View] Invalid icon for details "+icon);
+									detailsTxt += val;
+								}
+								else {
+									detailsTxt += '<img src="'+CONFIG.view.icons.folder+'/'+icon+'" title="'+val+'" />';
+								}
+							}
+							else {
+								detailsTxt += '<img src="'+CONFIG.view.icons.folder+'/'+detail.icons+'" title="'+val+'" />';
+							}
+						}
+						else {
+							console.warn("[View] Missing icon "+details.icons);
+						}
+						break;
+
+					case "link":
+						link = val;
+						if(detail.link != undefined) {
+							link = detail.link.replace(regex, val);
+						}
+						detailsTxt += '<a href="'+link+'" target="_blank"><img src="'+CONFIG.view.icons.folder+'/icon_link.svg" alt="Link" /></a>';
+						break;
+
+					case "direction":
+						//Is the orientation a number value or not ?
+						vInt = parseInt(val);
+						if(isNaN(vInt)) {
+							vOk = txtVals[val];
+							v = (vOk == undefined) ? "Invalid" : vOk;
+						}
+						else {
+							//Define a simple direction
+							if((vInt >= 337 && vInt < 360) || (vInt >= 0 && vInt < 22)) {
+								v = "North";
+							}
+							else if(vInt >= 22 && vInt < 67) {
+								v = "North-east";
+							}
+							else if(vInt >= 67 && vInt < 112) {
+								v = "East";
+							}
+							else if(vInt >= 112 && vInt < 157) {
+								v = "South-east";
+							}
+							else if(vInt >= 157 && vInt < 202) {
+								v = "South";
+							}
+							else if(vInt >= 202 && vInt < 247) {
+								v = "South-west";
+							}
+							else if(vInt >= 247 && vInt < 292) {
+								v = "West";
+							}
+							else if(vInt >= 292 && vInt < 337) {
+								v = "North-west";
+							}
+							else {
+								v = "Invalid";
+							}
+						}
+						
+						detailsTxt += v;
+						break;
+					
+					case "measure":
+						v = parseFloat(val);
+						if(isNaN(v)) {
+							detailsTxt += val;
+						}
+						else {
+							detailsTxt += val+detail.unit;
+						}
+						break;
+
+					case "text":
+					default:
+						detailsTxt += val;
+				}
+				
+				detailsTxt += '</span></span>';
+			}
+		}
+		
+		$("#op-tags-list").html(tagList);
+		
+		if(detailsTxt != '') {
+			$("#op-tags-details").show();
+			$("#op-tags-details").html(detailsTxt);
+		}
+		else {
+			$("#op-tags-details").hide();
+		}
+
+		//Show panel
+		$("#op-tags").removeClass("hide");
+		$("#op-tags").addClass("show");
+	};
+
+	/**
+	 * Creates a formated tag display
+	 * @param ftId the feature ID
+	 * @param key The OSM key to display
+	 * @param cleanName The clean name to display
+	 * @param tagCleaner The function that will clean the tag value (for example, add proper unit for dimensions), optional
+	 * @return The formated tag, or empty string if not found
+	 */
+	TagsView.prototype._addFormatedTag = function(ftId, key, cleanName, tagCleaner) {
+		var text = '';
+
+		if(this._mainView.getData().getFeature(ftId).hasTag(key)) {
+			text = (tagCleaner == undefined) ?
+				'<span class="detail"><span class="label">'+cleanName+'</span><span class="value">'+this._mainView.getData().getFeature(ftId).getTag(key)+'</span></span>'
+				: '<span class="detail"><span class="label">'+cleanName+'</span><span class="value">'+tagCleaner(this._mainView.getData().getFeature(ftId).getTag(key))+'</span></span>';
+		}
+		
+		return text;
+	};
+
+
+	
+/**
+ * The levels component
+ */
+var LevelView = function(main) {
+//ATTRIBUTES
+	/** The main view **/
+	this._mainView = main;
 	
 	/** The currently shown level **/
-	var _level = parseFloat(_mainView.getUrlView().getLevel());
+	this._level = parseFloat(this._mainView.getUrlView().getLevel());
 
 	/** The available levels **/
-	var _levels = null;
+	this._levels = null;
 	
 	/** Is the component enabled ? **/
-	var _enabled = false;
-	
-	/** This object **/
-	var _self = this;
+	this._enabled = false;
+};
 
 //ACCESSORS
 	/**
 	 * @return The current level value
 	 */
-	this.get = function() {
-		return _level;
+	LevelView.prototype.get = function() {
+		return this._level;
 	};
 
 //MODIFIERS
@@ -1350,34 +1368,38 @@ LevelView: function(main) {
 	 * Changes the current level
 	 * @param lvl The new level (if undefined, uses the current select value)
 	 */
-	this.set = function(lvl) {
-		var data = _mainView.getData();
+	LevelView.prototype.set = function(lvl) {
+		var result = false;
+		var data = this._mainView.getData();
 		var lvlOk = (lvl != null) ? parseFloat(lvl) : parseFloat($("#level").val());
 		
 		if(data != null && data.getLevels() != null) {
 			if(data.getLevels().indexOf(lvlOk) >= 0) {
 				//Change level
-				_level = lvlOk;
+				this._level = lvlOk;
 				if(lvl != null) { $("#level").val(lvlOk); }
+				result = true;
 			}
 		}
 		else {
 			throw new Error("Invalid level");
 		}
+		
+		return result;
 	};
 	
 	/**
 	 * Changes the level values depending of data
 	 */
-	this.update = function() {
-		_levels = _mainView.getData().getLevels();
+	LevelView.prototype.update = function() {
+		this._levels = this._mainView.getData().getLevels();
 		
 		//Change current level if not available anymore
-		if(_level == null || _levels.indexOf(_level) < 0) {
+		if(this._level == null || this._levels.indexOf(this._level) < 0) {
 			//Check if 
 			//Set to 0 if available
-			_level = (_levels.indexOf(0) >= 0) ? 0 : _levels[0];
-			_mainView.getUrlView().levelChanged();
+			this._level = (this._levels.indexOf(0) >= 0) ? 0 : this._levels[0];
+			this._mainView.getUrlView().levelChanged();
 		}
 		
 		/*
@@ -1386,11 +1408,11 @@ LevelView: function(main) {
 		var option = '';
 
 		//Compute level and store them as select options
-		for(var i=0; i < _levels.length; i++) {
-			var lvl = _levels[i];
+		for(var i=0; i < this._levels.length; i++) {
+			var lvl = this._levels[i];
 			
 			option += '<option value="'+ lvl + '"';
-			if(lvl == _level) { option += ' selected="selected"'; }
+			if(lvl == this._level) { option += ' selected="selected"'; }
 			option += '>' + lvl + '</option>';
 		}
 		
@@ -1408,48 +1430,60 @@ LevelView: function(main) {
 	
 	/**
 	 * Goes to the upper level
+	 * @return True if level was changed
 	 */
-	this.up = function() {
-		if(_mainView.getMapView().get().getZoom() >= OLvlUp.view.DATA_MIN_ZOOM) {
-			var currentLevelId = _levels.indexOf(_level);
+	LevelView.prototype.up = function() {
+		var result = false;
+		
+		if(this._mainView.getMapView().get().getZoom() >= CONFIG.view.map.data_min_zoom) {
+			var currentLevelId = this._levels.indexOf(this._level);
 			
 			if(currentLevelId == -1) {
-				_mainView.getMessagesView().displayMessage("Invalid level", "error");
+				this._mainView.getMessagesView().displayMessage("Invalid level", "error");
 			}
-			else if(currentLevelId + 1 < _levels.length) {
-				_self.set(_levels[currentLevelId+1]);
+			else if(currentLevelId + 1 < this._levels.length) {
+				this.set(this._levels[currentLevelId+1]);
+				result = true;
 			}
 			else {
-				_mainView.getMessagesView().displayMessage("You are already at the last available level", "alert");
+				this._mainView.getMessagesView().displayMessage("You are already at the last available level", "alert");
 			}
 		}
+		
+		return result;
 	};
 	
 	/**
 	 * Goes to the lower level
+	 * @return True if level was changed
 	 */
-	this.down = function() {
-		if(_mainView.getMapView().get().getZoom() >= OLvlUp.view.DATA_MIN_ZOOM) {
-			var currentLevelId = _levels.indexOf(_level);
+	LevelView.prototype.down = function() {
+		var result = false;
+		
+		if(this._mainView.getMapView().get().getZoom() >= CONFIG.view.map.data_min_zoom) {
+			var currentLevelId = this._levels.indexOf(this._level);
 			
 			if(currentLevelId == -1) {
-				_mainView.getMessagesView().displayMessage("Invalid level", "error");
+				this._mainView.getMessagesView().displayMessage("Invalid level", "error");
 			}
 			else if(currentLevelId > 0) {
-				_self.set(_levels[currentLevelId-1]);
+				this.set(this._levels[currentLevelId-1]);
+				result = true;
 			}
 			else {
-				_mainView.getMessagesView().displayMessage("You are already at the first available level", "alert");
+				this._mainView.getMessagesView().displayMessage("You are already at the first available level", "alert");
 			}
 		}
+		
+		return result;
 	};
 	
 	/**
 	 * Disable level buttons
 	 */
-	this.disable = function() {
-		if(_enabled) {
-			_enabled = false;
+	LevelView.prototype.disable = function() {
+		if(this._enabled) {
+			this._enabled = false;
 			$("#level").prop("disabled", true);
 			$("#levelUp").off("click");
 			$("#levelDown").off("click");
@@ -1460,164 +1494,160 @@ LevelView: function(main) {
 	/**
 	 * Enable level button
 	 */
-	this.enable = function() {
-		if(!_enabled) {
-			_enabled = true;
+	LevelView.prototype.enable = function() {
+		if(!this._enabled) {
+			this._enabled = true;
 			$("#level").prop("disabled", false);
 			$("#levelUp").click(controller.onLevelUp);
 			$("#levelDown").click(controller.onLevelDown);
 			$("#level").change(controller.onLevelChange);
 		}
 	};
-},
 
 
 
 /**
  * The options component
  */
-OptionsView: function() {
+var OptionsView = function() {
 //ATTRIBUTES
 	/** Show transcendent elements **/
-	var _transcend = true;
+	this._transcend = true;
 	
 	/** Show unrendered elements **/
-	var _unrendered = false;
+	this._unrendered = false;
 	
 	/** Show only buildings **/
-	var _buildings = false;
+	this._buildings = false;
 	
 	/** Show photos markers **/
-	var _photos = false;
-	
-	/** This object **/
-	var _self = this;
+	this._photos = false;
 
 //CONSTRUCTOR
-	function _init() {
-		//Init checkboxes
-		$("#show-transcendent").prop("checked", _transcend);
-		$("#show-unrendered").prop("checked", _unrendered);
-		$("#show-buildings-only").prop("checked", _buildings);
-		$("#show-photos").prop("checked", _photos);
-		
-		//Add triggers
-		$("#button-settings").click(function() {
-			controller.getView().showCentralPanel("settings");
-		});
-		$("#show-transcendent").change(function() {
-			_self.changeTranscendent();
-			controller.getView().updateOptionChanged();
-		});
-		$("#show-unrendered").change(function() {
-			_self.changeUnrendered();
-			controller.getView().updateOptionChanged();
-		});
-		$("#show-buildings-only").change(function() {
-			_self.changeBuildingsOnly();
-			controller.getView().updateOptionChanged();
-		});
-		$("#show-photos").change(function() {
-			_self.changePhotos();
-			controller.getView().updateOptionChanged();
-		});
-		_self.enable();
-	};
+	//Init checkboxes
+	$("#show-transcendent").prop("checked", this._transcend);
+	$("#show-unrendered").prop("checked", this._unrendered);
+	$("#show-buildings-only").prop("checked", this._buildings);
+	$("#show-photos").prop("checked", this._photos);
+	
+	//Add triggers
+	$("#button-settings").click(function() {
+		controller.getView().showCentralPanel("settings");
+	});
+	$("#show-transcendent").change(function() {
+		this.changeTranscendent();
+		controller.getView().updateOptionChanged();
+	}.bind(this));
+	$("#show-unrendered").change(function() {
+		this.changeUnrendered();
+		controller.getView().updateOptionChanged();
+	}.bind(this));
+	$("#show-buildings-only").change(function() {
+		this.changeBuildingsOnly();
+		controller.getView().updateOptionChanged();
+	}.bind(this));
+	$("#show-photos").change(function() {
+		this.changePhotos();
+		controller.getView().updateOptionChanged();
+	}.bind(this));
+	
+	this.enable();
+};
 
 //ACCESSORS
 	/**
 	 * @return Must we show transcendent objects ?
 	 */
-	this.showTranscendent = function() {
-		return _transcend;
+	OptionsView.prototype.showTranscendent = function() {
+		return this._transcend;
 	};
 	
 	/**
 	 * @return Must we show unrendered objects ?
 	 */
-	this.showUnrendered = function() {
-		return _unrendered;
+	OptionsView.prototype.showUnrendered = function() {
+		return this._unrendered;
 	};
 	
 	/**
 	 * @return Must we show only building objects ?
 	 */
-	this.showBuildingsOnly = function() {
-		return _buildings;
+	OptionsView.prototype.showBuildingsOnly = function() {
+		return this._buildings;
 	};
 	
 	/**
 	 * @return Must we show photo markers ?
 	 */
-	this.showPhotos = function() {
-		return _photos;
+	OptionsView.prototype.showPhotos = function() {
+		return this._photos;
 	};
 
 //MODIFIERS
 	/**
 	 * Must we set transcendent objects ?
 	 */
-	this.changeTranscendent = function() {
-		_transcend = !_transcend;
+	OptionsView.prototype.changeTranscendent = function() {
+		this._transcend = !this._transcend;
 	};
 	
 	/**
 	 * Must we set unrendered objects ?
 	 */
-	this.changeUnrendered = function() {
-		_unrendered = !_unrendered;
+	OptionsView.prototype.changeUnrendered = function() {
+		this._unrendered = !this._unrendered;
 	};
 	
 	/**
 	 * Must we set only building objects ?
 	 */
-	this.changeBuildingsOnly = function() {
-		_buildings = !_buildings;
+	OptionsView.prototype.changeBuildingsOnly = function() {
+		this._buildings = !this._buildings;
 	};
 	
 	/**
 	 * Must we show photo markers ?
 	 */
-	this.changePhotos = function() {
-		_photos = !_photos;
+	OptionsView.prototype.changePhotos = function() {
+		this._photos = !this._photos;
 	};
 	
 	/**
 	 * Must we set transcendent objects ?
 	 */
-	this.setTranscendent = function(p) {
-		_transcend = p;
-		$("#show-transcendent").prop("checked", _transcend);
+	OptionsView.prototype.setTranscendent = function(p) {
+		this._transcend = p;
+		$("#show-transcendent").prop("checked", this._transcend);
 	};
 	
 	/**
 	 * Must we set unrendered objects ?
 	 */
-	this.setUnrendered = function(p) {
-		_unrendered = p;
-		$("#show-unrendered").prop("checked", _unrendered);
+	OptionsView.prototype.setUnrendered = function(p) {
+		this._unrendered = p;
+		$("#show-unrendered").prop("checked", this._unrendered);
 	};
 	
 	/**
 	 * Must we set only building objects ?
 	 */
-	this.setBuildingsOnly = function(p) {
-		_buildings = p;
-		$("#show-buildings-only").prop("checked", _buildings);
+	OptionsView.prototype.setBuildingsOnly = function(p) {
+		this._buildings = p;
+		$("#show-buildings-only").prop("checked", this._buildings);
 	};
 	
 	/**
 	 * Must we show photo markers ?
 	 */
-	this.setPhotos = function(p) {
-		_photos = p;
-		$("#show-photos").prop("checked", _photos);
+	OptionsView.prototype.setPhotos = function(p) {
+		this._photos = p;
+		$("#show-photos").prop("checked", this._photos);
 	};
 	
 	/**
 	 * Disable options buttons
 	 */
-	this.disable = function() {
+	OptionsView.prototype.disable = function() {
 		$("#show-buildings-only").prop("disabled", true);
 		$("#show-unrendered").prop("disabled", true);
 		$("#show-transcendent").prop("disabled", true);
@@ -1627,190 +1657,174 @@ OptionsView: function() {
 	/**
 	 * Enable level button
 	 */
-	this.enable = function() {
+	OptionsView.prototype.enable = function() {
 		$("#show-buildings-only").prop("disabled", false);
 		$("#show-unrendered").prop("disabled", false);
 		$("#show-transcendent").prop("disabled", false);
 		$("#show-photos").prop("disabled", false);
 	};
 
-//INIT
-	_init();
-},
-
 
 
 /**
  * The export component
  */
-ExportView: function(main) {
+var ExportView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
+	this._mainView = main;
 
 //CONSTRUCTOR
-	function _init() {
-		$("#button-export").click(function() {
-			controller.getView().showCentralPanel("export");
-		});
-		//$("#export-link").click(controller.onExportLevel);
-		//$("#export-link-img").click(controller.onExportLevelImage);
-	};
+	$("#button-export").click(function() {
+		controller.getView().showCentralPanel("export");
+	});
+	//$("#export-link").click(controller.onExportLevel);
+	//$("#export-link-img").click(controller.onExportLevelImage);
+};
 	
 //OTHER METHODS
 	/**
 	 * Shows the export button
 	 */
-	this.showButton = function() {
+	ExportView.prototype.showButton = function() {
 		$("#button-export").show();
 	};
 	
 	/**
 	 * Hides the export button
 	 */
-	this.hideButton = function() {
+	ExportView.prototype.hideButton = function() {
 		$("#button-export").hide();
-		_mainView.hideCentralPanel();
+		this._mainView.hideCentralPanel();
 	};
-
-//INIT
-	_init();
-},
 
 
 
 /**
  * The permalink and browser URL component
  */
-URLView: function(main) {
+var URLView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
-	
-	/** This object **/
-	var _self = this;
+	this._mainView = main;
 	
 	/*
 	 * URL parameters
 	 */
-	var _bbox = null;
-	var _lat = null;
-	var _lon = null;
-	var _zoom = null;
-	var _level = null;
-	var _tiles = null;
+	this._bbox = null;
+	this._lat = null;
+	this._lon = null;
+	this._zoom = null;
+	this._level = null;
+	this._tiles = null;
+
+//CONSTRUCTOR
+	this._readUrl();
+	this._setShortlink();
+};
 
 //ACCESSORS
 	/**
 	 * @return The tile layer to display
 	 */
-	this.getTiles = function() {
-		return _tiles;
+	URLView.prototype.getTiles = function() {
+		return this._tiles;
 	};
 	
 	/**
 	 * @return The bounding box
 	 */
-	this.getBBox = function() {
-		return _bbox;
+	URLView.prototype.getBBox = function() {
+		return this._bbox;
 	};
 	
 	/**
 	 * @return The latitude
 	 */
-	this.getLatitude = function() {
-		return _lat;
+	URLView.prototype.getLatitude = function() {
+		return this._lat;
 	};
 	
 	/**
 	 * @return The longitude
 	 */
-	this.getLongitude = function() {
-		return _lon;
+	URLView.prototype.getLongitude = function() {
+		return this._lon;
 	};
 	
 	/**
 	 * @return The zoom
 	 */
-	this.getZoom = function() {
-		return _zoom;
+	URLView.prototype.getZoom = function() {
+		return this._zoom;
 	};
 	
 	/**
 	 * @return The level
 	 */
-	this.getLevel = function() {
-		return _level;
-	};
-
-//CONSTRUCTOR
-	/**
-	 * Constructor
-	 */
-	function _init() {
-		_readUrl();
-		_setShortlink();
+	URLView.prototype.getLevel = function() {
+		return this._level;
 	};
 
 //OTHER METHODS
 	/**
 	 * Updates the component when map moves
 	 */
-	this.mapUpdated = function() {
+	URLView.prototype.mapUpdated = function() {
 		//Update fields
-		var map = _mainView.getMapView().get();
-		_zoom = map.getZoom();
-		_lat = map.getCenter().lat;
-		_lon = map.getCenter().lng;
-		_tiles = _mainView.getMapView().getTileLayer();
+		var map = this._mainView.getMapView().get();
+		this._zoom = map.getZoom();
+		this._lat = map.getCenter().lat;
+		this._lon = map.getCenter().lng;
+		this._tiles = this._mainView.getMapView().getTileLayer();
 		
 		//Update DOM
-		_updateUrl();
-		_setShortlink();
+		this._updateUrl();
+		this._setShortlink();
 	};
 	
 	/**
 	 * Updates the component when options change
 	 */
-	this.optionsChanged = function() {
+	URLView.prototype.optionsChanged = function() {
 		//Update DOM
-		_updateUrl();
-		_setShortlink();
+		this._updateUrl();
+		this._setShortlink();
 	};
 	
 	/**
 	 * Updates the component when level changes
 	 */
-	this.levelChanged = function() {
-		_level = _mainView.getLevelView().get();
+	URLView.prototype.levelChanged = function() {
+		this._level = this._mainView.getLevelView().get();
 		
 		//Update DOM
-		_updateUrl();
-		_setShortlink();
+		this._updateUrl();
+		this._setShortlink();
 	};
 	
 	/**
 	 * Updates the component when tile layer changes
 	 */
-	this.tilesChanged = function() {
-		_tiles = _mainView.getMapView().getTileLayer();
+	URLView.prototype.tilesChanged = function() {
+		this._tiles = this._mainView.getMapView().getTileLayer();
 		
 		//Update DOM
-		_updateUrl();
-		_setShortlink();
+		this._updateUrl();
+		this._setShortlink();
 	};
 	
 	/**
 	 * @return The page base URL
 	 */
-	function _getUrl() {
+	URLView.prototype._getUrl = function() {
 		return $(location).attr('href').split('?')[0];
 	};
 	
 	/**
 	 * @return The URL hash
 	 */
-	function _getUrlHash() {
+	URLView.prototype._getUrlHash = function() {
 		var hash = $(location).attr('href').split('#')[1];
 		return (hash != undefined) ? hash : "";
 	};
@@ -1818,9 +1832,9 @@ URLView: function(main) {
 	/**
 	 * Reads the browser URL and updates this object fields
 	 */
-	function _readUrl() {
-		var parameters = _getParameters();
-		var optionsView = _mainView.getOptionsView();
+	URLView.prototype._readUrl = function() {
+		var parameters = this._getParameters();
+		var optionsView = this._mainView.getOptionsView();
 		
 		//Read shortlink
 		var short = parameters.s;
@@ -1828,13 +1842,13 @@ URLView: function(main) {
 			var regex = /^(-?)([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\+(-?)([a-zA-Z0-9]+)\.([a-zA-Z0-9]+)\+([A-Z])([a-zA-Z0-9]+)\+(?:(-?)([a-zA-Z0-9]+)\.([a-zA-Z0-9]+))?(?:\+([a-zA-Z0-9]+))?$/;
 			if(regex.test(short)) {
 				var shortRes = regex.exec(short);
-				_lat = base62toDec(shortRes[2]) + base62toDec(shortRes[3]) / 100000;
-				if(shortRes[1] == "-") { _lat = -_lat; }
+				this._lat = base62toDec(shortRes[2]) + base62toDec(shortRes[3]) / 100000;
+				if(shortRes[1] == "-") { this._lat = -this._lat; }
 				
-				_lon = base62toDec(shortRes[5]) + base62toDec(shortRes[6]) / 100000;
-				if(shortRes[4] == "-") { _lon = -_lon; }
+				this._lon = base62toDec(shortRes[5]) + base62toDec(shortRes[6]) / 100000;
+				if(shortRes[4] == "-") { this._lon = -this._lon; }
 				
-				_zoom = letterToInt(shortRes[7]);
+				this._zoom = letterToInt(shortRes[7]);
 				
 				var options = intToBitArray(base62toDec(shortRes[8]));
 				while(options.length < 5) { options = "0" + options; }
@@ -1846,41 +1860,41 @@ URLView: function(main) {
 				
 				//Get level if available
 				if(shortRes[10] != undefined && shortRes[11] != undefined) {
-					_level = base62toDec(shortRes[10]) + base62toDec(shortRes[11]) / 100;
-					if(shortRes[9] == "-") { _level = -_level; }
+					this._level = base62toDec(shortRes[10]) + base62toDec(shortRes[11]) / 100;
+					if(shortRes[9] == "-") { this._level = -this._level; }
 				}
 				
 				//Get tiles if available
 				if(shortRes[12] != undefined) {
-					_tiles = base62toDec(shortRes[12]);
+					this._tiles = base62toDec(shortRes[12]);
 				}
 			}
 			else {
-				_mainView.getMessagesView().displayMessage("Invalid short link", "alert");
+				this._mainView.getMessagesView().displayMessage("Invalid short link", "alert");
 			}
 		}
 		//Read parameters directly
 		else {
-			_bbox = parameters.bbox;
-			_lat = parameters.lat;
-			_lon = parameters.lon;
-			_zoom = parameters.zoom;
+			this._bbox = parameters.bbox;
+			this._lat = parameters.lat;
+			this._lon = parameters.lon;
+			this._zoom = parameters.zoom;
 			if(parameters.transcend != undefined) { optionsView.setTranscendent(parameters.transcend == "1"); }
 			if(parameters.unrendered != undefined) { optionsView.setUnrendered(parameters.unrendered == "1"); }
 			if(parameters.buildings != undefined) { optionsView.setBuildingsOnly(parameters.buildings == "1"); }
 			if(parameters.photos != undefined) { optionsView.setPhotos(parameters.photos == "1"); }
-			_level = parameters.level;
-			_tiles = parameters.tiles;
+			this._level = parameters.level;
+			this._tiles = parameters.tiles;
 		}
 	};
 	
-	function _updateUrl() {
-		var optionsView = _mainView.getOptionsView();
-		var params = "lat="+_lat+"&lon="+_lon+"&zoom="+_zoom+"&tiles="+_tiles;
+	URLView.prototype._updateUrl = function() {
+		var optionsView = this._mainView.getOptionsView();
+		var params = "lat="+this._lat+"&lon="+this._lon+"&zoom="+this._zoom+"&tiles="+this._tiles;
 		
-		if(_zoom >= OLvlUp.view.DATA_MIN_ZOOM) {
-			if(_level != null) {
-				params += "&level="+_level;
+		if(this._zoom >= CONFIG.view.map.data_min_zoom) {
+			if(this._level != null) {
+				params += "&level="+this._level;
 			}
 			
 			params += "&transcend="+((optionsView.showTranscendent()) ? "1" : "0");
@@ -1889,8 +1903,8 @@ URLView: function(main) {
 			params += "&photos="+((optionsView.showPhotos()) ? "1" : "0");
 		}
 		
-		var hash = _getUrlHash();
-		var link = _getUrl() + "?" + params + ((hash != "") ? '#' + hash : "");
+		var hash = this._getUrlHash();
+		var link = this._getUrl() + "?" + params + ((hash != "") ? '#' + hash : "");
 		
 		$("#permalink").attr('href', link);
 		
@@ -1898,7 +1912,7 @@ URLView: function(main) {
 		window.history.replaceState({}, "OpenLevelUp!", link);
 		
 		//Update OSM link
-		$("#osm-link").attr('href', "http://openstreetmap.org/#map="+_zoom+"/"+_lat+"/"+_lon);
+		$("#osm-link").attr('href', "http://openstreetmap.org/#map="+this._zoom+"/"+this._lat+"/"+this._lon);
 	};
 	
 	/**
@@ -1909,23 +1923,23 @@ URLView: function(main) {
 	 * Options are a bit array, encoded as base 62
 	 * Example: 10.AQ3+-2j.64S+E6+F+2
 	 */
-	function _setShortlink() {
-		var optionsView = _mainView.getOptionsView();
-		var shortLat = ((_lat < 0) ? "-" : "") + decToBase62(Math.floor(Math.abs(_lat))) + "." + decToBase62((Math.abs((_lat % 1).toFixed(5)) * 100000).toFixed(0)); //Latitude
-		var shortLon = ((_lon < 0) ? "-" : "") + decToBase62(Math.floor(Math.abs(_lon))) + "." + decToBase62((Math.abs((_lon % 1).toFixed(5)) * 100000).toFixed(0)); //Longitude
-		var shortZoom = intToLetter(_zoom); //Zoom
-		var shortTiles = decToBase62(_tiles);
+	URLView.prototype._setShortlink = function() {
+		var optionsView = this._mainView.getOptionsView();
+		var shortLat = ((this._lat < 0) ? "-" : "") + decToBase62(Math.floor(Math.abs(this._lat))) + "." + decToBase62((Math.abs((this._lat % 1).toFixed(5)) * 100000).toFixed(0)); //Latitude
+		var shortLon = ((this._lon < 0) ? "-" : "") + decToBase62(Math.floor(Math.abs(this._lon))) + "." + decToBase62((Math.abs((this._lon % 1).toFixed(5)) * 100000).toFixed(0)); //Longitude
+		var shortZoom = intToLetter(this._zoom); //Zoom
+		var shortTiles = decToBase62(this._tiles);
 		
 		//Level
 		var shortLvl = "";
-		if(_level != null) {
-			if(_level < 0) {
+		if(this._level != null) {
+			if(this._level < 0) {
 				shortLvl += "-";
 			}
 			
-			shortLvl += decToBase62(Math.floor(Math.abs(_level)));
+			shortLvl += decToBase62(Math.floor(Math.abs(this._level)));
 			shortLvl += ".";
-			shortLvl += decToBase62((Math.abs((_level % 1).toFixed(2)) * 100).toFixed(0));
+			shortLvl += decToBase62((Math.abs((this._level % 1).toFixed(2)) * 100).toFixed(0));
 		}
 		
 		var shortOptions = bitArrayToBase62([
@@ -1937,14 +1951,14 @@ URLView: function(main) {
 				]);
 		
 		//Update link
-		$("#shortlink").attr('href', _getUrl() + "?s=" + shortLat+"+"+shortLon+"+"+shortZoom+shortOptions+"+"+shortLvl+"+"+shortTiles);
+		$("#shortlink").attr('href', this._getUrl() + "?s=" + shortLat+"+"+shortLon+"+"+shortZoom+shortOptions+"+"+shortLvl+"+"+shortTiles);
 	}
 	
 	/**
 	 * Get URL parameters
 	 * @return The parameters
 	 */
-	function _getParameters() {
+	URLView.prototype._getParameters = function() {
 		var sPageURL = window.location.search.substring(1);
 		var sURLVariables = sPageURL.split('&');
 		var params = new Object();
@@ -1957,59 +1971,51 @@ URLView: function(main) {
 		return params;
 	};
 
-//INIT
-	_init();
-},
-
 
 
 /**
  * The room names component
  */
-NamesView: function(main) {
+var NamesView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
-	
-	/** This object **/
-	var _self = this;
+	this._mainView = main;
 
 //CONSTRUCTOR
-	function _init() {
-		$("#button-rooms").click(function() {
-			_mainView.showCentralPanel("room-names");
-		});
-		$("#search-room").click(_self.searchFocus);
-		$("#search-room").focus(_self.searchFocus);
-		$("#search-room").focusout(_self.searchFocus);
-		$("#search-room").bind("input propertychange", _self.update);
-		$("#search-room-reset").click(_self.reset);
-		$("#search-room").val("Search");
-	};
+	$("#button-rooms").click(function() {
+		this._mainView.showCentralPanel("room-names");
+	}.bind(this));
+	$("#search-room").click(this.searchFocus.bind(this));
+	$("#search-room").focus(this.searchFocus.bind(this));
+	$("#search-room").focusout(this.searchFocus.bind(this));
+	$("#search-room").bind("input propertychange", this.update.bind(this));
+	$("#search-room-reset").click(this.reset.bind(this));
+	$("#search-room").val("Search");
+};
 
 //OTHER METHODS
 	/**
 	 * Shows the export button
 	 */
-	this.showButton = function() {
+	NamesView.prototype.showButton = function() {
 		$("#button-rooms").show();
 	};
 	
 	/**
 	 * Hides the export button
 	 */
-	this.hideButton = function() {
+	NamesView.prototype.hideButton = function() {
 		$("#button-rooms").hide();
-		_mainView.hideCentralPanel();
+		this._mainView.hideCentralPanel();
 	};
 	
 	/**
 	 * Updates the names list
 	 */
-	this.update = function() {
-		if(_mainView.getData() != null) {
-			var filter = (_self.searchOK()) ? $("#search-room").val() : null;
-			var roomNames = _mainView.getData().getNames();
+	NamesView.prototype.update = function() {
+		if(this._mainView.getData() != null) {
+			var filter = (this.searchOK()) ? $("#search-room").val() : null;
+			var roomNames = this._mainView.getData().getNames();
 			
 			//Filter room names
 			var roomNamesFiltered = null;
@@ -2026,7 +2032,7 @@ NamesView: function(main) {
 						if((filter == null || room.toLowerCase().indexOf(filter.toLowerCase()) >= 0)
 							&& (roomNames[lvl][room].getStyle().get().popup == undefined
 							|| roomNames[lvl][room].getStyle().get().popup == "yes")
-							&& _mainView.getData().getBBox().intersects(ftGeomRoom.getBounds())) {
+							&& this._mainView.getData().getBBox().intersects(ftGeomRoom.getBounds())) {
 
 							roomNamesFiltered[lvl][room] = roomNames[lvl][room];
 						}
@@ -2040,65 +2046,34 @@ NamesView: function(main) {
 			}
 			
 			if(roomNames != null && roomNamesFiltered != null) {
-				$("#rooms").empty();
+				//$("#rooms").empty();
 				
 				var levelsKeys = Object.keys(roomNamesFiltered);
 				levelsKeys.sort(function (a,b) { return parseFloat(a)-parseFloat(b);});
 				
-				for(var i in levelsKeys) {
+				var roomHtml = '';
+				
+				for(var i=0; i < levelsKeys.length; i++) {
 					var lvl = levelsKeys[i];
+
 					//Create new level row
-					var newRow = document.createElement("div");
-					
-					//Add class
-					$("#rooms").append(newRow);
-					$("#rooms div:last").addClass("lvl-row").attr("id", "lvl"+lvl);
-					
-					//Create cell for level name
-					var newLvlName = document.createElement("div");
-					$("#lvl"+lvl).append(newLvlName);
-					$("#lvl"+lvl+" div").addClass("lvl-name").html(lvl);
-					
-					//Create cell for level rooms
-					var newLvlRooms = document.createElement("div");
-					$("#lvl"+lvl).append(newLvlRooms);
-					$("#lvl"+lvl+" div:last").addClass("lvl-rooms").attr("id", "lvl"+lvl+"-rooms");
-					
-					//Init room list
-					var newRoomList = document.createElement("ul");
-					$("#lvl"+lvl+"-rooms").append(newRoomList);
-					
+					roomHtml += '<div class="lvl-row" id="lvl'+lvl+'"><div class="lvl-name">'+lvl+'</div><div class="lvl-rooms" id="lvl'+lvl+'-rooms"><ul>';
+
 					//Add each room
 					for(var room in roomNamesFiltered[lvl]) {
-						var newRoom = document.createElement("li");
-						$("#lvl"+lvl+"-rooms ul").append(newRoom);
-						$("#lvl"+lvl+"-rooms ul li:last").addClass("ref");
-						
-						var roomIcon = document.createElement("img");
-						var roomLink = document.createElement("a");
-						$("#lvl"+lvl+"-rooms ul li:last").append(roomLink);
+						roomHtml += '<li class="ref"><a href="#" onclick="controller.getView().getMapView().goTo(\''+roomNamesFiltered[lvl][room].getId()+'\',\''+lvl+'\')">';
 						
 						if(STYLE != undefined) {
-							var addImg = STYLE.images.indexOf(roomNamesFiltered[lvl][room].getStyle().getIconUrl()) >= 0;
-							$("#lvl"+lvl+"-rooms ul li:last a").append(roomIcon);
+							roomHtml += '<img src="'+CONFIG.view.icons.folder+'/'+((STYLE.images.indexOf(roomNamesFiltered[lvl][room].getStyle().getIconUrl()) >= 0) ? roomNamesFiltered[lvl][room].getStyle().getIconUrl() : 'icon_default.png')+'" width="'+CONFIG.view.icons.size+'px"> '+room;
 						}
 						
-						var ftGeom = roomNamesFiltered[lvl][room].getGeometry();
-						
-						$("#lvl"+lvl+"-rooms ul li:last a")
-							.append(document.createTextNode(" "+room))
-							.attr("href", "#")
-							.attr("onclick", "controller.getView().getMapView().goTo('"+roomNamesFiltered[lvl][room].getId()+"','"+lvl+"')");
-						
-						if(STYLE != undefined) {
-							$("#lvl"+lvl+"-rooms ul li:last a img")
-								.attr("src", OLvlUp.view.ICON_FOLDER+'/'+
-									((addImg) ? roomNamesFiltered[lvl][room].getStyle().getIconUrl() : 'default.png')
-								)
-								.attr("width", OLvlUp.view.ICON_SIZE+"px");
-						}
+						roomHtml += '</a></li>';
 					}
+					
+					roomHtml += '</ul></div></div>';
 				}
+				
+				$("#rooms").html(roomHtml);
 			}
 		}
 	};
@@ -2106,23 +2081,23 @@ NamesView: function(main) {
 	/**
 	 * Resets the room names list
 	 */
-	this.reset = function() {
+	NamesView.prototype.reset = function() {
 		$("#search-room").val("Search");
-		_self.update();
+		this.update();
 	};
 	
 	/**
 	 * @return True if the searched string for filtering names is long enough
 	 */
-	this.searchOK = function() {
+	NamesView.prototype.searchOK = function() {
 		var search = $("#search-room").val();
-		return !_mainView.isMobile() && search != "Search" && search.length >= 3;
+		return !this._mainView.isMobile() && search != "Search" && search.length >= 3;
 	};
 	
 	/**
 	 * When search room input is changed
 	 */
-	this.searchFocus = function() {
+	NamesView.prototype.searchFocus = function() {
 		var search = $("#search-room").val();
 		if(search == "Search" && $("#search-room").is(":focus")) {
 			$("#search-room").val("");
@@ -2132,63 +2107,75 @@ NamesView: function(main) {
 		}
 	};
 
-//INIT
-	_init();
-},
-
 
 
 /**
  * The images overlay panel component
  */
-ImagesView: function(main) {
+var ImagesView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
-	var _mainView = main;
-
-	/** This object **/
-	var _self = this;
+	this._mainView = main;
+	
+	/** The currently shown spherical image **/
+	this._currentSpherical = -1;
+	
+	/** The available spherical images **/
+	this._sphericalImages = null;
 	
 	/*
 	 * Sphere related attributes
 	 */
-	var _camera, _scene, _renderer, _container,
-		_isUserInteracting, _onMouseDownMouseX, _onMouseDownMouseY,
-		_lon, _onMouseDownLon, _lat, _onMouseDownLat, _phi, _theta, _firstClick;
+	this._camera = null;
+	this._scene = null;
+	this._renderer = null;
+	this._container= null;
+	this._isUserInteracting = null;
+	this._onMouseDownMouseX = null;
+	this._onMouseDownMouseY = null;
+	this._lon = null;
+	this._onMouseDownLon = null;
+	this._lat = null;
+	this._onMouseDownLat = null;
+	this._phi = null;
+	this._theta = null;
+	this._firstClick = null;
+	this._mesh = null;
 	
 //CONSTRUCTOR
-	function _init() {
-		//$("#op-images").hide();
-		$("#images-close").click(function() {
-			$("#op-images").removeClass("show");
-			$("#op-images").addClass("hide");
-		});
-		$("#tab-imgs-a").click(function() { controller.getView().getImagesView().changeTab("tab-imgs"); });
-		$("#tab-spheric-a").click(function() { controller.getView().getImagesView().changeTab("tab-spheric"); });
-	};
+	//$("#op-images").hide();
+	$("#images-close").click(function() {
+		$("#op-images").removeClass("show");
+		$("#op-images").addClass("hide");
+	});
+	$("#tab-imgs-a").click(function() { controller.getView().getImagesView().changeTab("tab-imgs"); });
+	$("#tab-spheric-a").click(function() { controller.getView().getImagesView().changeTab("tab-spheric"); });
+	$("#spherical-nav-left").click(function() { controller.getView().getImagesView().previousSpherical(); });
+	$("#spherical-nav-right").click(function() { controller.getView().getImagesView().nextSpherical(); });
+};
 
 //OTHER METHODS
 	/**
 	 * Opens and set images for the given feature
 	 * @param ftId The feature ID
 	 */
-	this.open = function(ftId) {
+	ImagesView.prototype.open = function(ftId) {
 		//Retrieve feature
-		var ft = _mainView.getData().getFeature(ftId);
+		var ft = this._mainView.getData().getFeature(ftId);
 		var ftImgs = ft.getImages();
 		var images = ftImgs.get();
-		var sphericalImages = ftImgs.getSpherical();
+		this._sphericalImages = ftImgs.getSpherical();
 		
 		//Create images list
 		var imagesData = [];
-		for(var i in images) {
+		for(var i=0; i < images.length; i++) {
 			var img = images[i];
 
 			imagesData.push({
 				image: img.url,
 				link: img.url,
 				title: img.source,
-				description: _getLegend(img)
+				description: this._getLegend(img)
 			});
 		}
 		
@@ -2196,7 +2183,7 @@ ImagesView: function(main) {
 		 * Set images tab
 		 */
 		var hasCommon = imagesData.length > 0;
-		var hasSpherical = sphericalImages != null && _mainView.hasWebGL() && !_mainView.isMobile();
+		var hasSpherical = this._sphericalImages.length > 0 && this._mainView.hasWebGL() && !this._mainView.isMobile();
 		
 		//Common images
 		if(hasCommon) {
@@ -2210,29 +2197,46 @@ ImagesView: function(main) {
 		
 		//Spherical images
 		if(hasSpherical) {
+			this._currentSpherical = 0;
 			$("#tab-spheric-a").show();
-			$("#spherical-legend-title").html(sphericalImages.source);
-			$("#spherical-legend-text").html(_getLegend(sphericalImages));
-			_loadSphere(sphericalImages.url);
-			_animateSphere();
+			var sceneInit = this._scene == null;
+			if(sceneInit) {
+				this._initSphere();
+			}
+			this._loadSphere();
+			if(sceneInit) {
+				this._animateSphere();
+			}
+			
+			//Other settings
+			this._renderer.setSize(this._getSphereWidth(), this._getSphereHeight());
+			
+			//Navigation buttons
+			if(this._sphericalImages.length > 1) {
+				$("#spherical-nav").show();
+			}
+			else {
+				$("#spherical-nav").hide();
+			}
 		}
 		else {
+			this._currentSpherical = -1;
 			$("#tab-spheric-a").hide();
 		}
 		
 		//Open panel
 		if(hasCommon) {
-			_self.changeTab("tab-imgs");
+			this.changeTab("tab-imgs");
 		}
 		else if(hasSpherical) {
-			_self.changeTab("tab-spheric");
+			this.changeTab("tab-spheric");
 		}
 		
 		//Update images status
 		var status = ftImgs.getStatus();
-		_self.updateStatus("web", status.web, ft.getTag("image"));
-		_self.updateStatus("mapillary", status.mapillary, ft.getTag("mapillary"));
-		_self.updateStatus("flickr", status.flickr);
+		this.updateStatus("web", status.web, ft.getTag("image"));
+		this.updateStatus("mapillary", status.mapillary, ft.getTag("mapillary"));
+		this.updateStatus("flickr", status.flickr);
 		
 		$("#op-images").removeClass("hide");
 		$("#op-images").addClass("show");
@@ -2242,7 +2246,7 @@ ImagesView: function(main) {
  	 * Changes the currently opened tab in images popup
  	 * @param tab The tab name
  	 */
- 	this.changeTab = function(tab) {
+ 	ImagesView.prototype.changeTab = function(tab) {
 		$("#op-images-tabs-links a").removeClass("selected");
  		$("#"+tab+"-a").addClass("selected");
 		$(".op-images-tab").hide();
@@ -2255,7 +2259,7 @@ ImagesView: function(main) {
 	 * @param status The image status (ok, missing, bad, unknown)
 	 * @param baselink The image link (optional)
 	 */
-	this.updateStatus = function(source, status, baselink) {
+	ImagesView.prototype.updateStatus = function(source, status, baselink) {
 		var link = $("#status-"+source);
 		var element = $("#status-"+source+" span");
 		
@@ -2276,7 +2280,7 @@ ImagesView: function(main) {
 			case "bad":
 				title = "The image link is broken";
 				if(source == "mapillary") {
-					title += " (Mapillary ID: "+baselink+")";
+					title += " (Check mapillary:* tags)";
 				}
 				else if(source == "web") {
 					title += " (URL: "+baselink+")";
@@ -2293,13 +2297,17 @@ ImagesView: function(main) {
 	 * @param img The image details
 	 * @return The description
 	 */
-	function _getLegend(img) {
+	ImagesView.prototype._getLegend = function(img) {
 		var description = "";
 		
 		if(img.author != undefined) { description += img.author }
 		if(img.date != undefined && img.date > 0) {
 			if(description != "") { description += ", "; }
-			description += new Date(img.date).toLocaleString('fr-FR');
+			description += new Date(img.date).toLocaleString();
+		}
+		if(img.page != undefined) {
+			if(description != "") { description += " - "; }
+			description += '<a href="'+img.page+'" target="_blank">Page</a>';
 		}
 		description += "<br />"+img.tag;
 		
@@ -2309,71 +2317,129 @@ ImagesView: function(main) {
 	/*
 	 * Sphere related methods
 	 */
-	 
+	
+	ImagesView.prototype._getSphereWidth = function() {
+		var w = $("#op-images > div").width();
+		return (w > 0) ? w : CONFIG.view.images.spherical.width;
+	};
+	
+	ImagesView.prototype._getSphereHeight = function() {
+		var h = window.innerHeight * 0.8;
+		h = (h > 800) ? 700 : h - 100;
+		return (h > 0) ? h : CONFIG.view.images.spherical.height;
+	};
+	
 	/**
-	 * Loads the ThreeJS sphere
-	 * @param url The image URL
+	 * Changes the spherical to the previous one (if any)
 	 */
-	function _loadSphere(url) {
-		//Init vars
-		_isUserInteracting = false;
-		_onMouseDownMouseX = 0;
-		_onMouseDownMouseY = 0;
-		_lon = 0;
-		_onMouseDownLon = 0;
-		_lat = 0;
-		_onMouseDownLat = 0;
-		_phi = 0;
-		_theta = 0;
-		_firstClick = true;
-		
-		var mesh;
+	ImagesView.prototype.previousSpherical = function() {
+		if(this._sphericalImages.length > 1) {
+			if(this._currentSpherical > 0) {
+				this._currentSpherical--;
+			}
+			else {
+				this._currentSpherical = this._sphericalImages.length -1;
+			}
+			this._loadSphere();
+		}
+	};
+	
+	/**
+	 * Changes the spherical to the previous one (if any)
+	 */
+	ImagesView.prototype.nextSpherical = function() {
+		if(this._sphericalImages.length > 1) {
+			if(this._currentSpherical < this._sphericalImages.length -1) {
+				this._currentSpherical++;
+			}
+			else {
+				this._currentSpherical = 0;
+			}
+			this._loadSphere();
+		}
+	};
+	
+	/**
+	 * Initializes the ThreeJS sphere
+	 */
+	ImagesView.prototype._initSphere = function() {
 		$("#spherical-content canvas").remove();
-		_container = document.getElementById("spherical-content");
-		
-		//Camera
-		_camera = new THREE.PerspectiveCamera( 75, 16/9, 1, 1100 );
-		_camera.target = new THREE.Vector3( 0, 0, 0 );
+		this._container = document.getElementById("spherical-content");
 		
 		//Scene
-		_scene = new THREE.Scene();
-
+		this._scene = new THREE.Scene();
+		
 		//Renderer
-		_renderer = new THREE.WebGLRenderer({ antialias: true });
-		_renderer.setPixelRatio( window.devicePixelRatio );
-		_container.appendChild(_renderer.domElement);
+		this._renderer = new THREE.WebGLRenderer({ antialias: true });
+		this._renderer.setPixelRatio( window.devicePixelRatio );
+		this._container.appendChild(this._renderer.domElement);
+		
+		//Events
+		document.addEventListener('mousedown', this._onDocumentMouseDown.bind(this), false);
+		document.addEventListener('mousemove', this._onDocumentMouseMove.bind(this), false);
+		document.addEventListener('mouseup', this._onDocumentMouseUp.bind(this), false);
+		document.addEventListener('mousewheel', this._onDocumentMouseWheel.bind(this), false);
+		document.addEventListener('DOMMouseScroll', this._onDocumentMouseWheel.bind(this), false);
+		document.addEventListener('dragover', function ( event ) {
+			event.preventDefault();
+			event.dataTransfer.dropEffect = 'copy';
+		}.bind(this), false );
+		document.addEventListener( 'dragenter', function ( event ) {
+			document.body.style.opacity = 0.5;
+		}.bind(this), false );
+		document.addEventListener( 'dragleave', function ( event ) {
+			document.body.style.opacity = 1;
+		}.bind(this), false );
+		window.addEventListener( 'resize', this._onWindowResize.bind(this), false );
+	};
+	
+	/**
+	 * Loads the ThreeJS sphere with current spherical image
+	 */
+	ImagesView.prototype._loadSphere = function() {
+		var sphericalImg = this._sphericalImages[this._currentSpherical];
+		$("#spherical-legend-title").html(sphericalImg.source);
+		$("#spherical-legend-text").html(this._getLegend(sphericalImg));
+		$("#spherical-counter span").html((this._currentSpherical+1)+' / '+this._sphericalImages.length);
+		
+		//Init vars
+		this._isUserInteracting = false;
+		this._onMouseDownMouseX = 0;
+		this._onMouseDownMouseY = 0;
+		this._onMouseDownLon = 0;
+		this._lat = 0;
+		this._onMouseDownLat = 0;
+		this._phi = 0;
+		this._theta = 0;
+		this._firstClick = true;
+		
+		//Set initial direction
+		this._lon = (sphericalImg.relativeDirection != undefined) ? sphericalImg.relativeDirection - 180 : sphericalImg.angle;
+		
+		//Camera
+		this._camera = new THREE.PerspectiveCamera(75, this._getSphereWidth() / this._getSphereHeight(), 1, 1000);
+		this._camera.target = new THREE.Vector3( 0, 0, 0 );
 		
 		//Sphere
-		var geometry = new THREE.SphereGeometry( 500, 60, 40 );
+		if(this._mesh != null) {
+			this._scene.remove(this._mesh);
+		}
+		var geometry = new THREE.SphereGeometry(100, 30, 30);
 		geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 		THREE.ImageUtils.crossOrigin = "anonymous";
-		var texture = THREE.ImageUtils.loadTexture(url);
-		texture.anisotropy = _renderer.getMaxAnisotropy();
+		var texture = THREE.ImageUtils.loadTexture(sphericalImg.url);
+		texture.anisotropy = this._renderer.getMaxAnisotropy();
 		texture.magFilter = THREE.LinearFilter;
 		texture.minFilter = THREE.LinearMipMapLinearFilter;
 		var material = new THREE.MeshBasicMaterial({
 			map: texture,
 			side: THREE.FrontSide
 		});
-		mesh = new THREE.Mesh( geometry, material );
-		_scene.add( mesh );
-
+		this._mesh = new THREE.Mesh( geometry, material );
+		this._mesh.rotation.y = Math.PI - THREE.Math.degToRad(sphericalImg.angle); //Pointing to north
+		this._scene.add( this._mesh );
+		
 		//Events
-		document.addEventListener('mousedown', _onDocumentMouseDown, false);
-		document.addEventListener('mousemove', _onDocumentMouseMove, false);
-		document.addEventListener('mouseup', _onDocumentMouseUp, false);
-		document.addEventListener('mousewheel', _onDocumentMouseWheel, false);
-		document.addEventListener('DOMMouseScroll', _onDocumentMouseWheel, false);
-		document.addEventListener('dragover', function ( event ) {
-			event.preventDefault();
-			event.dataTransfer.dropEffect = 'copy';
-		}, false );
-		document.addEventListener( 'dragenter', function ( event ) {
-			document.body.style.opacity = 0.5;
-		}, false );
-		document.addEventListener( 'dragleave', function ( event ) {
-			document.body.style.opacity = 1;
-		}, false );
 		document.addEventListener( 'drop', function ( event ) {
 			event.preventDefault();
 			var reader = new FileReader();
@@ -2383,114 +2449,107 @@ ImagesView: function(main) {
 			}, false );
 			reader.readAsDataURL( event.dataTransfer.files[ 0 ] );
 			document.body.style.opacity = 1;
-		}, false );
-		window.addEventListener( 'resize', _onWindowResize, false );
+		}.bind(this), false );
 	};
 	
-	function _onWindowResize() {
-		var aspect = _container.clientWidth / _container.clientHeight;
+	ImagesView.prototype._onWindowResize = function() {
+		var aspect = this._getSphereWidth() / this._getSphereHeight(); //this._container.clientWidth / this._container.clientHeight;
 		if(!isNaN(aspect) && aspect > 0) {
-			_camera.aspect = aspect;
+			this._camera.aspect = aspect;
+			this._camera.updateProjectionMatrix();
+			this._renderer.setSize(this._getSphereWidth(), this._getSphereHeight());
 		}
-		_camera.updateProjectionMatrix();
-	}
+	};
 
-	function _onDocumentMouseDown( event ) {
+	ImagesView.prototype._onDocumentMouseDown = function( event ) {
 		event.preventDefault();
 		if($('#spherical-content canvas:hover').length != 0) {
-			_isUserInteracting = true;
+			this._isUserInteracting = true;
 			onPointerDownPointerX = event.clientX;
 			onPointerDownPointerY = event.clientY;
-			onPointerDownLon = _lon;
-			onPointerDownLat = _lat;
+			onPointerDownLon = this._lon;
+			onPointerDownLat = this._lat;
 		}
-	}
+	};
 
-	function _onDocumentMouseMove( event ) {
-		if ( _isUserInteracting === true ) {
-			_lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
-			_lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+	ImagesView.prototype._onDocumentMouseMove = function( event ) {
+		if ( this._isUserInteracting === true ) {
+			this._lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
+			this._lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
 		}
-	}
+	};
 
-	function _onDocumentMouseUp( event ) {
-		_isUserInteracting = false;
+	ImagesView.prototype._onDocumentMouseUp = function( event ) {
+		this._isUserInteracting = false;
 		if($('#spherical-content canvas:hover').length != 0) {
-			_firstClick = false;
+			this._firstClick = false;
 		}
-	}
+	};
 
-	function _onDocumentMouseWheel( event ) {
-		var prevFov = _camera.fov;
+	ImagesView.prototype._onDocumentMouseWheel = function( event ) {
+		var prevFov = this._camera.fov;
 		// WebKit
 		if ( event.wheelDeltaY ) {
-			_camera.fov -= event.wheelDeltaY * 0.05;
+			this._camera.fov -= event.wheelDeltaY * 0.05;
 		// Opera / Explorer 9
 		} else if ( event.wheelDelta ) {
-			_camera.fov -= event.wheelDelta * 0.05;
+			this._camera.fov -= event.wheelDelta * 0.05;
 		// Firefox
 		} else if ( event.detail ) {
-			_camera.fov += event.detail * 1.0;
+			this._camera.fov += event.detail * 1.0;
 		}
 		
 		//Limit wheel action
-		if(_camera.fov < 20 || _camera.fov > 100) {
-			_camera.fov = prevFov;
+		if(this._camera.fov < 40 || this._camera.fov > 100) {
+			this._camera.fov = prevFov;
 		}
-		var aspect = _container.clientWidth / _container.clientHeight;
-		if(!isNaN(aspect) && aspect > 0) {
-			_camera.aspect = aspect;
+		this._camera.updateProjectionMatrix();
+	};
+
+	ImagesView.prototype._animateSphere = function() {
+		requestAnimationFrame( this._animateSphere.bind(this) );
+		this._update();
+	};
+
+	ImagesView.prototype._update = function() {
+		if (this._firstClick && this._isUserInteracting === false) {
+			this._lon += 0.1;
 		}
-		_camera.updateProjectionMatrix();
-	}
-
-	function _animateSphere() {
-		requestAnimationFrame( _animateSphere );
-		_update();
-	}
-
-	function _update() {
-		if (_firstClick && _isUserInteracting === false) {
-			_lon += 0.1;
-		}
-		_lat = Math.max( - 85, Math.min( 85, _lat ) );
-		_phi = THREE.Math.degToRad( 90 - _lat );
-		_theta = THREE.Math.degToRad( _lon );
-		_camera.target.x = 500 * Math.sin( _phi ) * Math.cos( _theta );
-		_camera.target.y = 500 * Math.cos( _phi );
-		_camera.target.z = 500 * Math.sin( _phi ) * Math.sin( _theta );
-		_camera.lookAt( _camera.target );
-		_renderer.render( _scene, _camera );
-	}
-
-//INIT
-	_init();
-},
+		this._lat = Math.max( - 85, Math.min( 85, this._lat ) );
+		this._phi = THREE.Math.degToRad( 90 - this._lat );
+		this._theta = THREE.Math.degToRad( this._lon );
+		this._camera.target.x = 500 * Math.sin( this._phi ) * Math.cos( this._theta );
+		this._camera.target.y = 500 * Math.cos( this._phi );
+		this._camera.target.z = 500 * Math.sin( this._phi ) * Math.sin( this._theta );
+		this._camera.lookAt( this._camera.target );
+		
+		//var angle = Math.round(THREE.Math.radToDeg(this._theta) % 360);
+		//if(angle < 0) { angle += 360; }
+		//$("#spherical-direction").html(angle+"°");
+		
+		this._renderer.render( this._scene, this._camera );
+	};
 
 
 
 /**
  * The loading overlay panel component
  */
-LoadingView: function() {
+var LoadingView = function() {
 //ATTRIBUTES
 	/** Is loading ? **/
-	var _loading = false;
+	this._loading = false;
 	
 	/** The last timestamp **/
-	var _lastTime = 0;
-
-//CONSTRUCTOR
-	function _init() {
-		//$("#op-loading").hide();
-	};
+	this._lastTime = 0;
+};
 	
 //ACCESSORS
 	/**
 	 * @return True if loading
 	 */
-	this.isLoading = function() {
-		return _loading;
+	LoadingView.prototype.isLoading = function() {
+		return this._loading;
 	};
 	
 //OTHER METHODS
@@ -2498,13 +2557,13 @@ LoadingView: function() {
 	 * Shows or hides the loading component
 	 * @param loading True if the application is loading something
 	 */
-	this.setLoading = function(loading) {
-		_loading = loading;
+	LoadingView.prototype.setLoading = function(loading) {
+		this._loading = loading;
 		if(loading) {
 			$("#op-loading-info li").remove();
 			$("#op-loading").removeClass("hide");
 			$("#op-loading").addClass("show");
-			_lastTime = (new Date()).getTime();
+			this._lastTime = (new Date()).getTime();
 		}
 		else {
 			$("#op-loading").removeClass("show");
@@ -2517,10 +2576,10 @@ LoadingView: function() {
 	 * Adds an information about the loading progress
 	 * @param info The loading information to add
 	 */
-	this.addLoadingInfo = function(info) {
+	LoadingView.prototype.addLoadingInfo = function(info) {
 		//Timestamp
 		var currentTime = (new Date()).getTime();
-		$("#op-loading-info li:last").append(' <small>'+(currentTime-_lastTime)+' ms</small>');
+		$("#op-loading-info li:last").append(' <small>'+(currentTime-this._lastTime)+' ms</small>');
 		
 		//Add a new child in list, corresponding to the given message
 		var newLi = document.createElement("li");
@@ -2529,19 +2588,15 @@ LoadingView: function() {
 		//Add text to the added child
 		$("#op-loading-info li:last-child").html(info);
 		
-		_lastTime = currentTime;
+		this._lastTime = currentTime;
 	};
-
-//INIT
-	_init();
-},
 
 
 
 /**
  * The about view
  */
-AboutView: function() {
+var AboutView = function() {
 //CONSTRUCTOR
 	//$("#op-about").hide();
 	$("#about-link").click(function() {
@@ -2551,35 +2606,33 @@ AboutView: function() {
 		$("#op-about").removeClass("show");
 		$("#op-about").addClass("hide");
 	});
-},
+}
 
 
 
 /**
  * The messages stack component
  */
-MessagesView: function() {
+var MessagesView = function() {
 //ATTRIBUTES
 	/** The amount of currently shown messages **/
-	var _nbMessages = 0;
-
-	/** The current object **/
-	var _self = this;
+	this._nbMessages = 0;
+};
 
 //ACCESSORS
 	/**
 	 * @return The amount of currently shown messages
 	 */
-	this.getNbMessages = function() {
-		return _nbMessages;
+	MessagesView.prototype.getNbMessages = function() {
+		return this._nbMessages;
 	};
 	
 //MODIFIERS
 	/**
 	 * Decreases the amount of currently shown messages
 	 */
-	this.decreaseNbMessages = function() {
-		_nbMessages--;
+	MessagesView.prototype.decreaseNbMessages = function() {
+		this._nbMessages--;
 	};
 	
 //OTHER METHODS
@@ -2588,11 +2641,11 @@ MessagesView: function() {
 	 * @param msg The string to display
 	 * @param type The kind of message (info, alert, error)
 	 */
-	this.displayMessage = function(msg, type) {
+	MessagesView.prototype.displayMessage = function(msg, type) {
 		//Add a new child in list, corresponding to the given message
 		var line = '<li class="'+type+'">'+msg+'</li>';
 		
-		if(_nbMessages == 0) {
+		if(this._nbMessages == 0) {
 			$("#infobox").show();
 			$("#infobox-list").append(line);
 		}
@@ -2600,26 +2653,22 @@ MessagesView: function() {
 			$("#infobox-list li:first-child").before(line);
 		}
 		
-		_nbMessages++;
+		this._nbMessages++;
 		
 		//Remove that child after a delay
 		setTimeout(function() {
 			$("#infobox-list li").last().remove();
-			_self.decreaseNbMessages();
-			if(_self.getNbMessages() == 0) {
+			this.decreaseNbMessages();
+			if(this.getNbMessages() == 0) {
 				$("#infobox").hide();
 			}
-		}, 5000);
+		}.bind(this), 5000);
 	};
-	
 	
 	/**
 	 * Clears all messages.
 	 */
-	this.clear = function() {
+	MessagesView.prototype.clear = function() {
 		$("#infobox-list li").remove();
-		_nbMessages = 0;
+		this._nbMessages = 0;
 	};
-}
-
-};

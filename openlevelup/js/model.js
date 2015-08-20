@@ -23,133 +23,153 @@
  * Model JS classes
  */
 
-OLvlUp.model = {
-
-// ======= CLASSES =======
 /**
  * The OSM global data container.
  * It contains the parsed object from Overpass call.
  */
-OSMData: function(bbox, styleDef) {
+var OSMData = function(bbox, data) {
 //ATTRIBUTES
 	/** The feature objects **/
-	var _features = null;
+	this._features = null;
 	
 	/** The available levels **/
-	var _levels = [];
+	this._levels = [];
 	
 	/** The bounding box of the data **/
-	var _bbox = bbox;
+	this._bbox = bbox;
 	
 	/** The names of objects, by level **/
-	var _names = new Object();
+	this._names = new Object();
 
 //CONSTRUCTOR
-	/**
-	 * Class constructor, initializes this object with received data.
-	 */
-	this.init = function(data) {
-		//Parse OSM data
-		var geojson = parseOsmData(data);
-		
-		//Create features
-		_features = new Object();
+	var timeStart = new Date().getTime();
+	
+	//Parse OSM data
+	var geojson = parseOsmData(data);
+	
+	//Create features
+	this._features = new Object();
 
-		for(var i in geojson.features) {
-			var f = geojson.features[i];
-			var id = f.id;
-			var currentFeature = new OLvlUp.model.Feature(f, styleDef);
-			
-			if(_features[id] == undefined) {
-				_features[id] = currentFeature;
-			}
-//			else {
-//				console.log("Duplicate: "+id);
-//				console.log(currentFeature.getTags());
-//			}
+	var id, f, i, currentFeature, ftLevels, lvlId, lvl;
+	for(i=0; i < geojson.features.length; i++) {
+		f = geojson.features[i];
+		id = f.id;
+		currentFeature = new Feature(f);
+		
+		if(this._features[id] == undefined) {
+			this._features[id] = currentFeature;
 			
 			//Add levels to list
-			var ftLevels = currentFeature.onLevels();
-			_levels = mergeArrays(_levels, ftLevels);
+			ftLevels = currentFeature.onLevels();
+			$.merge(this._levels, ftLevels);
 			
 			//Add name to list
-			var name = currentFeature.getTag("name");
-			if(name != undefined) {
-				for(var lvlId in ftLevels) {
-					var lvl = ftLevels[lvlId];
+			if(currentFeature.hasTag("name")) {
+				for(var lvlId=0; lvlId < ftLevels.length; lvlId++) {
+					lvl = ftLevels[lvlId];
 					
 					//Create given level in names if needed
-					if(_names[lvl] == undefined) {
-						_names[lvl] = new Array();
+					if(this._names[lvl] == undefined) {
+						this._names[lvl] = [];
 					}
 					
-					_names[lvl][name] = currentFeature;
+					this._names[lvl][currentFeature.getTag("name")] = currentFeature;
 				}
 			}
 		}
-		
-		_levels.sort(function (a,b) { return a-b;});
-	};
+		// else {
+			// console.log("Duplicate: "+id);
+			// console.log(currentFeature.getTags());
+		// }
+	}
+	
+	//Sort and remove duplicates in levels array
+	this._levels = this._levels.sort(sortNumberArray).filter(rmDuplicatesSortedArray);
+
+	//Clear tmp objects
+	geojson = null;
+	id = null;
+	f = null;
+	i = null;
+	currentFeature = null;
+	ftLevels = null;
+	lvlId = null;
+	lvl = null;
+	
+	console.log("[Time] Model parsing: "+((new Date().getTime()) - timeStart));
+};
 
 //ACCESSORS
 	/**
 	 * @return The data bounding box
 	 */
-	this.getBBox = function() {
-		return _bbox;
+	OSMData.prototype.getBBox = function() {
+		return this._bbox;
 	};
 	
 	/**
 	 * @return True if the object was initialized
 	 */
-	this.isInitialized = function() {
-		return _features != null;
+	OSMData.prototype.isInitialized = function() {
+		return this._features != null;
 	};
 	
 	/**
 	 * @return The levels contained in data
 	 */
-	this.getLevels = function() {
-		return _levels;
+	OSMData.prototype.getLevels = function() {
+		return this._levels;
 	};
 	
 	/**
 	 * @return The read names
 	 */
-	this.getNames = function() {
-		return _names;
+	OSMData.prototype.getNames = function() {
+		return this._names;
 	};
 	
 	/**
 	 * @param id The feature OSM ID
 	 * @return The feature object
 	 */
-	this.getFeature = function(id) {
-		return _features[id];
+	OSMData.prototype.getFeature = function(id) {
+		return this._features[id];
 	};
 	
 	/**
 	 * @return The features as an array
 	 */
-	this.getFeatures = function() {
-		return _features;
+	OSMData.prototype.getFeatures = function() {
+		return this._features;
 	};
 	
 	/**
 	 * @return The mapillary keys in data
 	 */
-	this.getMapillaryKeys = function() {
+	OSMData.prototype.getMapillaryKeys = function() {
 		var keys = [];
-		for(var ftId in _features) {
-			var feature = _features[ftId];
-			var mapillary = feature.getTag("mapillary");
-			if(mapillary != undefined) {
-				keys.push(mapillary);
+		var ftId, feature, i, k, ftTags, mapillaryVal;
+		var mapillaryRegex = /^mapillary.*$/;
+		var mapillaryValRegex = /^[\w\-]+$/;
+		
+		for(ftId in this._features) {
+			feature = this._features[ftId];
+			ftTags = feature.getTags();
+			
+			for(k in ftTags) {
+				if(k.match(mapillaryRegex)) {
+					mapillaryVal = ftTags[k];
+					if(mapillaryVal.match(mapillaryValRegex)) {
+						keys.push(mapillaryVal);
+					}
+					else {
+						console.warn("[Mapillary] Invalid key: "+mapillaryVal+" for "+ftId);
+					}
+				}
 			}
 		}
-		return keys;
+		return keys.sort().filter(rmDuplicatesSortedArray);
 	};
-},
 
 
 
@@ -157,55 +177,47 @@ OSMData: function(bbox, styleDef) {
  * The OSM cluster data container.
  * It contains the parsed object from Overpass call.
  */
-OSMClusterData: function(bbox) {
-	//ATTRIBUTES
+var OSMClusterData = function(bbox, data) {
+//ATTRIBUTES
 	/** The feature objects **/
-	var _data = null;
+	this._data = parseOsmData(data);
 
 	/** The bounding box of the data **/
-	var _bbox = bbox;
-	
-//CONSTRUCTOR
-	/**
-	 * Class constructor, initializes this object with received data.
-	 */
-	this.init = function(data) {
-		//Parse OSM data
-		_data = parseOsmData(data);
-	};
+	this._bbox = bbox;
+};
 
 //ACCESSORS
 	/**
 	 * @return The OSM cluster data
 	 */
-	this.get = function() {
-		return _data;
+	OSMClusterData.prototype.get = function() {
+		return this._data;
 	};
 	
 	/**
 	 * @return The data bounding box
 	 */
-	this.getBBox = function() {
-		return _bbox;
+	OSMClusterData.prototype.getBBox = function() {
+		return this._bbox;
 	};
 	
 	/**
 	 * @return True if the object was initialized
 	 */
-	this.isInitialized = function() {
-		return _data != null;
+	OSMClusterData.prototype.isInitialized = function() {
+		return this._data != null;
 	};
-},
 
 
 
 /**
  * A container for Mapillary images information
  */
-MapillaryData: function() {
+var MapillaryData = function() {
 //ATTRIBUTES
 	/** The mapillary data, as key => data **/
-	var _data = {};
+	this._data = {};
+};
 
 //ACCESSORS
 	/**
@@ -213,16 +225,16 @@ MapillaryData: function() {
 	 * @param key The image key
 	 * @return True if got data
 	 */
-	this.has = function(key) {
-		return _data[key] != undefined;
+	MapillaryData.prototype.has = function(key) {
+		return this._data[key] != undefined;
 	};
 	
 	/**
 	 * @param key The image key
 	 * @return The image data
 	 */
-	this.get = function(key) {
-		return _data[key];
+	MapillaryData.prototype.get = function(key) {
+		return this._data[key];
 	};
 	
 	/**
@@ -230,22 +242,29 @@ MapillaryData: function() {
 	 * @param key The image key
 	 * @return True if spherical
 	 */
-	this.isSpherical = function(key) {
-		return _data[key].special_type == "pano";
+	MapillaryData.prototype.isSpherical = function(key) {
+		return this._data[key].special_type == "pano";
 	};
 	
 	/**
 	 * @return the picture author
 	 */
-	this.getAuthor = function(key) {
-		return _data[key].username;
+	MapillaryData.prototype.getAuthor = function(key) {
+		return this._data[key].username;
 	};
 	
 	/**
 	 * @return The capture date (as Unix timestamp)
 	 */
-	this.getDate = function(key) {
-		return _data[key].captured_at;
+	MapillaryData.prototype.getDate = function(key) {
+		return this._data[key].captured_at;
+	};
+	
+	/**
+	 * @return The capture angle (in degrees, North = 0°)
+	 */
+	MapillaryData.prototype.getAngle = function(key) {
+		return this._data[key].ca;
 	};
 	
 //MODIFIERS
@@ -254,328 +273,327 @@ MapillaryData: function() {
 	 * @param key The image key
 	 * @param data The image data
 	 */
-	this.add = function(key, data) {
-		_data[key] = data;
+	MapillaryData.prototype.add = function(key, data) {
+		this._data[key] = data;
 	};
-},
 
 
 
 /**
  * A feature is a geolocated object with properties, style, geometry, ...
  */
-Feature: function(f, styleDef) {
+var Feature = function(f) {
 //ATTRIBUTES
 	/** The human readable name of the object **/
-	var _name = null;
+	this._name = null;
 
 	/** The OSM ID (for example "node/123456") **/
-	var _id = f.id;
+	this._id = f.id;
 	
 	/** The levels in which this object is present **/
-	var _onLevels = null;
+	this._onLevels = null;
+	
+	/** The OSM keys **/
+	this._keys = null;
 	
 	/** The OSM object tags **/
-	var _tags = null;
+	this._tags = f.properties.tags;
 	
 	/** The feature geometry **/
-	var _geometry = null;
+	this._geometry = null;
 	
 	/** The feature style **/
-	var _style = null;
+	this._style = null;
 	
 	/** The feature images (if any) **/
-	var _images = undefined;
-	
-	/** This object **/
-	var _self = this;
-	
+	this._images = undefined;
+
 //CONSTRUCTOR
-	/**
-	 * Class constructor
-	 * @param feature The OSM feature
+	/*
+	 * Init some vars
 	 */
-	function _init(feature) {
-		/*
-		 * Init some vars
-		 */
-		_tags = feature.properties.tags;
-		_style = new OLvlUp.model.FeatureStyle(_self, styleDef);
-		_geometry = new OLvlUp.model.FeatureGeometry(feature.geometry);
+	this._keys = Object.keys(this._tags);
+	this._style = new FeatureStyle(this);
+	this._geometry = new FeatureGeometry(f.geometry);
+	
+	/*
+	 * Find a name for this object
+	 */
+	if(this._tags.name != undefined) {
+		this._name = this._tags.name;
+	}
+	else if(this._tags.ref != undefined) {
+		this._name = this._tags.ref;
+	}
+	else {
+		this._name = this._style.getName();
+	}
+	
+	/*
+	 * Parse levels
+	 */
+	//try to find levels for this feature
+	var currentLevel = null;
+	var relations = f.properties.relations;
+	
+	//Tag level
+	if(this._tags.level != undefined) {
+		currentLevel = parseLevelsFloat(this._tags.level);
+	}
+	//Tag repeat_on
+	else if(this._tags.repeat_on != undefined) {
+		currentLevel = parseLevelsFloat(this._tags.repeat_on);
+	}
+	//Tag min_level and max_level
+	else if(this._tags.min_level != undefined && this._tags.max_level != undefined) {
+		currentLevel = parseLevelsFloat(this._tags.min_level+"-"+this._tags.max_level);
+	}
+	//Tag buildingpart:verticalpassage:floorrange
+	else if(this._tags["buildingpart:verticalpassage:floorrange"] != undefined) {
+		currentLevel = parseLevelsFloat(this._tags["buildingpart:verticalpassage:floorrange"]);
+	}
+	//Relations type=level
+	else if(relations != undefined && relations.length > 0) {
+		currentLevel = [];
 		
-		/*
-		 * Find a name for this object
-		 */
-		if(_tags.name != undefined) {
-			_name = _tags.name;
-		}
-		else if(_tags.ref != undefined) {
-			_name = _tags.ref;
-		}
-		else {
-			_name = _style.getName();
-		}
-		
-		/*
-		 * Parse levels
-		 */
-		//try to find levels for this feature
-		var currentLevel = null;
-		var relations = feature.properties.relations;
-		
-		//Tag level
-		if(_tags.level != undefined) {
-			currentLevel = parseLevelsFloat(_tags.level);
-		}
-		//Tag repeat_on
-		else if(_tags.repeat_on != undefined) {
-			currentLevel = parseLevelsFloat(_tags.repeat_on);
-		}
-		//Tag min_level and max_level
-		else if(_tags.min_level != undefined && _tags.max_level != undefined) {
-			currentLevel = parseLevelsFloat(_tags.min_level+"-"+_tags.max_level);
-		}
-		//Tag buildingpart:verticalpassage:floorrange
-		else if(_tags["buildingpart:verticalpassage:floorrange"] != undefined) {
-			currentLevel = parseLevelsFloat(_tags["buildingpart:verticalpassage:floorrange"]);
-		}
-		//Relations type=level
-		else if(relations != undefined && relations.length > 0) {
-			currentLevel = new Array();
-			
-			//Try to find type=level relations, and add level value in level array
-			for(var i in relations) {
-				var rel = relations[i];
-				if(rel.reltags.type == "level" && rel.reltags.level != undefined) {
-					var relLevel = parseLevelsFloat(rel.reltags.level);
-					
-					//Test if level value in relation is unique
-					if(relLevel.length == 1) {
-						currentLevel.push(relLevel[0]);
-					}
-					else {
-						console.log("Invalid level value for relation "+rel.rel);
-					}
+		//Try to find type=level relations, and add level value in level array
+		for(var i=0; i < relations.length; i++) {
+			var rel = relations[i];
+			if(rel.reltags.type == "level" && rel.reltags.level != undefined) {
+				var relLevel = parseLevelsFloat(rel.reltags.level);
+				
+				//Test if level value in relation is unique
+				if(relLevel.length == 1) {
+					currentLevel.push(relLevel[0]);
+				}
+				else {
+					console.log("Invalid level value for relation "+rel.rel);
 				}
 			}
-			
-			//Reset currentLevel if no level found
-			if(currentLevel.length == 0) { currentLevel = null; }
 		}
 		
-		//Save found levels
-		if(currentLevel != null) {
-			currentLevel.sort(function(a,b) { return a - b; });
-			_onLevels = currentLevel;
-		} else {
-			//console.log("No valid level found for "+_id);
-			_onLevels = [];
-		}
-		
-		/*
-		 * Check if the feature could have images
-		 */
-		_images = (_self.hasImages()) ? new OLvlUp.model.FeatureImages(_self) : null;
-	};
+		//Reset currentLevel if no level found
+		if(currentLevel.length == 0) { currentLevel = null; }
+	}
+	
+	//Save found levels
+	if(currentLevel != null) {
+		currentLevel.sort(sortNumberArray);
+		this._onLevels = currentLevel;
+	} else {
+		//console.log("No valid level found for "+_id);
+		this._onLevels = [];
+	}
+	
+	/*
+	 * Check if the feature could have images
+	 */
+	this._images = (this._tags.image != undefined || this._tags.mapillary != undefined) ? new FeatureImages(this) : null;
+};
 
 //ACCESSORS
 	/**
 	 * @return The human readable name
 	 */
-	this.getName = function() {
-		return _name;
+	Feature.prototype.getName = function() {
+		return this._name;
 	};
 	
 	/**
 	 * @return The OSM Id
 	 */
-	this.getId = function() {
-		return _id;
+	Feature.prototype.getId = function() {
+		return this._id;
 	};
 	
 	/**
 	 * @return True if the feature has related images
 	 */
-	this.hasImages = function() {
-		return (_images == undefined && (_tags.image != undefined || _tags.mapillary != undefined))
-			|| (_images != undefined && _images != null && (_images.hasValidImages() || _images.hasValidSpherical()));
+	Feature.prototype.hasImages = function() {
+		return this._images != null && (this._images.hasValidImages() || this._images.hasValidSpherical());
 	};
 	
 	/**
 	 * @return The array of levels where the feature is available
 	 */
-	this.onLevels = function() {
-		return _onLevels;
+	Feature.prototype.onLevels = function() {
+		return this._onLevels;
 	};
 	
 	/**
 	 * @param lvl The level to look for
 	 * @return True if the feature is present in the given level
 	 */
-	this.isOnLevel = function(lvl) {
-		return _onLevels.indexOf(lvl) != -1;
+	Feature.prototype.isOnLevel = function(lvl) {
+		return this._onLevels.indexOf(lvl) != -1;
 	};
 	
 	/**
 	 * @return The OSM tags
 	 */
-	this.getTags = function() {
-		return _tags;
+	Feature.prototype.getTags = function() {
+		return this._tags;
 	};
 	
 	/**
 	 * @param key The OSM key
 	 * @return The corresponding OSM value, or undefined if not found
 	 */
-	this.getTag = function(key) {
-		return _tags[key];
+	Feature.prototype.getTag = function(key) {
+		return this._tags[key];
+	};
+	
+	/**
+	 * @param key The OSM key
+	 * @return True if this key is defined in this object
+	 */
+	Feature.prototype.hasTag = function(key) {
+		return contains(this._keys, key);
 	};
 	
 	/**
 	 * @return The feature images object or null if no available images
 	 */
-	this.getImages = function() {
-		if(_images == null || _images == undefined) {
-			_images = new OLvlUp.model.FeatureImages(_self);
+	Feature.prototype.getImages = function() {
+		if(this._images == null || this._images == undefined) {
+			this._images = new FeatureImages(this);
 		}
-		return _images;
+		return this._images;
 	};
 	
 	/**
 	 * @return The feature style
 	 */
-	this.getStyle = function() {
-		return _style;
+	Feature.prototype.getStyle = function() {
+		return this._style;
 	};
 	
 	/**
 	 * @return The feature geometry
 	 */
-	this.getGeometry = function() {
-		return _geometry;
+	Feature.prototype.getGeometry = function() {
+		return this._geometry;
 	};
-	
-//INIT
-	_init(f);
-},
 
 
 
 /**
  * This class handles a feature geometry, and allows to do some processing on it.
  */
-FeatureGeometry: function(fGeometry) {
+var FeatureGeometry = function(fGeometry) {
 //ATTRIBUTES
 	/** The feature geometry, in GeoJSON **/
-	var _geom = fGeometry;
-	
-	/** The current object **/
-	var _self = this;
+	this._geom = fGeometry;
+};
 
 //ACCESSORS
 	/**
 	 * @return The geometry in GeoJSON
 	 */
-	this.get = function() {
-		return _geom;
+	FeatureGeometry.prototype.get = function() {
+		return this._geom;
 	};
 	
 	/**
-	 * @return The centroid, as [longitude, latitude]
+	 * @return The centroid, as LatLng
 	 */
-	this.getCentroid = function() {
+	FeatureGeometry.prototype.getCentroid = function() {
 		var result = null;
+		var type = this._geom.type;
 		
-		if(_geom.type == "Point") {
-			result = _geom.coordinates;
+		if(type == "Point") {
+			result = this._geom.coordinates;
 		}
-		else if(_geom.type == "LineString") {
+		else if(type == "LineString") {
 			result = [0, 0];
+			var length = this._geom.coordinates.length;
 			
-			for(var i in _geom.coordinates) {
-				if(i < _geom.coordinates.length) {
-					result[0] += _geom.coordinates[i][0];
-					result[1] += _geom.coordinates[i][1];
+			for(var i=0; i < length; i++) {
+				result[0] += this._geom.coordinates[i][0];
+				result[1] += this._geom.coordinates[i][1];
+			}
+			
+			result[0] = result[0] / length;
+			result[1] = result[1] / length;
+		}
+		else if(type == "Polygon") {
+			result = [0, 0];
+			var length = this._geom.coordinates[0].length;
+			
+			for(var i=0; i < length; i++) {
+				if(i < length - 1) {
+					result[0] += this._geom.coordinates[0][i][0];
+					result[1] += this._geom.coordinates[0][i][1];
 				}
 			}
 			
-			result[0] = result[0] / (_geom.coordinates.length);
-			result[1] = result[1] / (_geom.coordinates.length);
+			result[0] = result[0] / (length -1);
+			result[1] = result[1] / (length -1);
 		}
-		else if(_geom.type == "Polygon") {
+		else if(type == "MultiPolygon") {
 			result = [0, 0];
+			var length = this._geom.coordinates[0][0].length;
 			
-			for(var i in _geom.coordinates[0]) {
-				if(i < _geom.coordinates[0].length - 1) {
-					result[0] += _geom.coordinates[0][i][0];
-					result[1] += _geom.coordinates[0][i][1];
+			for(var i = 0; i < length; i++) {
+				if(i < length - 1) {
+					result[0] += this._geom.coordinates[0][0][i][0];
+					result[1] += this._geom.coordinates[0][0][i][1];
 				}
 			}
 			
-			result[0] = result[0] / (_geom.coordinates[0].length -1);
-			result[1] = result[1] / (_geom.coordinates[0].length -1);
-		}
-		else if(_geom.type == "MultiPolygon") {
-			result = [0, 0];
-			
-			for(var i in _geom.coordinates[0][0]) {
-				if(i < _geom.coordinates[0][0].length - 1) {
-					result[0] += _geom.coordinates[0][0][i][0];
-					result[1] += _geom.coordinates[0][0][i][1];
-				}
-			}
-			
-			result[0] = result[0] / (_geom.coordinates[0][0].length -1);
-			result[1] = result[1] / (_geom.coordinates[0][0].length -1);
+			result[0] = result[0] / (length -1);
+			result[1] = result[1] / (length -1);
 		}
 		else {
-			console.log("Unknown type: "+_geom.type);
+			console.log("Unknown type: "+this._geom.type);
 		}
 		
-		return result;
+		return L.latLng(result[1], result[0]);
 	};
 	
 	/**
 	 * Get this object centroid as a string
 	 * @return "lat, lon"
 	 */
-	this.getCentroidAsString = function() {
-		var c = _self.getCentroid();
-		return c[1]+", "+c[0];
+	FeatureGeometry.prototype.getCentroidAsString = function() {
+		var c = this.getCentroid();
+		return c.lat+", "+c.lng;
 	};
 	
 	/**
 	 * @return The geometry type (GeoJSON values)
 	 */
-	this.getType = function() {
-		return _geom.type;
+	FeatureGeometry.prototype.getType = function() {
+		return this._geom.type;
 	};
 	
 	/**
 	 * @return The geometry as leaflet format (LatLng)
 	 */
-	this.getLatLng = function() {
+	FeatureGeometry.prototype.getLatLng = function() {
 		var result = null;
 		
-		switch(_geom.type) {
+		switch(this._geom.type) {
 			case "Point":
-				result = L.latLng(_geom.coordinates[1], _geom.coordinates[0]);
+				result = L.latLng(this._geom.coordinates[1], this._geom.coordinates[0]);
 				break;
 				
 			case "LineString":
 				result = [];
-				for(var i = 0; i < _geom.coordinates.length; i++) {
-					var coords = _geom.coordinates[i];
+				var coords;
+				for(var i = 0; i < this._geom.coordinates.length; i++) {
+					coords = this._geom.coordinates[i];
 					result[i] = L.latLng(coords[1], coords[0]);
 				}
 				break;
 				
 			case "Polygon":
 				result = [];
-				for(var i = 0; i < _geom.coordinates.length; i++) {
+				var coords;
+				for(var i = 0; i < this._geom.coordinates.length; i++) {
 					result[i] = [];
-					for(var j=0; j < _geom.coordinates[i].length; j++) {
-						var coords = _geom.coordinates[i][j];
+					for(var j=0; j < this._geom.coordinates[i].length; j++) {
+						coords = this._geom.coordinates[i][j];
 						result[i][j] = L.latLng(coords[1], coords[0]);
 					}
 				}
@@ -583,12 +601,13 @@ FeatureGeometry: function(fGeometry) {
 				
 			case "MultiPolygon":
 				result = [];
-				for(var i = 0; i < _geom.coordinates.length; i++) {
+				var coords;
+				for(var i = 0; i < this._geom.coordinates.length; i++) {
 					result[i] = [];
-					for(var j=0; j < _geom.coordinates[i].length; j++) {
+					for(var j=0; j < this._geom.coordinates[i].length; j++) {
 						result[i][j] = [];
-						for(var k=0; k < _geom.coordinates[i][j]; k++) {
-							var coords = _geom.coordinates[i][j][k];
+						for(var k=0; k < this._geom.coordinates[i][j].length; k++) {
+							coords = this._geom.coordinates[i][j][k];
 							result[i][j][k] = L.latLng(coords[1], coords[0]);
 						}
 					}
@@ -596,7 +615,7 @@ FeatureGeometry: function(fGeometry) {
 				break;
 				
 			default:
-				console.log("Unknown type: "+_geom.type);
+				console.log("Unknown type: "+this._geom.type);
 		}
 		
 		return result;
@@ -606,25 +625,25 @@ FeatureGeometry: function(fGeometry) {
 	 * Returns the bounding box
 	 * @return The bounding box
 	 */
-	this.getBounds = function() {
+	FeatureGeometry.prototype.getBounds = function() {
 		var minlat, maxlat, minlon, maxlon;
 
-		switch(_geom.type) {
+		switch(this._geom.type) {
 			case "Point":
-				minlat = _geom.coordinates[1];
-				maxlat = _geom.coordinates[1];
-				minlon = _geom.coordinates[0];
-				maxlon = _geom.coordinates[0];
+				minlat = this._geom.coordinates[1];
+				maxlat = this._geom.coordinates[1];
+				minlon = this._geom.coordinates[0];
+				maxlon = this._geom.coordinates[0];
 				break;
 				
 			case "LineString":
-				minlat = _geom.coordinates[0][1];
-				maxlat = _geom.coordinates[0][1];
-				minlon = _geom.coordinates[0][0];
-				maxlon = _geom.coordinates[0][0];
+				minlat = this._geom.coordinates[0][1];
+				maxlat = this._geom.coordinates[0][1];
+				minlon = this._geom.coordinates[0][0];
+				maxlon = this._geom.coordinates[0][0];
 				
-				for(var i = 1; i < _geom.coordinates.length; i++) {
-					var coords = _geom.coordinates[i];
+				for(var i = 1; i < this._geom.coordinates.length; i++) {
+					var coords = this._geom.coordinates[i];
 					if(coords[0] < minlon) { minlon = coords[0]; }
 					else if(coords[0] > maxlon) { maxlon = coords[0]; }
 					if(coords[1] < minlat) { minlat = coords[1]; }
@@ -633,14 +652,15 @@ FeatureGeometry: function(fGeometry) {
 				break;
 				
 			case "Polygon":
-				minlat = _geom.coordinates[0][0][1];
-				maxlat = _geom.coordinates[0][0][1];
-				minlon = _geom.coordinates[0][0][0];
-				maxlon = _geom.coordinates[0][0][0];
+				minlat = this._geom.coordinates[0][0][1];
+				maxlat = this._geom.coordinates[0][0][1];
+				minlon = this._geom.coordinates[0][0][0];
+				maxlon = this._geom.coordinates[0][0][0];
 				
-				for(var i = 0; i < _geom.coordinates.length; i++) {
-					for(var j=0; j < _geom.coordinates[i].length; j++) {
-						var coords = _geom.coordinates[i][j];
+				var coords;
+				for(var i = 0; i < this._geom.coordinates.length; i++) {
+					for(var j=0; j < this._geom.coordinates[i].length; j++) {
+						coords = this._geom.coordinates[i][j];
 						if(coords[0] < minlon) { minlon = coords[0]; }
 						else if(coords[0] > maxlon) { maxlon = coords[0]; }
 						if(coords[1] < minlat) { minlat = coords[1]; }
@@ -650,15 +670,16 @@ FeatureGeometry: function(fGeometry) {
 				break;
 				
 			case "MultiPolygon":
-				minlat = _geom.coordinates[0][0][1];
-				maxlat = _geom.coordinates[0][0][1];
-				minlon = _geom.coordinates[0][0][0];
-				maxlon = _geom.coordinates[0][0][0];
+				minlat = this._geom.coordinates[0][0][1];
+				maxlat = this._geom.coordinates[0][0][1];
+				minlon = this._geom.coordinates[0][0][0];
+				maxlon = this._geom.coordinates[0][0][0];
 				
-				for(var i = 0; i < _geom.coordinates.length; i++) {
-					for(var j=0; j < _geom.coordinates[i].length; j++) {
-						for(var k=0; k < _geom.coordinates[i][j]; k++) {
-							var coords = _geom.coordinates[i][j][k];
+				var coords;
+				for(var i = 0; i < this._geom.coordinates.length; i++) {
+					for(var j=0; j < this._geom.coordinates[i].length; j++) {
+						for(var k=0; k < this._geom.coordinates[i][j].length; k++) {
+							coords = this._geom.coordinates[i][j][k];
 							if(coords[0] < minlon) { minlon = coords[0]; }
 							else if(coords[0] > maxlon) { maxlon = coords[0]; }
 							if(coords[1] < minlat) { minlat = coords[1]; }
@@ -669,159 +690,177 @@ FeatureGeometry: function(fGeometry) {
 				break;
 				
 			default:
-				console.log("Unknown type: "+_geom.type);
+				console.log("Unknown type: "+this._geom.type);
 		}
 		
 		return L.latLngBounds(L.latLng(minlat, minlon), L.latLng(maxlat, maxlon));
 	};
-
-//MODIFIERS
-	/**
-	 * Converts this into a polygon.
-	 */
-	this.convertToPolygon = function() {
-		if(_geom.type == "LineString") {
-			_geom.type = "Polygon";
-			_geom.coordinates = [ _geom.coordinates ];
-		}
-		else {
-			console.log("Unhandled geometry change to polygon");
-		}
-	}
-	
-	/**
-	 * Converts this into a LineString.
-	 */
-	this.convertToLine = function() {
-		if(_geom.type == "Polygon") {
-			_geom.type = "LineString";
-			_geom.coordinates = _geom.coordinates[0];
-		}
-		else {
-			console.log("Unhandled geometry change to linestring");
-		}
-	}
-},
 
 
 
 /**
  * This class represents a feature style, defined from JSON rules
  */
-FeatureStyle: function(feature, jsonStyle) {
+var FeatureStyle = function(feature) {
 //ATTRIBUTES
-	/** The feature tags **/
-	var _tags = feature.getTags();
-	
 	/** The style **/
-	var _style = new Object();
+	this._style = new Object();
 	
 	/** The feature icon **/
-	var _icon = undefined;
+	this._icon = undefined;
 	
 	/** The style name **/
-	var _name = "Object";
-	
-	/** The current object **/
-	var _self = this;
+	this._name = "Object";
+
+	/** The feature **/
+	this._feature = feature;
 
 //CONSTRUCTOR
-
+	var applyable, tagList, val, featureVal, style, key, param;
 	//Find potential styles depending on tags
-	for(var i in jsonStyle.styles) {
-		var style = jsonStyle.styles[i];
-		
-		//If applyable, we update the result style
-		if(_isStyleApplyable(feature, style)) {
-			_name = style.name;
-			for(var param in style.style) {
-				_style[param] = style.style[param];
+	for(var mainKey in STYLE.styles) {
+		if(this._hasKey(mainKey)) {
+			for(var i=0, until=STYLE.styles[mainKey].length; i < until; i++) {
+				style = STYLE.styles[mainKey][i];
+				
+				/*
+				 * Check if style is applyable
+				 */
+				applyable = false;
+				
+				for(var j=0, until2 = style.onTags.length; j < until2; j++) {
+					tagList = style.onTags[j];
+					applyable = true;
+					
+					for(key in tagList) {
+						val = tagList[key];
+						
+						//If this rule is not applyable, stop
+						if(!this._feature.hasTag(key)) {
+							applyable = false;
+							break;
+						}
+						else {
+							featureVal = this._feature.getTag(key);
+							if(val != featureVal && val != "*" && !contains(val.split("|"), featureVal)) {
+								applyable = false;
+								break;
+							}
+						}
+					}
+					//If style still applyable after looking for all tags in a taglist, then it's applyable
+					if(applyable) { break; }
+				}
+				
+				//If applyable, we update the result style
+				if(applyable) {
+					if(style.name != undefined) {
+						this._name = style.name;
+					}
+					
+					for(param in style.style) {
+						if(style.style[param] != undefined && (param != "icon" || this._createIconUrl(style.style) != null)) {
+							this._style[param] = style.style[param];
+						}
+					}
+				}
 			}
 		}
 	}
 	
 	//Change icon=no into undefined
-	if(_style.icon == "no") { _style.icon = undefined; }
-//--CONSTRUCTOR
+	if(this._style.icon == "none") { this._style.icon = undefined; }
+	
+	//Clean tmp objects
+	applyable = null;
+	tagList = null;
+	val = null;
+	featureVal = null;
+	style = null;
+};
 
 //ACCESSORS
 	/**
 	 * @return The style which is applyable on the feature
 	 */
-	this.get = function() {
-		return _style;
+	FeatureStyle.prototype.get = function() {
+		return this._style;
 	};
 	
 	/**
 	 * @return True if this style has an associated icon
 	 */
-	this.hasIcon = function() {
-		return _icon != undefined;
+	FeatureStyle.prototype.hasIcon = function() {
+		return this._icon != undefined;
 	};
 
 	/**
 	 * Get the complete icon name, in particular when style contains a tag variable.
 	 * @return The icon URL
 	 */
-	this.getIconUrl = function() {
-		if(_icon == undefined) {
-			_icon = _style.icon;
+	FeatureStyle.prototype.getIconUrl = function() {
+		if(this._icon == undefined) {
+			this._icon = this._createIconUrl(this._style);
+		}
+		
+		return this._icon;
+	};
+	
+	/**
+	 * Replaces if needed the variable tag in an icon URL
+	 */
+	FeatureStyle.prototype._createIconUrl = function(style) {
+		var regex = /\$\{(\w+)\}/;
+		var icon = style.icon;
+		if(regex.test(icon)) {
+			//Replace tag name with actual tag value
+			var tagName = regex.exec(icon)[1];
+			var tagValue = this._feature.getTag(tagName);
 			
-			var regex = /\$\{(\w+)\}/;
-			if(regex.test(_icon)) {
-				//Replace tag name with actual tag value
-				var tagName = regex.exec(_icon)[1];
-				_icon = _icon.replace(regex, _tags[tagName]);
-				
-				//Check if icon file exists (to avoid exotic values)
-				if(jsonStyle.images.indexOf(_icon) < 0) {
-					_icon = null;
-				}
+			//If an alias exists for the given value, replace
+			if(style.iconAlias != undefined && style.iconAlias[tagValue] != undefined) {
+				tagValue = style.iconAlias[tagValue];
+			}
+			
+			icon = icon.replace(regex, tagValue);
+			
+			//Check if icon file exists (to avoid exotic values)
+			if(!contains(STYLE.images, icon)) {
+				icon = null;
 			}
 		}
 		
-		return _icon;
+		return icon;
+	};
+	
+	/**
+	 * Checks if the feature has one of the given key defined
+	 */
+	FeatureStyle.prototype._hasKey = function(keys) {
+		keys = keys.split("|");
+		for(var i=0; i < keys.length; i++) {
+			if(this._feature.hasTag(keys[i])) {
+				return true;
+			}
+		}
+		return false;
 	};
 	
 	/**
 	 * @return The style name
 	 */
-	this.getName = function() {
-		return _name;
-	};
-
-//OTHER METHODS
-	/**
-	 * Checks if a given style is applyable on a given feature
-	 * @param feature The feature to test
-	 * @param style The JSON style to test
-	 * @return True if the style is applyable
-	 */
-	function _isStyleApplyable(feature, style) {
-		var applyable = false;
-		
-		for(var j in style.onTags) {
-			var tagList = style.onTags[j];
-			applyable = true;
-			for(var key in tagList) {
-				var val = tagList[key];
-				var featureVal = feature.getTag(key);
-				
-				//If this rule is not applyable, stop
-				if(featureVal == undefined
-					|| (val != "*" && val != featureVal && val.split("|").indexOf(featureVal) < 0)) {
-					
-					applyable = false;
-					break;
-				}
-			}
-			//If style still applyable after looking for all tags in a taglist, then it's applyable
-			if(applyable) { break; }
+	FeatureStyle.prototype.getName = function() {
+		//Replace tag var in name
+		var regex = /\$\{(\w+)\}/;
+		if(regex.test(this._name)) {
+			//Replace tag name with actual tag value
+			var tagName = regex.exec(this._name)[1];
+			this._name = removeUscore(this._name.replace(regex, this._feature.getTag(tagName)));
+			this._name = this._name.charAt(0).toUpperCase() + this._name.substr(1);
 		}
 		
-		return applyable;
-	}
-},
+		return this._name;
+	};
 
 
 
@@ -829,88 +868,147 @@ FeatureStyle: function(feature, jsonStyle) {
  * FeatureImages represents the picture related to a given feature
  * They can be from various sources (Web URL, Mapillary, Flickr, ...)
  */
-FeatureImages: function(feature) {
+var FeatureImages = function(feature) {
 //ATTRIBUTES
-	/** The image from image=* tag **/
-	var _img = undefined;
+	/** The image retrieved from image=* tag **/
+	this._img = undefined;
+	
+	/** The original image tag **/
+	this._imgTag = feature.getTag("image");
 	
 	/** The image from mapillary=* tag **/
-	var _mapillary = feature.getTag("mapillary");
-	
-	/** The Flickr images **/
-	var _flickr = [];
-	
-	/** This object **/
-	var _self = this;
+	this._mapillary = [];
 
+	/** The Flickr images **/
+	this._flickr = [];
+	
 //CONSTRUCTOR
-	function _init() {
-		var imageTag = feature.getTag("image");
-		if(imageTag != undefined) {
-			_img = _parseImageTag(imageTag);
+	if(this._imgTag != undefined) {
+		/*
+		 * Parse image tag
+		 */
+		var regexUrl = /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+\.(png|PNG|gif|GIF|jpg|JPG|jpeg|JPEG|bmp|BMP)$/;
+		var regexUrlNoProtocol = /^(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+\.(png|PNG|gif|GIF|jpg|JPG|jpeg|JPEG|bmp|BMP)$/;
+		var regexWiki = /^(File):.+\.(png|gif|jpg|jpeg|bmp)$/i;
+		
+		if(this._imgTag.match(regexUrl)) {
+			this._img = this._imgTag;
 		}
-	};
+		else if(this._imgTag.match(regexUrlNoProtocol) && !this._imgTag.match(regexWiki)) {
+			this._img = 'http://'+this._imgTag;
+		}
+		else if(this._imgTag.match(regexWiki)) {
+			var file = this._imgTag.substring(5);
+			var imageUtf8 = file.replace(/ /g, '_');
+			var digest = md5(imageUtf8);
+			var folder = digest[0] + '/' + digest[0] + digest[1] + '/' + encodeURIComponent(imageUtf8);
+			this._img = 'http://upload.wikimedia.org/wikipedia/commons/' + folder;
+		}
+		else {
+			console.warn("[Images] Invalid key: "+this._imgTag+ " for "+feature.getId());
+			this._img = null;
+		}
+	}
+	
+	/*
+	 * Read mapillary images
+	 */
+	var ftTags = feature.getTags();
+	var mapillaryRegex = /^mapillary.*$/;
+	var k;
+
+	for(k in ftTags) {
+		if(k.match(mapillaryRegex)) {
+			this._mapillary.push({ key: k, val: ftTags[k] });
+		}
+	}
+	
+	//Clean tmp objects
+	ftTags = null;
+	k = null;
+	mapillaryRegex = null;
+};
 
 //ACCESSORS
 	/**
 	 * @return All the simple pictures (as an array)
 	 */
-	this.get = function() {
+	FeatureImages.prototype.get = function() {
 		var result = [];
 		
-		if(_img != null && _img != undefined) {
+		if(this._img != null && this._img != undefined) {
 			result.push({
-				url: _img,
+				url: this._img,
 				source: "Web",
-				tag: "image = "+feature.getTag("image"),
+				tag: "image = "+this._imgTag,
+				page: this._img,
 				date: 0
 			});
 		}
 		
 		var mapillaryData = controller.getMapillaryData();
-		if(
-			_mapillary != undefined
-			&& mapillaryData.has(_mapillary)
-			&& !mapillaryData.isSpherical(_mapillary)
-		) {
-			result.push({
-				url: 'https://d1cuyjsrcm0gby.cloudfront.net/'+_mapillary+'/thumb-2048.jpg',
-				source: "Mapillary",
-				tag: "mapillary = "+_mapillary,
-				author: mapillaryData.getAuthor(_mapillary),
-				date: mapillaryData.getDate(_mapillary)
-			});
+		var mapillaryImg = null;
+		for(var i=0; i < this._mapillary.length; i++) {
+			mapillaryImg = this._mapillary[i];
+			
+			if(mapillaryData.has(mapillaryImg.val) && !mapillaryData.isSpherical(mapillaryImg.val)) {
+				result.push({
+					url: 'https://d1cuyjsrcm0gby.cloudfront.net/'+mapillaryImg.val+'/thumb-2048.jpg',
+					source: "Mapillary",
+					tag: mapillaryImg.key+" = "+mapillaryImg.val,
+					author: mapillaryData.getAuthor(mapillaryImg.val),
+					page: 'http://www.mapillary.com/map/im/'+mapillaryImg.val,
+					date: mapillaryData.getDate(mapillaryImg.val)
+				});
+			}
 		}
 		
-		if(_flickr.length > 0) {
-			result = mergeArrays(result, _flickr);
+		if(this._flickr.length > 0) {
+			result = mergeArrays(result, this._flickr);
 		}
 		
-		result.sort(_sortByDate);
+		result.sort(this._sortByDate);
 
 		return result;
 	};
 	
 	/**
-	 * @return A spherical image of the feature or null if no one associated
+	 * @return Spherical images of the feature (as an array)
 	 */
-	this.getSpherical = function() {
-		var result = null;
+	FeatureImages.prototype.getSpherical = function() {
+		var result = [];
 		
 		var mapillaryData = controller.getMapillaryData();
-		if(
-			_mapillary != undefined
-			&& mapillaryData.has(_mapillary)
-			&& mapillaryData.isSpherical(_mapillary)
-		) {
-			result = {
-				url: 'https://d1cuyjsrcm0gby.cloudfront.net/'+_mapillary+'/thumb-2048.jpg',
-				source: "Mapillary",
-				tag: "mapillary = "+_mapillary,
-				author: mapillaryData.getAuthor(_mapillary),
-				date: mapillaryData.getDate(_mapillary)
-			};
+		var mapillaryImg, mapillaryMetadata, initDir, dir;
+		var directions = { "N": 0, "NE": 45, "E": 90, "SE": 135, "S": 180, "SW": 225, "W": 270, "NW": 315 };
+		
+		for(var i=0; i < this._mapillary.length; i++) {
+			mapillaryImg = this._mapillary[i];
+			
+			if(mapillaryData.has(mapillaryImg.val) && mapillaryData.isSpherical(mapillaryImg.val)) {
+				mapillaryMetadata = mapillaryImg.key.split(':');
+				initDir = undefined;
+				if(mapillaryMetadata.length >= 2) {
+					dir = directions[mapillaryMetadata[1]];
+					if(dir != undefined) {
+						initDir = dir;
+					}
+				}
+				
+				result.push({
+					url: 'https://d1cuyjsrcm0gby.cloudfront.net/'+mapillaryImg.val+'/thumb-2048.jpg',
+					source: "Mapillary",
+					tag: mapillaryImg.key+" = "+mapillaryImg.val,
+					author: mapillaryData.getAuthor(mapillaryImg.val),
+					page: 'http://www.mapillary.com/map/im/'+mapillaryImg.val,
+					date: mapillaryData.getDate(mapillaryImg.val),
+					angle: mapillaryData.getAngle(mapillaryImg.val),
+					relativeDirection: initDir
+				});
+			}
 		}
+		
+		result.sort(this._sortByDate);
 		
 		return result;
 	};
@@ -918,14 +1016,14 @@ FeatureImages: function(feature) {
 	/**
 	 * @return The images status as an object { source => status }
 	 */
-	this.getStatus = function() {
+	FeatureImages.prototype.getStatus = function() {
 		var status = {};
 		
 		//Web image
-		if(_img === null) {
+		if(this._img === null) {
 			status.web = "bad";
 		}
-		else if(_img === undefined) {
+		else if(this._img === undefined) {
 			status.web = "missing";
 		}
 		else {
@@ -934,18 +1032,25 @@ FeatureImages: function(feature) {
 		
 		//Mapillary
 		var mapillaryData = controller.getMapillaryData();
-		if(_mapillary == undefined) {
+		if(this._mapillary.length == 0) {
 			status.mapillary = "missing";
 		}
-		else if(mapillaryData.has(_mapillary)) {
-			status.mapillary = "ok";
-		}
 		else {
-			status.mapillary = "bad";
+			var isMapillaryOK = true;
+			var i = 0;
+			
+			while(isMapillaryOK && i < this._mapillary.length) {
+				if(!mapillaryData.has(this._mapillary[i].val)) {
+					isMapillaryOK = false;
+				}
+				i++;
+			}
+			
+			status.mapillary = (isMapillaryOK) ? "ok" : "bad";
 		}
 		
 		//Flickr
-		status.flickr = (_flickr.length > 0) ? "ok" : "missing";
+		status.flickr = (this._flickr.length > 0) ? "ok" : "missing";
 		
 		return status;
 	};
@@ -953,24 +1058,22 @@ FeatureImages: function(feature) {
 	/**
 	 * @return True if it has at least one valid image
 	 */
-	this.hasValidImages = function() {
-		return _self.get().length > 0;
+	FeatureImages.prototype.hasValidImages = function() {
+		return this.get().length > 0;
 	};
 	
 	/**
 	 * @return True if it has a valid spherical image
 	 */
-	this.hasValidSpherical = function() {
-		return _self.getSpherical() != null;
+	FeatureImages.prototype.hasValidSpherical = function() {
+		return this.getSpherical().length > 0;
 	};
 	
 	/**
 	 * @return The amount of valid images
 	 */
-	this.countImages = function() {
-		var size = _self.get().length;
-		if(_self.hasValidSpherical()) { size++; }
-		return size;
+	FeatureImages.prototype.countImages = function() {
+		return this.get().length + this.getSpherical().length;
 	};
 
 //MODIFIERS
@@ -981,51 +1084,19 @@ FeatureImages: function(feature) {
 	 * @param date The capture timestamp
 	 * @param author The picture author
 	 */
-	this.addFlickrImage = function(title, url, date, author) {
-		_flickr.push({
+	FeatureImages.prototype.addFlickrImage = function(title, url, date, author, authorId, imgId) {
+		this._flickr.push({
 			url: url,
 			source: "Flickr",
 			tag: title,
 			author: author,
+			page: 'https://www.flickr.com/photos/'+authorId+'/'+imgId,
 			date: date
 		});
 	};
 
 //OTHER METHODS
-	function _parseImageTag(image) {
-		var result = undefined;
-		
-		var regexUrl = /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+\.(png|PNG|gif|GIF|jpg|JPG|jpeg|JPEG|bmp|BMP)$/;
-		var regexUrlNoProtocol = /^(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+\.(png|PNG|gif|GIF|jpg|JPG|jpeg|JPEG|bmp|BMP)$/;
-		var regexWiki = /^(File):.+\.(png|gif|jpg|jpeg|bmp)$/i;
-		
-		if(image.match(regexUrl)) {
-			result = image;
-		}
-		else if(image.match(regexUrlNoProtocol) && !image.match(regexWiki)) {
-			result = 'http://'+image;
-		}
-		else if(image.match(regexWiki)) {
-			var file = image.substring(5);
-			var imageUtf8 = file.replace(/ /g, '_');
-			var digest = md5(imageUtf8);
-			var folder = digest[0] + '/' + digest[0] + digest[1] + '/' + encodeURIComponent(imageUtf8);
-			result = 'http://upload.wikimedia.org/wikipedia/commons/' + folder;
-		}
-		else {
-			console.warn("[Images] Invalid key: "+image);
-			result = null;
-		}
-		
-		return result;
-	};
-	
-	function _sortByDate(a, b) {
+	FeatureImages.prototype._sortByDate = function(a, b) {
 		return b.date - a.date;
 	};
 
-//INIT
-	_init();
-}
-
-};

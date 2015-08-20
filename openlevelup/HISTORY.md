@@ -1,6 +1,50 @@
 Changes history
 ===============
 
+5 august 2015
+-------------
+* Icon for charging bike and luggage locker added
+* emergency=* icon harmonization
+* Fix missing advertising=* icons under Firefox (caused by Adblock)
+
+4 august 2015
+-------------
+* Spherical images rotation depending of mapillary tag (mapillary:N/W/S/E/NW...)
+* Separated configuration file for whole application
+* Icons and simple description for feature details
+
+31 july 2015
+------------
+* FeatureStyle class optimization
+
+30 july 2015
+------------
+* Navigation buttons for spherical images hidden if an object has a single picture
+* Links to original images pages added to legends
+* Photo sphere looking in camera direction when loaded
+
+29 july 2015
+------------
+* amenity=photo_booth icon changed
+* Images counter for spherical pictures added
+* Pictures metadata requests optimized (fully asynchronized and deduplicated requests for mapillary)
+
+28 july 2015
+------------
+* Multiple spherical images from Mapillary handled
+* mapillary:front/back/right/left/large/detail tags handled
+* Style added for amenity=photo_booth and emergency=siren/fire_extinguisher/defibrillator/assembly_point
+* Style changed for highway=footway + conveying=*
+* More precise name in pop-ups for objects without a name tag
+
+27 july 2015
+------------
+* amenity=piano rendered
+
+24 july 2015
+------------
+* Performance improved by changing array loops and using prototypes for function definition
+
 21 july 2015
 ------------
 * Author and capture date added in images information

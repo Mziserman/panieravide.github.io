@@ -24,28 +24,86 @@
  */
 
 /**
- * Parses raw OSM XML data, and return result.
- * @param data The OSM XML data.
+ * Parses raw OSM data, and return result.
+ * @param data The OSM data.
  * @return The OSM parsed data (GeoJSON)
  */
 function parseOsmData(data) {
-	//Convert XML to GeoJSON
-	data = data || "<osm></osm>";
-	return osmtogeojson(parseApiData(data), { polygonFeatures: POLYGON_FEATURES });
+	if(!data) {
+		console.error(data);
+		throw new Error("Invalid data");
+	}
+	return osmtogeojson(data, { polygonFeatures: POLYGON_FEATURES });
 };
 
-/**
- * Parses whatever API data
- * @param data The data as JSON or XML
- * @return The parsed data
- */
-function parseApiData(data) {
-	try {
-		data = $.parseXML(data);
-	} catch(e) {
-		data = JSON.parse(data);
+function addCompatibility() {
+	//Bind
+	if (!Function.prototype.bind) {
+		Function.prototype.bind = function(oThis) {
+			if (typeof this !== 'function') {
+				// closest thing possible to the ECMAScript 5
+				// internal IsCallable function
+				throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+			}
+			
+			var aArgs   = Array.prototype.slice.call(arguments, 1),
+			fToBind = this,
+			fNOP    = function() {},
+			fBound  = function() {
+				return fToBind.apply(this instanceof fNOP
+				? this
+				: oThis,
+			 aArgs.concat(Array.prototype.slice.call(arguments)));
+			};
+			
+			fNOP.prototype = this.prototype;
+			fBound.prototype = new fNOP();
+			
+			return fBound;
+		};
 	}
-	return data;
+	
+	//Object.keys
+	if (!Object.keys) {
+	  Object.keys = (function() {
+		'use strict';
+		var hasOwnProperty = Object.prototype.hasOwnProperty,
+			hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
+			dontEnums = [
+			  'toString',
+			  'toLocaleString',
+			  'valueOf',
+			  'hasOwnProperty',
+			  'isPrototypeOf',
+			  'propertyIsEnumerable',
+			  'constructor'
+			],
+			dontEnumsLength = dontEnums.length;
+
+		return function(obj) {
+		  if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+			throw new TypeError('Object.keys called on non-object');
+		  }
+
+		  var result = [], prop, i;
+
+		  for (prop in obj) {
+			if (hasOwnProperty.call(obj, prop)) {
+			  result.push(prop);
+			}
+		  }
+
+		  if (hasDontEnumBug) {
+			for (i = 0; i < dontEnumsLength; i++) {
+			  if (hasOwnProperty.call(obj, dontEnums[i])) {
+				result.push(dontEnums[i]);
+			  }
+			}
+		  }
+		  return result;
+		};
+	  }());
+	}
 };
 
 /**
@@ -66,11 +124,41 @@ function mergeArrays(a1, a2) {
 };
 
 /**
+ * Does the array contains the given object
+ * @param a The array
+ * @param obj The object to look for
+ * @return True if obj in array
+ */
+function contains(a, obj) {
+	var i = a.length;
+	while (i--) {
+		if (a[i] === obj) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
+ * Sorts a number array
+ */
+function sortNumberArray(a, b) {
+	return a-b;
+};
+
+/**
+ * Removes duplicates elements in a sorted array
+ */
+function rmDuplicatesSortedArray(item, pos, ary) {
+	return !pos || item != ary[pos - 1];
+};
+
+/**
  * Parses levels list.
  * @param str The levels as a string (for example "1;5", "1,3", "1-3", "-1--6", "from 1 to 42" or "-2 to 6")
- * @return The parsed levels as a string array, or null if invalid
+ * @return The parsed levels as a float array, or null if invalid
  */
-function parseLevelsStr(str) {
+function parseLevelsFloat(str) {
 	var result = null;
 	
 	//Level values separated by ';'
@@ -81,9 +169,17 @@ function parseLevelsStr(str) {
 	
 	if(regex1.test(str)) {
 		result = str.split(';');
+		for(var i=0; i < result.length; i++) {
+			result[i] = parseFloat(result[i]);
+		}
+		result.sort(sortNumberArray);
 	}
 	else if(regex2.test(str)) {
 		result = str.split(',');
+		for(var i=0; i < result.length; i++) {
+			result[i] = parseFloat(result[i]);
+		}
+		result.sort(sortNumberArray);
 	}
 	//Level intervals
 	else {
@@ -110,36 +206,21 @@ function parseLevelsStr(str) {
 		
 		//Add values between min and max
 		if(regexResult != null && min != null && max != null) {
-			result = new Array();
+			result = [];
+			if(min > max) {
+				var tmp = min;
+				min = max;
+				max = tmp;
+			}
 			
 			//Add intermediate values
 			for(var i=min; i != max; i=i+((max-min)/Math.abs(max-min))) {
-				result.push(i.toString());
+				result.push(i);
 			}
-			result.push(max.toString());
+			result.push(max);
 		}
 	}
 	
-	//If levels available, sort them
-	if(result != null) {
-		result.sort(function (a,b) { return parseFloat(a)-parseFloat(b); });
-	}
-	
-	return result;
-}
-
-/**
- * Parses levels list.
- * @param str The levels as a string (for example "1;5", "1,3", "1-3", "-1--6", "from 1 to 42" or "-2 to 6")
- * @return The parsed levels as a float array, or null if invalid
- */
-function parseLevelsFloat(str) {
-	var result = parseLevelsStr(str);
-	if(result != null) {
-		for(var i in result) {
-			result[i] = parseFloat(result[i]);
-		}
-	}
 	return result;
 }
 
@@ -159,57 +240,6 @@ function addDimensionUnit(v) {
 	if(!isNaN(parseInt(v.substr(-1)))) {
 		v+="m";
 	}
-	return v;
-}
-
-/**
- * @return An understandable value for OSM direction tag
- */
-function orientationValue(v) {
-	//Is the orientation a number value or not ?
-	var vInt = parseInt(v);
-	if(isNaN(vInt)) {
-		var txtVals = {
-			N: "North", NNE: "North North-east", NE:"North-east", ENE: "East North-east",
-			E: "East", ESE: "East South-east", SE: "South-east", SSE: "South South-east",
-			S: "South", SSW: "South South-west", SW: "South-west", WSW:"West South-west",
-			W: "West", WNW: "West North-west", NW: "North-west", NNW: "North North-west",
-			north: "North", south: "South", east: "East", west: "West"
-		};
-		var vOk = txtVals[v];
-		v = (vOk == undefined) ? "Invalid value ("+v+")" : vOk;
-	}
-	else {
-		//Define a simple direction
-		if((vInt >= 337 && vInt < 360) || (vInt >= 0 && vInt < 22)) {
-			v = "North";
-		}
-		else if(vInt >= 22 && vInt < 67) {
-			v = "North-east";
-		}
-		else if(vInt >= 67 && vInt < 112) {
-			v = "East";
-		}
-		else if(vInt >= 112 && vInt < 157) {
-			v = "South-east";
-		}
-		else if(vInt >= 157 && vInt < 202) {
-			v = "South";
-		}
-		else if(vInt >= 202 && vInt < 247) {
-			v = "South-west";
-		}
-		else if(vInt >= 247 && vInt < 292) {
-			v = "West";
-		}
-		else if(vInt >= 292 && vInt < 337) {
-			v = "North-west";
-		}
-		else {
-			v = "Invalid direction ("+vInt+")";
-		}
-	}
-	
 	return v;
 }
 
@@ -234,8 +264,8 @@ function asWebLink(v) {
  */
 function correctWebLink(url) {
 	var result;
-	var regexUrl = /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+$/;
-	var regexUrlNoProtocol = /^(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?\/[\w#!:.?+=&%@!\-\/]+$/;
+	var regexUrl = /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/[\w#!:.?+=&%@!\-\/]+)?$/;
+	var regexUrlNoProtocol = /^(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/[\w#!:.?+=&%@!\-\/]+)?$/;
 	
 	if(url.match(regexUrl)) {
 		result = url;
@@ -268,7 +298,7 @@ function decToBase62(val) {
 	
 	var i = 0;
 	var qi = val;
-	var r = new Array();
+	var r = [];
 	
 	while(qi > 0) {
 		r[i+1] = qi % 62;
