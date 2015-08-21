@@ -2,7 +2,7 @@
 	"themes": [
 		{
 			"title": "Wheelchair",
-			"subtitle": "Accessibility to the object for disabled people",
+			"subtitle": "Accessibility for disabled people",
 			"style": {
 				"icon": "wheelchair.svg",
 				"background": "#049dd1",
@@ -33,7 +33,7 @@
 			"title": "Levels",
 			"subtitle": "Floor of objects inside a building",
 			"style": {
-				"icon": "levels.png",
+				"icon": "levels.svg",
 				"background": "#7c7c7c",
 				"text": "white"
 			},
@@ -43,7 +43,7 @@
 				{ "room": "*" },
 				{ "highway": "corridor|elevator" },
 				{ "highway": "footway|steps", "indoor": "*" },
-				{ "highway": "footway|steps", "buildingpart": "*" },
+				{ "highway": "footway|steps", "buildingpart": "*" }
 			],
 			"editable_tags": [
 				{
@@ -65,7 +65,7 @@
 				"text": "white"
 			},
 			"potential_objects": [
-				{ "highway": "residential|unclassified|tertiary|secondary|primary|trunk|motorway|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link" },
+				{ "highway": "residential|unclassified|tertiary|secondary|primary|trunk|motorway|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link" }
 			],
 			"editable_tags": [
 				{
@@ -93,7 +93,7 @@
 				"text": "white"
 			},
 			"potential_objects": [
-				{ "amenity": "parking" },
+				{ "amenity": "parking" }
 			],
 			"editable_tags": [
 				{
@@ -106,7 +106,7 @@
 							{ "val": "surface", "desc": "One level of parking on the ground" },
 							{ "val": "underground", "desc": "One level of parking in the basement" },
 							{ "val": "multi-storey", "desc": "Two or more levels of parking decks in a building structure" },
-							{ "val": "rooftop", "desc": "One level of a parking deck on top of the building" }
+							{ "val": "rooftop", "desc": "One level of a parking deck on top of the building" },
 							{ "val": "garage_boxes", "desc": "One level buildings with individual brick or metal boxes for one car" }
 						]
 					}
