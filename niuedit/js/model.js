@@ -32,12 +32,17 @@ OapiQuery = function(potentials) {
 	this._query = null;
 
 //CONSTRUCTOR
+	//Check potentials
+	if(potentials == null || potentials == undefined || !potentials instanceof Array || potentials.length == 0) {
+		throw Error("Invalid potential tags");
+	}
+	
 	//Query start
 	this._query = '[out:json][timeout:25];(';
 	
 	//Query content
 	var txt, potential, val, valSplit;
-	for(var i=0; l=potentials.length; i < l; i++) {
+	for(var i=0, l=potentials.length; i < l; i++) {
 		txt = '';
 		potential = potentials[i];
 		
@@ -68,6 +73,7 @@ OapiQuery = function(potentials) {
 	 * @param bbox The leaflet BBox object
 	 * @return The query string for OAPI request
 	 */
-	OapiQuery.prototype.get(bbox) {
-		
+	OapiQuery.prototype.get = function(bbox) {
+		var bboxStr = normLat(bbox.getSouth())+","+normLon(bbox.getWest())+","+normLat(bbox.getNorth())+","+normLon(bbox.getEast());
+		return this._query.replace(/\{\{bbox\}\}/g, bboxStr);
 	};

@@ -1,0 +1,148 @@
+<!DOCTYPE html5>
+<html>
+<!--
+	This file is part of NiuEdit.
+
+	NiuEdit is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Affero General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	any later version.
+
+	NiuEdit is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Affero General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with NiuEdit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+	NiuEdit
+	Web thematic and simple OpenStreetMap editor.
+	Author: Adrien PAVIE
+	
+	Test page
+-->
+<head>
+	<!-- General definitions -->
+	<title>NiuEdit - Tests</title>
+	<meta charset="utf-8" />
+
+	<!-- QUnit includes -->
+	<link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.18.0.css">
+	<script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
+	
+	<!-- Leaflet includes -->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+	
+	<!-- NiuEdit includes -->
+	<script src="js/utils.js"></script>
+	<script src="js/model.js"></script>
+	
+	<!-- Tests -->
+	<script>
+		/*********
+		 * Utils *
+		 *********/
+		
+		QUnit.module("Utils");
+		QUnit.test("normAbs", function(assert) {
+			assert.equal(normAbs(10, 100), 10);
+			assert.equal(normAbs(-10, 100), -10);
+			assert.equal(normAbs(-100, 100), 0);
+			assert.equal(normAbs(-101, 100), 99);
+		});
+		QUnit.test("normLat", function(assert) {
+			assert.equal(normLat(0), 0);
+			assert.equal(normLat(10.15), 10.15);
+			assert.equal(normLat(91), -89);
+			assert.equal(normLat(-92), 88);
+			assert.equal(normLat(90), 90);
+			assert.equal(normLat(-90), -90);
+			assert.equal(normLat(270), 90);
+			assert.equal(normLat(-270), -90);
+		});
+		QUnit.test("normLon", function(assert) {
+			assert.equal(normLon(0), 0);
+			assert.equal(normLon(10.15), 10.15);
+			assert.equal(normLon(181), -179);
+			assert.equal(normLon(-182), 178);
+			assert.equal(normLon(180), 180);
+			assert.equal(normLon(-180), -180);
+			assert.equal(normLon(360), 180);
+			assert.equal(normLon(-360), -180);
+		});
+		
+		
+		/*********
+		 * Model *
+		 *********/
+		
+		/*
+		 * OapiQuery
+		 */
+		QUnit.module("Model > OapiQuery");
+		QUnit.test("Constructor void", function(assert) {
+			try {
+				var q1 = new OapiQuery();
+				assert.ok(false);
+			}
+			catch(e) {
+				assert.ok(true);
+			}
+		});
+		QUnit.test("Constructor void array", function(assert) {
+			try {
+				var q1 = new OapiQuery([]);
+				assert.ok(false);
+			}
+			catch(e) {
+				assert.ok(true);
+			}
+		});
+		QUnit.test("Constructor ok", function(assert) {	
+			try {
+				var q3 = new OapiQuery([ { "highway": "*" }]);
+				assert.ok(true);
+			}
+			catch(e) {
+				assert.ok(false);
+			}
+		});
+		QUnit.test("Get void bbox", function(assert) {
+			var q3 = new OapiQuery([ { "highway": "*" }]);
+			try {
+				q3.get();
+				assert.ok(false);
+			}
+			catch(e) {
+				assert.ok(true);
+			}
+		});
+		QUnit.test("Get simple", function(assert) {
+			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
+			var q3 = new OapiQuery([ { "highway": "*" } ]);
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4););out meta center;');
+		});
+		QUnit.test("Get A & B", function(assert) {
+			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
+			var q3 = new OapiQuery([ { "highway": "*", "maxspeed": "30" } ]);
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);way["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4););out meta center;');
+		});
+		QUnit.test("Get A | B", function(assert) {
+			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
+			var q3 = new OapiQuery([ { "highway": "*" }, { "maxspeed": "30" } ]);
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4);node["maxspeed"="30"](10.1,2.2,11.3,3.4);way["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["maxspeed"="30"](10.1,2.2,11.3,3.4););out meta center;');
+		});
+		QUnit.test("Get A=(1|2)", function(assert) {
+			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
+			var q3 = new OapiQuery([ { "highway": "motorway|trunk" } ]);
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);way["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);relation["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4););out meta center;');
+		});
+	</script>
+</head>
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+</body>
+</html>
