@@ -2,16 +2,16 @@
  * This file is part of OpenLevelUp!.
  * 
  * OpenLevelUp! is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  * 
  * OpenLevelUp! is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenLevelUp!.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -71,6 +71,9 @@ var MainView = function(ctrl, mobile) {
 	/** The tags component **/
 	this._cTags = null;
 
+	/** The notes component **/
+	this._cNotes = null;
+	
 	/** The map component **/
 	this._cMap = null;
 
@@ -82,6 +85,7 @@ var MainView = function(ctrl, mobile) {
 	this._cLevel = new LevelView(this);
 	this._cExport = new ExportView(this);
 	this._cTags = new TagsView(this);
+	this._cNotes = new NotesView(this);
 	
 	this._cExport.hideButton();
 	this._cNames.hideButton();
@@ -165,6 +169,13 @@ var MainView = function(ctrl, mobile) {
 	};
 	
 	/**
+	 * @return The notes component
+	 */
+	MainView.prototype.getNotesView = function() {
+		return this._cNotes;
+	};
+	
+	/**
 	 * @return The map data from the controller
 	 */
 	MainView.prototype.getData = function() {
@@ -176,6 +187,13 @@ var MainView = function(ctrl, mobile) {
 	 */
 	MainView.prototype.getClusterData = function() {
 		return this._ctrl.getClusterData();
+	};
+	
+	/**
+	 * @return The notes data from the controller
+	 */
+	MainView.prototype.getNotesData = function() {
+		return (this._ctrl.getNotesData() != null) ? this._ctrl.getNotesData().get() : null;
 	};
 
 //OTHER METHODS
@@ -258,16 +276,28 @@ var MainView = function(ctrl, mobile) {
 	};
 	
 	/**
+	 * Updates the view when new note is added
+	 */
+	MainView.prototype.updateNoteAdded = function() {
+		this._cMap.update();
+	};
+	
+	/**
 	 * Displays the given central panel
 	 * @param id The panel ID
 	 */
 	MainView.prototype.showCentralPanel = function(id) {
 		if(!$("#"+id).is(":visible")) {
+			//Remove draggable marker if new note panel
+			if($("#note-add").is(":visible")) {
+				this._cMap.hideDraggableMarker();
+			}
+			
 			$("#central .part").hide();
 			$("#"+id).show();
 			$("#main-buttons").addClass("opened");
 			$("#central-close").show();
-			$("#central-close").click(controller.getView().hideCentralPanel);
+			$("#central-close").click(controller.getView().hideCentralPanel.bind(this));
 		}
 		else {
 			this.hideCentralPanel();
@@ -282,6 +312,8 @@ var MainView = function(ctrl, mobile) {
 		$("#central-close").hide();
 		$("#central-close").off("click");
 		$("#main-buttons").removeClass("opened");
+		
+		this._cMap.hideDraggableMarker();
 	};
 
 
@@ -311,6 +343,9 @@ var MapView = function(main) {
 	
 	/** The feature popups **/
 	this._dataPopups = {};
+	
+	/** The draggable marker **/
+	this._draggableMarker = null;
 	
 	/** The previous zoom value **/
 	this._oldZoom = null;
@@ -372,6 +407,11 @@ var MapView = function(main) {
 	
 	if(isMobile) {
 		L.control.zoom({ position: "topright" }).addTo(this._map);
+	}
+	
+	//New note button
+	if(!isMobile) {
+		var newNoteBtn = new NoteButton().addTo(this._map);
 	}
 	
 	//Create tile layers
@@ -476,7 +516,6 @@ var MapView = function(main) {
 			if(fullData != null) {
 				//Create data layer
 				this._dataLayer = L.layerGroup();
-				this._dataLayer.addTo(this._map);
 				
 				//Order layers
 				var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
@@ -484,6 +523,16 @@ var MapView = function(main) {
 					var featureLayerGroup = fullData[featureLayersKeys[i]];
 					this._dataLayer.addLayer(featureLayerGroup);
 				}
+				
+				//Show OSM notes if needed
+				if(this._mainView.getOptionsView().showNotes()) {
+					var notesLayer = this._createNotesLayer();
+					if(notesLayer != null) {
+						this._dataLayer.addLayer(notesLayer);
+					}
+				}
+				
+				this._dataLayer.addTo(this._map);
 			}
 			else {
 				this._mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
@@ -506,7 +555,7 @@ var MapView = function(main) {
 		
 		this.changeTilesOpacity();
 		
-		console.log("[Time] View update: "+((new Date().getTime()) - timeStart));
+		//console.log("[Time] View update: "+((new Date().getTime()) - timeStart));
 	};
 	
 	/**
@@ -587,6 +636,43 @@ var MapView = function(main) {
 				maxClusterRadius: 30
 			});
 			result.addLayer(L.geoJson(data));
+		}
+		
+		return result;
+	};
+	
+	/**
+	 * @return The notes layer, or null if no notes available
+	 */
+	MapView.prototype._createNotesLayer = function() {
+		var result = null;
+		var notes = this._mainView.getNotesData();
+		
+		//Create icons
+		var iconOpen = L.icon({
+			iconUrl: 'img/icon_note_open.png'
+		});
+		var iconClosed = L.icon({
+			iconUrl: 'img/icon_note_closed.png'
+		});
+		
+		if(notes != null && notes.length > 0) {
+			result = L.layerGroup();
+			var note, marker;
+			
+			for(var i=0, l=notes.length; i < l; i++) {
+				note = notes[i];
+				marker = L.marker(
+							[note.lat, note.lon],
+							{
+								id: i,
+								icon: (note.status == "closed") ? iconClosed : iconOpen,
+								zIndexOffset: (note.status == "closed") ? 999 : 1000,
+							}
+						);
+				marker.on("click", controller.getView().getNotesView().show.bind(controller.getView().getNotesView()));
+				result.addLayer(marker);
+			}
 		}
 		
 		return result;
@@ -674,6 +760,39 @@ var MapView = function(main) {
 		$(".leaflet-popup:visible #popup-tab-"+id).show();
 		$("#item-"+id).addClass("selected");
 	};
+	
+	/**
+	 * Shows a draggable marker on map (mainly for notes)
+	 */
+	MapView.prototype.showDraggableMarker = function() {
+		if(this._draggableMarker == null) {
+			var iconAdd = L.icon({
+				iconUrl: 'img/icon_note_new.png',
+				className: 'note-new-icon'
+			});
+			this._draggableMarker = new L.marker(this._map.getCenter(), { draggable: true, icon: iconAdd, zIndexOffset: 10000 }).addTo(this._map);
+		}
+		else {
+			this._draggableMarker.setLatLng(this._map.getCenter()).addTo(this._map);
+		}
+	};
+	
+	/**
+	 * Hides the draggable marker
+	 */
+	MapView.prototype.hideDraggableMarker = function() {
+		if(this._draggableMarker != null) {
+			this._map.removeLayer(this._draggableMarker);
+		}
+	};
+	
+	/**
+	 * Get the draggable marker coordinates
+	 * @return The LatLng, or null if draggable isn't visible
+	 */
+	MapView.prototype.getDraggableMarkerCoords = function() {
+		return (this._draggableMarker != null) ? this._draggableMarker.getLatLng() : null;
+	};
 
 
 
@@ -693,156 +812,120 @@ var FeatureView = function(main, feature) {
 	
 	/** The feature **/
 	this._feature = feature;
+	
+	this._init();
+};
 
 //CONSTRUCTOR
-	if(this._isDisplayable(this._feature)) {
-		var style = this._feature.getStyle().get();
-		var geom = this._feature.getGeometry();
-		var geomType = geom.getType();
-		var hasIcon = style.icon != undefined;
-		var geomLatLng = geom.getLatLng();
-		this._layer = L.featureGroup();
-		
-		//Init layer object, depending of geometry type
-		switch(geomType) {
-			case "Point":
-				var marker = this._createMarker(geomLatLng);
-				if(marker != null) {
-					this._layer.addLayer(marker);
-					hasIcon = true;
-					
-					marker = null;
-				}
-				break;
-				
-			case "LineString":
-				this._layer.addLayer(L.polyline(geomLatLng, style));
-				break;
-				
-			case "Polygon":
-				this._layer.addLayer(L.polygon(geomLatLng, style));
-				break;
-				
-			case "MultiPolygon":
-				this._layer.addLayer(L.multiPolygon(geomLatLng, style));
-				break;
-				
-			default:
-				console.log("Unknown geometry type: "+geomType);
-		}
-		
-		//Look for an icon or a label
-		var labelizable = this._labelizable();
-		var hasPhoto = this._mainView.getOptionsView().showPhotos() && (this._feature.getImages().hasValidImages() || (this._mainView.hasWebGL() && !this._mainView.isMobile() && this._feature.getImages().hasValidSpherical()));
-		
-		if(hasIcon || labelizable || hasPhoto) {
+	FeatureView.prototype._init = function() {
+		if(this._isDisplayable(this._feature)) {
+			var style = this._feature.getStyle().get();
+			var geom = this._feature.getGeometry();
+			var geomType = geom.getType();
+			var hasIcon = style.icon != undefined;
+			var geomLatLng = geom.getLatLng();
+			this._layer = L.featureGroup();
+			
+			//Init layer object, depending of geometry type
 			switch(geomType) {
 				case "Point":
-					//Labels
-					if(labelizable) {
-						this._layer.addLayer(this._createLabel(geomLatLng, hasIcon));
-					}
-					
-					if(hasPhoto) {
-						this._layer.addLayer(this._createPhotoIcon(geomLatLng));
+					var marker = this._createMarker(geomLatLng);
+					if(marker != null) {
+						this._layer.addLayer(marker);
+						hasIcon = true;
+						
+						marker = null;
 					}
 					break;
 					
 				case "LineString":
-					var ftGeomJSON = geom.get();
-					var nbSegments = ftGeomJSON.coordinates.length - 1;
-					
-					//For each segment, add an icon
-					var coord1, coord2, coordMid, angle, coord, marker;
-					for(var i=0; i < nbSegments; i++) {
-						coord1 = ftGeomJSON.coordinates[i];
-						coord2 = ftGeomJSON.coordinates[i+1];
-						coordMid = [ (coord1[0] + coord2[0]) / 2, (coord1[1] + coord2[1]) / 2 ];
-						angle = azimuth({lat: coord1[1], lng: coord1[0], elv: 0}, {lat: coord2[1], lng: coord2[0], elv: 0}).azimuth;
-						coord = L.latLng(coordMid[1], coordMid[0]);
-						
-						if(hasIcon) {
-							if(style.rotateIcon) {
-								marker = this._createMarker(coord, angle);
-								if(marker != null) {
-									this._layer.addLayer(marker);
-								}
-							}
-							else {
-								marker = this._createMarker(coord);
-								if(marker != null) {
-									this._layer.addLayer(marker);
-								}
-							}
-						}
-						
-						//Labels
-						if(labelizable) {
-							this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
-						}
-						
-						if(hasPhoto) {
-							this._layer.addLayer(this._createPhotoIcon(coord));
-						}
-					}
-					
-					//Clear tmp objects
-					coord1 = null;
-					coord2 = null;
-					coordMid = null;
-					angle = null;
-					coord = null;
-					marker = null;
-					
+					this._layer.addLayer(L.polyline(geomLatLng, style));
 					break;
 					
 				case "Polygon":
-					var coord = geom.getCentroid();
-					
-					if(hasIcon) {
-						var marker = this._createMarker(coord);
-						if(marker != null) {
-							this._layer.addLayer(marker);
-						}
-					}
-					
-					//Labels
-					if(labelizable) {
-						this._layer.addLayer(this._createLabel(coord, hasIcon));
-					}
-					
-					if(hasPhoto) {
-						this._layer.addLayer(this._createPhotoIcon(coord));
-					}
-					
-					//Clear tmp objects
-					coord = null;
-					
+					this._layer.addLayer(L.polygon(geomLatLng, style));
 					break;
-				
-				case "MultiPolygon":
-					var ftGeomJSON = geom.get();
-					var nbPolygons = ftGeomJSON.coordinates.length;
 					
-					//For each polygon, add an icon
-					var coordMid, coordsPolygon, length, coord, marker;
-					for(var i=0; i < nbPolygons; i++) {
-						coordMid = [0, 0];
-						coordsPolygon = ftGeomJSON.coordinates[i];
-						length = coordsPolygon[0].length;
-						for(var j=0; j < length; j++) {
-							if(j < length - 1) {
-								coordMid[0] += coordsPolygon[0][j][0];
-								coordMid[1] += coordsPolygon[0][j][1];
+				case "MultiPolygon":
+					this._layer.addLayer(L.multiPolygon(geomLatLng, style));
+					break;
+					
+				default:
+					console.log("Unknown geometry type: "+geomType);
+			}
+			
+			//Look for an icon or a label
+			var labelizable = this._labelizable();
+			var hasPhoto = this._mainView.getOptionsView().showPhotos() && (this._feature.getImages().hasValidImages() || (this._mainView.hasWebGL() && !this._mainView.isMobile() && this._feature.getImages().hasValidSpherical()));
+			
+			if(hasIcon || labelizable || hasPhoto) {
+				switch(geomType) {
+					case "Point":
+						//Labels
+						if(labelizable) {
+							this._layer.addLayer(this._createLabel(geomLatLng, hasIcon));
+						}
+						
+						if(hasPhoto) {
+							this._layer.addLayer(this._createPhotoIcon(geomLatLng));
+						}
+						break;
+						
+					case "LineString":
+						var ftGeomJSON = geom.get();
+						var nbSegments = ftGeomJSON.coordinates.length - 1;
+						
+						//For each segment, add an icon
+						var coord1, coord2, coordMid, angle, coord, marker;
+						for(var i=0; i < nbSegments; i++) {
+							coord1 = ftGeomJSON.coordinates[i];
+							coord2 = ftGeomJSON.coordinates[i+1];
+							coordMid = [ (coord1[0] + coord2[0]) / 2, (coord1[1] + coord2[1]) / 2 ];
+							angle = azimuth({lat: coord1[1], lng: coord1[0], elv: 0}, {lat: coord2[1], lng: coord2[0], elv: 0}).azimuth;
+							coord = L.latLng(coordMid[1], coordMid[0]);
+							
+							if(hasIcon) {
+								if(style.rotateIcon) {
+									marker = this._createMarker(coord, angle);
+									if(marker != null) {
+										this._layer.addLayer(marker);
+									}
+								}
+								else {
+									marker = this._createMarker(coord);
+									if(marker != null) {
+										this._layer.addLayer(marker);
+									}
+								}
+							}
+							
+							//Labels
+							if(labelizable) {
+								this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
+							}
+							
+							if(hasPhoto) {
+								this._layer.addLayer(this._createPhotoIcon(coord));
 							}
 						}
 						
-						coordMid[0] = coordMid[0] / (length -1);
-						coordMid[1] = coordMid[1] / (length -1);
-						coord = L.latLng(coordMid[1], coordMid[0]);
+						//Clear tmp objects
+						coord1 = null;
+						coord2 = null;
+						coordMid = null;
+						angle = null;
+						coord = null;
+						marker = null;
+						ftGeomJSON = null;
+						nbSegments = null;
+						
+						break;
+						
+					case "Polygon":
+						var coord = geom.getCentroid();
 						
 						if(hasIcon) {
-							marker = this._createMarker(coord);
+							var marker = this._createMarker(coord);
 							if(marker != null) {
 								this._layer.addLayer(marker);
 							}
@@ -850,46 +933,88 @@ var FeatureView = function(main, feature) {
 						
 						//Labels
 						if(labelizable) {
-							this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
+							this._layer.addLayer(this._createLabel(coord, hasIcon));
 						}
 						
 						if(hasPhoto) {
 							this._layer.addLayer(this._createPhotoIcon(coord));
 						}
-					}
+						
+						//Clear tmp objects
+						coord = null;
+						
+						break;
 					
-					//Clear tmp objects
-					ftGeomJSON = null;
-					nbPolygons = null;
-					coordMid = null;
-					coordsPolygon = null;
-					length = null;
-					coord = null;
-					marker = null;
-					
-					break;
-					
-				default:
-					console.log("Unknown geometry type: "+geomType);
+					case "MultiPolygon":
+						var ftGeomJSON = geom.get();
+						var nbPolygons = ftGeomJSON.coordinates.length;
+						
+						//For each polygon, add an icon
+						var coordMid, coordsPolygon, length, coord, marker;
+						for(var i=0; i < nbPolygons; i++) {
+							coordMid = [0, 0];
+							coordsPolygon = ftGeomJSON.coordinates[i];
+							length = coordsPolygon[0].length;
+							for(var j=0; j < length; j++) {
+								if(j < length - 1) {
+									coordMid[0] += coordsPolygon[0][j][0];
+									coordMid[1] += coordsPolygon[0][j][1];
+								}
+							}
+							
+							coordMid[0] = coordMid[0] / (length -1);
+							coordMid[1] = coordMid[1] / (length -1);
+							coord = L.latLng(coordMid[1], coordMid[0]);
+							
+							if(hasIcon) {
+								marker = this._createMarker(coord);
+								if(marker != null) {
+									this._layer.addLayer(marker);
+								}
+							}
+							
+							//Labels
+							if(labelizable) {
+								this._layer.addLayer(this._createLabel(coord, hasIcon, angle));
+							}
+							
+							if(hasPhoto) {
+								this._layer.addLayer(this._createPhotoIcon(coord));
+							}
+						}
+						
+						//Clear tmp objects
+						ftGeomJSON = null;
+						nbPolygons = null;
+						coordMid = null;
+						coordsPolygon = null;
+						length = null;
+						coord = null;
+						marker = null;
+						
+						break;
+						
+					default:
+						console.log("Unknown geometry type: "+geomType);
+				}
 			}
+			
+			//Add popup if needed
+			if(style.popup == undefined || style.popup == "yes") {
+				this._layer.bindPopup(this.createPopup());
+				this._hasPopup = true;
+			}
+			
+			//Clear tmp objects
+			style = null;
+			geom = null;
+			geomType = null;
+			hasIcon = null;
+			geomLatLng = null;
+			labelizable = null;
+			hasPhoto = null;
 		}
-		
-		//Add popup if needed
-		if(style.popup == undefined || style.popup == "yes") {
-			this._layer.bindPopup(this.createPopup());
-			this._hasPopup = true;
-		}
-		
-		//Clear tmp objects
-		style = null;
-		geom = null;
-		geomType = null;
-		hasIcon = null;
-		geomLatLng = null;
-		labelizable = null;
-		hasPhoto = null;
-	}
-};
+	};
 
 //ACCESSORS
 	/**
@@ -1291,6 +1416,10 @@ var TagsView = function(main) {
 						}
 						break;
 
+					case "hours":
+						detailsTxt += '<a href="http://github.pavie.info/yohours/?oh='+encodeURIComponent(val)+'" target="_blank"><img src="'+CONFIG.view.icons.folder+'/icon_link.svg" alt="YoHours" /></a>';
+						break;
+					
 					case "text":
 					default:
 						detailsTxt += val;
@@ -1374,7 +1503,7 @@ var LevelView = function(main) {
 		var lvlOk = (lvl != null) ? parseFloat(lvl) : parseFloat($("#level").val());
 		
 		if(data != null && data.getLevels() != null) {
-			if(data.getLevels().indexOf(lvlOk) >= 0) {
+			if(contains(data.getLevels(), lvlOk)) {
 				//Change level
 				this._level = lvlOk;
 				if(lvl != null) { $("#level").val(lvlOk); }
@@ -1395,10 +1524,10 @@ var LevelView = function(main) {
 		this._levels = this._mainView.getData().getLevels();
 		
 		//Change current level if not available anymore
-		if(this._level == null || this._levels.indexOf(this._level) < 0) {
+		if(this._level == null || !contains(this._levels, this._level)) {
 			//Check if 
 			//Set to 0 if available
-			this._level = (this._levels.indexOf(0) >= 0) ? 0 : this._levels[0];
+			this._level = (contains(this._levels, 0)) ? 0 : this._levels[0];
 			this._mainView.getUrlView().levelChanged();
 		}
 		
@@ -1522,6 +1651,9 @@ var OptionsView = function() {
 	
 	/** Show photos markers **/
 	this._photos = false;
+	
+	/** Show OSM notes **/
+	this._notes = false;
 
 //CONSTRUCTOR
 	//Init checkboxes
@@ -1529,6 +1661,7 @@ var OptionsView = function() {
 	$("#show-unrendered").prop("checked", this._unrendered);
 	$("#show-buildings-only").prop("checked", this._buildings);
 	$("#show-photos").prop("checked", this._photos);
+	$("#show-notes").prop("checked", this._notes);
 	
 	//Add triggers
 	$("#button-settings").click(function() {
@@ -1548,6 +1681,10 @@ var OptionsView = function() {
 	}.bind(this));
 	$("#show-photos").change(function() {
 		this.changePhotos();
+		controller.getView().updateOptionChanged();
+	}.bind(this));
+	$("#show-notes").change(function() {
+		this.changeNotes();
 		controller.getView().updateOptionChanged();
 	}.bind(this));
 	
@@ -1582,6 +1719,13 @@ var OptionsView = function() {
 	OptionsView.prototype.showPhotos = function() {
 		return this._photos;
 	};
+	
+	/**
+	 * @return Must we show notes markers ?
+	 */
+	OptionsView.prototype.showNotes = function() {
+		return this._notes;
+	};
 
 //MODIFIERS
 	/**
@@ -1610,6 +1754,13 @@ var OptionsView = function() {
 	 */
 	OptionsView.prototype.changePhotos = function() {
 		this._photos = !this._photos;
+	};
+	
+	/**
+	 * Must we show OSM notes ?
+	 */
+	OptionsView.prototype.changeNotes = function() {
+		this._notes = !this._notes;
 	};
 	
 	/**
@@ -1645,6 +1796,14 @@ var OptionsView = function() {
 	};
 	
 	/**
+	 * Must we show notes markers ?
+	 */
+	OptionsView.prototype.setNotes = function(p) {
+		this._notes = p;
+		$("#show-notes").prop("checked", this._notes);
+	};
+	
+	/**
 	 * Disable options buttons
 	 */
 	OptionsView.prototype.disable = function() {
@@ -1652,6 +1811,7 @@ var OptionsView = function() {
 		$("#show-unrendered").prop("disabled", true);
 		$("#show-transcendent").prop("disabled", true);
 		$("#show-photos").prop("disabled", true);
+		$("#show-notes").prop("disabled", true);
 	};
 	
 	/**
@@ -1662,6 +1822,7 @@ var OptionsView = function() {
 		$("#show-unrendered").prop("disabled", false);
 		$("#show-transcendent").prop("disabled", false);
 		$("#show-photos").prop("disabled", false);
+		$("#show-notes").prop("disabled", false);
 	};
 
 
@@ -1851,12 +2012,13 @@ var URLView = function(main) {
 				this._zoom = letterToInt(shortRes[7]);
 				
 				var options = intToBitArray(base62toDec(shortRes[8]));
-				while(options.length < 5) { options = "0" + options; }
+				while(options.length < 6) { options = "0" + options; }
 				optionsView.setUnrendered(options[options.length - 1] == 1);
 				//optionsView.setLegacy(options[options.length - 2] == 1); //Deprecated option
 				optionsView.setTranscendent(options[options.length - 3] == 1);
 				optionsView.setBuildingsOnly(options[options.length - 4] == 1);
 				optionsView.setPhotos(options[options.length - 5] == 1);
+				optionsView.setNotes(options[options.length - 6] == 1);
 				
 				//Get level if available
 				if(shortRes[10] != undefined && shortRes[11] != undefined) {
@@ -1883,6 +2045,7 @@ var URLView = function(main) {
 			if(parameters.unrendered != undefined) { optionsView.setUnrendered(parameters.unrendered == "1"); }
 			if(parameters.buildings != undefined) { optionsView.setBuildingsOnly(parameters.buildings == "1"); }
 			if(parameters.photos != undefined) { optionsView.setPhotos(parameters.photos == "1"); }
+			if(parameters.notes != undefined) { optionsView.setNotes(parameters.notes == "1"); }
 			this._level = parameters.level;
 			this._tiles = parameters.tiles;
 		}
@@ -1901,6 +2064,7 @@ var URLView = function(main) {
 			params += "&unrendered="+((optionsView.showUnrendered()) ? "1" : "0");
 			params += "&buildings="+((optionsView.showBuildingsOnly()) ? "1" : "0");
 			params += "&photos="+((optionsView.showPhotos()) ? "1" : "0");
+			params += "&notes="+((optionsView.showNotes()) ? "1" : "0");
 		}
 		
 		var hash = this._getUrlHash();
@@ -1943,6 +2107,7 @@ var URLView = function(main) {
 		}
 		
 		var shortOptions = bitArrayToBase62([
+					((optionsView.showNotes()) ? "1" : "0"),
 					((optionsView.showPhotos()) ? "1" : "0"),
 					((optionsView.showBuildingsOnly()) ? "1" : "0"),
 					((optionsView.showTranscendent()) ? "1" : "0"),
@@ -2029,7 +2194,7 @@ var NamesView = function(main) {
 					for(var room in roomNames[lvl]) {
 						var ftGeomRoom = roomNames[lvl][room].getGeometry();
 						
-						if((filter == null || room.toLowerCase().indexOf(filter.toLowerCase()) >= 0)
+						if((filter == null || contains(room.toLowerCase(), filter.toLowerCase()))
 							&& (roomNames[lvl][room].getStyle().get().popup == undefined
 							|| roomNames[lvl][room].getStyle().get().popup == "yes")
 							&& this._mainView.getData().getBBox().intersects(ftGeomRoom.getBounds())) {
@@ -2064,7 +2229,7 @@ var NamesView = function(main) {
 						roomHtml += '<li class="ref"><a href="#" onclick="controller.getView().getMapView().goTo(\''+roomNamesFiltered[lvl][room].getId()+'\',\''+lvl+'\')">';
 						
 						if(STYLE != undefined) {
-							roomHtml += '<img src="'+CONFIG.view.icons.folder+'/'+((STYLE.images.indexOf(roomNamesFiltered[lvl][room].getStyle().getIconUrl()) >= 0) ? roomNamesFiltered[lvl][room].getStyle().getIconUrl() : 'icon_default.png')+'" width="'+CONFIG.view.icons.size+'px"> '+room;
+							roomHtml += '<img src="'+CONFIG.view.icons.folder+'/'+((contains(STYLE.images, roomNamesFiltered[lvl][room].getStyle().getIconUrl())) ? roomNamesFiltered[lvl][room].getStyle().getIconUrl() : 'icon_default.png')+'" width="'+CONFIG.view.icons.size+'px"> '+room;
 						}
 						
 						roomHtml += '</a></li>';
@@ -2672,3 +2837,115 @@ var MessagesView = function() {
 		$("#infobox-list li").remove();
 		this._nbMessages = 0;
 	};
+
+
+
+/**
+ * The notes overlay panel
+ */
+var NotesView = function(main) {
+//ATTRIBUTES
+	this._mainView = main;
+
+//CONSTRUCTOR
+	$("#notes-close").click(function() {
+		$("#op-notes").removeClass("show");
+		$("#op-notes").addClass("hide");
+	});
+	$("#note-send").click(controller.newNote.bind(controller));
+};
+
+//ACCESSORS
+	/**
+	 * @return The notes textarea content
+	 */
+	NotesView.prototype.getNewNoteText = function() {
+		return $("#note-txt").val();
+	};
+	
+//MODIFIERS
+	/**
+	 * Shows a given note in panel
+	 * @param e The leaflet event
+	 */
+	NotesView.prototype.show = function(e) {
+		var note = this._mainView.getNotesData()[e.target.options.id];
+		
+		if(note != undefined) {
+			//Change title
+			$("#op-notes h2").html("Note #"+note.id);
+			$("#notes-status-txt").html(note.status);
+			$("#notes-status-icon").removeClass("ok bad").addClass((note.status == "closed") ? "ok" : "bad");
+			$("#notes-link").attr("href", "http://www.openstreetmap.org/note/"+note.id);
+			
+			//Add comments
+			var commentsHtml = "", comment, user;
+			for(var i=0, l=note.comments.length; i < l; i++) {
+				comment = note.comments[i];
+				user = (comment.user != "") ? "User "+comment.user : "Anonymous";
+				commentsHtml += '<div class="op-notes-comment">'
+								+'<p class="desc">'+user+', '+comment.date+'</p>'
+								+'<p class="txt">'+comment.text+'</p>'
+								+'</div>';
+			}
+			
+			$("#op-notes-comments").html(commentsHtml);
+			$("#op-notes").addClass("show");
+		}
+		else {
+			console.error("[Notes] Invalid ID: "+e.target.options.id);
+		}
+	};
+
+//OTHER METHODS
+	/**
+	 * Starts or stops to edit a new note
+	 */
+	NotesView.prototype.editNote = function() {
+		if(!$("#note-add").is(":visible")) {
+			var dataZoom = this._mainView.getMapView().get().getZoom() >= CONFIG.view.map.data_min_zoom;
+			if(dataZoom) {
+				this._mainView.showCentralPanel("note-add");
+				this._mainView.getMapView().showDraggableMarker();
+				$("#note-txt").val("Level "+this._mainView.getLevelView().get()+": ");
+			}
+			else {
+				this._mainView.getMessagesView().displayMessage("You have to zoom in to add a note", "alert");
+			}
+		}
+		else {
+			this._mainView.hideCentralPanel();
+			this._mainView.getMapView().hideDraggableMarker();
+		}
+	};
+
+
+
+/**
+ * New note button for leaflet
+ * @see https://gist.github.com/ns-1m/2935530
+ */
+var NoteButton = L.Control.extend({
+	options: {
+		position: 'topright'
+	},
+
+	onAdd: function (map) {
+		//Button
+		var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-note');
+		container.style.backgroundColor = 'white';
+		container.style.width = '26px';
+		container.style.height = '26px';
+		
+		//Image
+		var image = L.DomUtil.create('img', '', container);
+		image.src = 'img/icon_note_add.png';
+		image.title = 'Add a comment on map';
+
+		container.onclick = function(){
+			controller.getView().getNotesView().editNote();
+		}
+
+		return container;
+	}
+});

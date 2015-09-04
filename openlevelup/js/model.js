@@ -2,16 +2,16 @@
  * This file is part of OpenLevelUp!.
  * 
  * OpenLevelUp! is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  * 
  * OpenLevelUp! is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenLevelUp!.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -96,7 +96,7 @@ var OSMData = function(bbox, data) {
 	lvlId = null;
 	lvl = null;
 	
-	console.log("[Time] Model parsing: "+((new Date().getTime()) - timeStart));
+	//console.log("[Time] Model parsing: "+((new Date().getTime()) - timeStart));
 };
 
 //ACCESSORS
@@ -280,6 +280,85 @@ var MapillaryData = function() {
 
 
 /**
+ * The container for OSM notes
+ */
+var NotesData = function(d) {
+//ATTRIBUTES
+	this._notes = [];
+
+//CONSTRUCTOR
+	//Parse XML
+	this.parse(d);
+};
+
+//ACCESSORS
+	/**
+	 * @return All the notes, as an array of objects
+	 */
+	NotesData.prototype.get = function() {
+		return this._notes;
+	};
+	
+//MODIFIERS
+	/**
+	 * Parses the given XML and adds extracted data
+	 * @param xml The XML data
+	 */
+	NotesData.prototype.parse = function(xml) {
+		var _self = this;
+		$(xml).find('note').each(function() {
+			//Create note
+			var id = _self.add(
+				$(this).find('id').text(),
+				$(this).attr('lat'),
+				$(this).attr('lon'),
+				$(this).find('date_created').text(),
+				$(this).find('status').text()
+			);
+			
+			//Add comments
+			$(this).find('comment').each(function() {
+				_self.addComment(
+					id,
+					$(this).find('date').text(),
+					$(this).find('uid').text(),
+					$(this).find('user').text(),
+					$(this).find('action').text(),
+					$(this).find('text').text()
+				);
+			});
+		});
+	};
+	
+	/**
+	 * Adds a new note in data
+	 * @param id The note ID in OSM
+	 * @param lat The latitude in WGS84
+	 * @param lon The longitude in WGS84
+	 * @param dateCreated The note creation date
+	 * @param status The status in OSM
+	 * @return The note ID in OpenLevelUp
+	 */
+	NotesData.prototype.add = function(id, lat, lon, dateCreated, status) {
+		return this._notes.push({ id: id, lat: lat, lon: lon, date: dateCreated, status: status, comments: [] }) - 1;
+	};
+	
+	/**
+	 * Adds a new comment in a note
+	 * @param id The note ID in OpenLevelUp
+	 * @param date The comment date
+	 * @param uid The user ID
+	 * @param user The user name
+	 * @param action The action done with this comment
+	 * @param text The text of the comment
+	 */
+	NotesData.prototype.addComment = function(id, date, uid, user, action, text) {
+		this._notes[id].comments.push({ date: date, uid: uid, user: user, action: action, text: text });
+	};
+
+
+
+/**
  * A feature is a geolocated object with properties, style, geometry, ...
  */
 var Feature = function(f) {
@@ -425,7 +504,7 @@ var Feature = function(f) {
 	 * @return True if the feature is present in the given level
 	 */
 	Feature.prototype.isOnLevel = function(lvl) {
-		return this._onLevels.indexOf(lvl) != -1;
+		return contains(this._onLevels, lvl);
 	};
 	
 	/**
@@ -505,44 +584,58 @@ var FeatureGeometry = function(fGeometry) {
 			result = this._geom.coordinates;
 		}
 		else if(type == "LineString") {
-			result = [0, 0];
+			var minlon = this._geom.coordinates[0][0];
+			var minlat = this._geom.coordinates[0][1];
+			var maxlon = minlon;
+			var maxlat = minlat;
 			var length = this._geom.coordinates.length;
+			var coord;
 			
-			for(var i=0; i < length; i++) {
-				result[0] += this._geom.coordinates[i][0];
-				result[1] += this._geom.coordinates[i][1];
+			for(var i=1; i < length; i++) {
+				coord = this._geom.coordinates[i];
+				if(minlon > coord[0]) { minlon = coord[0]; }
+				else if(maxlon < coord[0]) { maxlon = coord[0]; }
+				if(minlat > coord[1]) { minlat = coord[1]; }
+				else if(maxlat < coord[1]) { maxlat = coord[1]; }
 			}
 			
-			result[0] = result[0] / length;
-			result[1] = result[1] / length;
+			result = [ minlon + (maxlon-minlon)/2, minlat + (maxlat-minlat)/2 ];
 		}
 		else if(type == "Polygon") {
-			result = [0, 0];
+			var minlon = this._geom.coordinates[0][0][0];
+			var minlat = this._geom.coordinates[0][0][1];
+			var maxlon = minlon;
+			var maxlat = minlat;
 			var length = this._geom.coordinates[0].length;
+			var coord;
 			
-			for(var i=0; i < length; i++) {
-				if(i < length - 1) {
-					result[0] += this._geom.coordinates[0][i][0];
-					result[1] += this._geom.coordinates[0][i][1];
-				}
+			for(var i=1; i < length-1; i++) {
+				coord = this._geom.coordinates[0][i];
+				if(minlon > coord[0]) { minlon = coord[0]; }
+				else if(maxlon < coord[0]) { maxlon = coord[0]; }
+				if(minlat > coord[1]) { minlat = coord[1]; }
+				else if(maxlat < coord[1]) { maxlat = coord[1]; }
 			}
 			
-			result[0] = result[0] / (length -1);
-			result[1] = result[1] / (length -1);
+			result = [ minlon + (maxlon-minlon)/2, minlat + (maxlat-minlat)/2 ];
 		}
 		else if(type == "MultiPolygon") {
-			result = [0, 0];
+			var minlon = this._geom.coordinates[0][0][0][0];
+			var minlat = this._geom.coordinates[0][0][0][1];
+			var maxlon = minlon;
+			var maxlat = minlat;
 			var length = this._geom.coordinates[0][0].length;
+			var coord;
 			
-			for(var i = 0; i < length; i++) {
-				if(i < length - 1) {
-					result[0] += this._geom.coordinates[0][0][i][0];
-					result[1] += this._geom.coordinates[0][0][i][1];
-				}
+			for(var i=1; i < length-1; i++) {
+				coord = this._geom.coordinates[0][0][i];
+				if(minlon > coord[0]) { minlon = coord[0]; }
+				else if(maxlon < coord[0]) { maxlon = coord[0]; }
+				if(minlat > coord[1]) { minlat = coord[1]; }
+				else if(maxlat < coord[1]) { maxlat = coord[1]; }
 			}
 			
-			result[0] = result[0] / (length -1);
-			result[1] = result[1] / (length -1);
+			result = [ minlon + (maxlon-minlon)/2, minlat + (maxlat-minlat)/2 ];
 		}
 		else {
 			console.log("Unknown type: "+this._geom.type);
@@ -714,70 +807,74 @@ var FeatureStyle = function(feature) {
 
 	/** The feature **/
 	this._feature = feature;
+	
+	this._init();
+};
 
 //CONSTRUCTOR
-	var applyable, tagList, val, featureVal, style, key, param;
-	//Find potential styles depending on tags
-	for(var mainKey in STYLE.styles) {
-		if(this._hasKey(mainKey)) {
-			for(var i=0, until=STYLE.styles[mainKey].length; i < until; i++) {
-				style = STYLE.styles[mainKey][i];
-				
-				/*
-				 * Check if style is applyable
-				 */
-				applyable = false;
-				
-				for(var j=0, until2 = style.onTags.length; j < until2; j++) {
-					tagList = style.onTags[j];
-					applyable = true;
+	FeatureStyle.prototype._init = function() {
+		var applyable, tagList, val, featureVal, style, key, param;
+		//Find potential styles depending on tags
+		for(var mainKey in STYLE.styles) {
+			if(this._hasKey(mainKey)) {
+				for(var i=0, until=STYLE.styles[mainKey].length; i < until; i++) {
+					style = STYLE.styles[mainKey][i];
 					
-					for(key in tagList) {
-						val = tagList[key];
+					/*
+					 * Check if style is applyable
+					 */
+					applyable = false;
+					
+					for(var j=0, until2 = style.onTags.length; j < until2; j++) {
+						tagList = style.onTags[j];
+						applyable = true;
 						
-						//If this rule is not applyable, stop
-						if(!this._feature.hasTag(key)) {
-							applyable = false;
-							break;
-						}
-						else {
-							featureVal = this._feature.getTag(key);
-							if(val != featureVal && val != "*" && !contains(val.split("|"), featureVal)) {
+						for(key in tagList) {
+							val = tagList[key];
+							
+							//If this rule is not applyable, stop
+							if(!this._feature.hasTag(key)) {
 								applyable = false;
 								break;
 							}
+							else {
+								featureVal = this._feature.getTag(key);
+								if(val != featureVal && val != "*" && !contains(val.split("|"), featureVal)) {
+									applyable = false;
+									break;
+								}
+							}
 						}
-					}
-					//If style still applyable after looking for all tags in a taglist, then it's applyable
-					if(applyable) { break; }
-				}
-				
-				//If applyable, we update the result style
-				if(applyable) {
-					if(style.name != undefined) {
-						this._name = style.name;
+						//If style still applyable after looking for all tags in a taglist, then it's applyable
+						if(applyable) { break; }
 					}
 					
-					for(param in style.style) {
-						if(style.style[param] != undefined && (param != "icon" || this._createIconUrl(style.style) != null)) {
-							this._style[param] = style.style[param];
+					//If applyable, we update the result style
+					if(applyable) {
+						if(style.name != undefined) {
+							this._name = style.name;
+						}
+						
+						for(param in style.style) {
+							if(style.style[param] != undefined && (param != "icon" || this._createIconUrl(style.style) != null)) {
+								this._style[param] = style.style[param];
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	
-	//Change icon=no into undefined
-	if(this._style.icon == "none") { this._style.icon = undefined; }
-	
-	//Clean tmp objects
-	applyable = null;
-	tagList = null;
-	val = null;
-	featureVal = null;
-	style = null;
-};
+		
+		//Change icon=no into undefined
+		if(this._style.icon == "none") { this._style.icon = undefined; }
+		
+		//Clean tmp objects
+		applyable = null;
+		tagList = null;
+		val = null;
+		featureVal = null;
+		style = null;
+	};
 
 //ACCESSORS
 	/**
