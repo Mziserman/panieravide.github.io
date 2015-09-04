@@ -1,0 +1,25 @@
+{
+	"_comment": "NiuEdit configuration file (JSON)",
+	
+	"osm": {
+		"oapi": "http://www.overpass-api.de/api/interpreter?data=",
+		"api": "https://api.openstreetmap.org/api/0.6/",
+		"api_dev": "https://api06.dev.openstreetmap.org/api/0.6/",
+		"attribution": "Map data © <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors"
+	},
+	
+	"map": {
+		"tiles": {
+			"name": "OpenStreetMap",
+			"URL": "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+			"attribution": "Tiles <a href=\"http://openstreetmap.org/\">OSM</a>",
+			"minZoom": 1,
+			"maxZoom": 19
+		},
+		"position": { "lat": 48, "lon": 2, "zoom": 6 }
+	},
+	
+	"data_view": {
+		"minZoom": 16
+	}
+}

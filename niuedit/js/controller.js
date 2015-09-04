@@ -27,6 +27,15 @@
  * NiuEdit object init *
  ***********************/
 
+//Load config
+var CONFIG;
+$.ajax({
+	url: 'config.json',
+       async: false,
+       dataType: 'json',
+       success: function(data) { CONFIG = data; }
+}).fail(function() { console.error("[Controller] Error while retrieving CONFIG"); });
+
 //Load themes
 var THEMES;
 $.ajax({
@@ -34,7 +43,7 @@ $.ajax({
 	async: false,
 	dataType: 'json',
 	success: function(data) { THEMES = data.themes; }
-});
+}).fail(function() { console.error("[Controller] Error while retrieving THEMES"); });
 
 /**********************************************************************************/
 
@@ -93,14 +102,11 @@ MapController = function() {
 	 * @param bbox The bounding box
 	 */
 	MapController.prototype.downloadData = function(bbox) {
-		var oapiRequest = null;
-		//var bounds = boundsString(bbox);
-		
 		this._view.getLoadingView().setLoading(true);
 		this._view.getLoadingView().addLoadingInfo("Request Overpass API");
 		
 		//Prepare request
-		//oapiRequest = '[out:json][timeout:25][bbox:'+bounds+'];(node["repeat_on"];way["repeat_on"];relation["repeat_on"];node[~"^.*level$"~"."];way[~"^.*level$"~"."];relation[~"^.*level$"~"."];);out body;>;out qt skel;';
+		var oapiRequest = new OapiQuery(this._theme.potential_objects).get(bbox);
 
 		//Download data
 		/*$(document).ajaxError(function( event, jqxhr, settings, thrownError ) { console.log("Error: "+thrownError+"\nURL: "+settings.url); });

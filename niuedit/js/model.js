@@ -66,6 +66,8 @@ OapiQuery = function(potentials) {
 	
 	//Query end
 	this._query += ');out meta center;';
+	
+	return this;
 };
 
 //ACCESSORS

@@ -72,6 +72,9 @@ MapView = function(ctrl) {
 	/** The MapController **/
 	this._ctrl = ctrl;
 	
+	/** The messages view **/
+	this._vMessages = new MessagesView(this);
+	
 	/** The LMapView **/
 	this._vMap = new LMapView(this);
 	
@@ -116,6 +119,13 @@ MapView = function(ctrl) {
 	MapView.prototype.getLoadingView = function() {
 		return this._vLoading;
 	};
+	
+	/**
+	 * @return The messages view
+	 */
+	MapView.prototype.getMessagesView = function() {
+		return this._vMessages;
+	};
 
 /**********************************************************************************/
 
@@ -128,14 +138,66 @@ LMapView = function(main) {
 	this._mainView = main;
 	
 	/** The leaflet map object **/
-	this._map = L.map('map').setView([48, 2], 6);
+	this._map = L.map('map').setView([CONFIG.map.position.lat, CONFIG.map.position.lon], CONFIG.map.position.zoom);
+	
+	/** Is the map already handling a change event **/
+	this._isChanging = false;
 
 //CONSTRUCTOR
-	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-		maxZoom: 18
+	//Tiles
+	L.tileLayer(CONFIG.map.tiles.URL, {
+		attribution: CONFIG.map.tiles.attribution,
+		minZoom: CONFIG.map.tiles.minZoom,
+		maxZoom: CONFIG.map.tiles.maxZoom
 	}).addTo(this._map);
+	
+	//Events
+	this._map.on("moveend resize", this.moved.bind(this));
+	this._map.on("zoomend", this.zoomed.bind(this));
+	
+	//First call for data download
+	this.moved();
 };
+
+//OTHER METHODS
+	/**
+	 * This method is called when map moves
+	 * Checks for zoom level and query data if needed
+	 */
+	LMapView.prototype.moved = function() {
+		if(!this._isChanging) {
+			this._isChanging = true;
+			
+			//Is map at the correct zoom ?
+			if(this._map.getZoom() >= CONFIG.data_view.minZoom) {
+				//TODO
+				console.log("download");
+			}
+			else {
+				this._isChanging = false;
+			}
+		}
+	};
+	
+	/**
+	 * This method is called when map zoom changes
+	 * Checks for zoom level and query data if needed
+	 */
+	LMapView.prototype.zoomed = function() {
+		if(!this._isChanging) {
+			this._isChanging = true;
+			
+			//Is map at the correct zoom ?
+			if(this._map.getZoom() >= CONFIG.data_view.minZoom) {
+				//TODO
+				console.log("download");
+			}
+			else {
+				this._isChanging = false;
+				this._mainView.getMessagesView().display("info", "Zoom in to see data");
+			}
+		}
+	};
 
 /**********************************************************************************/
 
@@ -286,4 +348,25 @@ LoadingView = function() {
 		$("#loading-info li:last-child").html(info);
 		
 		this._lastTime = currentTime;
+	};
+
+/**********************************************************************************/
+
+/**
+ * The messages view, alerting user about events
+ */
+MessagesView = function(main) {
+//ATTRIBUTES
+	/** The main view **/
+	this._mainView = main;
+};
+
+//MODIFIERS
+	/**
+	 * Shows a message to the user
+	 * @param level The kind of message (info, alert, error)
+	 * @param msg The message to show
+	 */
+	MessagesView.prototype.display = function(level, msg) {
+		alert(level+": "+msg);
 	};
