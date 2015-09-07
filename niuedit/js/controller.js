@@ -68,6 +68,9 @@ MapController = function() {
 	
 	/** The currently used theme **/
 	this._theme = null;
+	
+	/** The OSM data **/
+	this._data = null;
 
 //CONSTRUCTOR
 	//Get theme
@@ -80,6 +83,9 @@ MapController = function() {
 		this._theme = THEMES[themeId];
 	}
 	
+	//Ajax errors handling
+	$(document).ajaxError(function( event, jqxhr, settings, thrownError ) { console.log("Error: "+thrownError+"\nURL: "+settings.url); });
+	
 	this._view.init();
 };
 
@@ -89,6 +95,20 @@ MapController = function() {
 	 */
 	MapController.prototype.getTheme = function() {
 		return this._theme;
+	};
+	
+	/**
+	 * @return The map view
+	 */
+	MapController.prototype.getView = function() {
+		return this._view;
+	};
+	
+	/**
+	 * @return The OSM data
+	 */
+	MapController.prototype.getData = function() {
+		return this._data;
 	};
 
 //OTHER METHODS
@@ -102,30 +122,45 @@ MapController = function() {
 	 * @param bbox The bounding box
 	 */
 	MapController.prototype.downloadData = function(bbox) {
-		this._view.getLoadingView().setLoading(true);
-		this._view.getLoadingView().addLoadingInfo("Request Overpass API");
-		
-		//Prepare request
-		var oapiRequest = new OapiQuery(this._theme.potential_objects).get(bbox);
-
-		//Download data
-		/*$(document).ajaxError(function( event, jqxhr, settings, thrownError ) { console.log("Error: "+thrownError+"\nURL: "+settings.url); });
-		$.get(
-			CONFIG.osm.oapi+encodeURIComponent(oapiRequest),
-			this.onDownloadSuccess.bind(this),
-			"json")
-		.fail(controller.onDownloadFail.bind(this));*/
+		//Check if currently shown area is contained in previously downloaded data area
+		//If not, download data
+		if(this._data == null || !this._data.getBBox().contains(bbox)) {
+			this._view.getLoadingView().setLoading(true);
+			this._view.getLoadingView().addLoadingInfo("Request Overpass API");
+			
+			//Prepare request
+			bbox = bbox.pad(0.6);
+			var oapiRequest = new OapiQuery(this._theme.potential_objects).get(bbox);
+			
+			//Download data
+			$.get(
+				CONFIG.osm.oapi+encodeURIComponent(oapiRequest),
+				function(data) { this.onDownloadSuccess(data, bbox) }.bind(this),
+				"json"
+			)
+			.fail(this.onDownloadFail.bind(this));
+		}
+		else {
+			this._view.getLMapView().doneChanging();
+		}
 	};
 	
 	/**
 	 * This function is called when OSM data download is successful
 	 */
-	MapController.prototype.onDownloadSuccess = function(data) {
+	MapController.prototype.onDownloadSuccess = function(data, bbox) {
 		this._view.getLoadingView().addLoadingInfo("Process received data");
-		this._data = new OSMData(bbox, data);
 		
-		//TODO
+		try {
+			this._data = new OSMData(bbox, data);
+			this._view.getLMapView().showData(this._data);
+		}
+		catch(e) {
+			console.error(e);
+			this._view.getMessagesView().display("error", "Data processing failed");
+		}
 		
+		this._view.getLMapView().doneChanging();
 		this._view.getLoadingView().setLoading(false);
 	};
 	
@@ -134,5 +169,6 @@ MapController = function() {
 	 */
 	MapController.prototype.onDownloadFail = function() {
 		this._view.getLoadingView().setLoading(false);
-		this._view.getMessagesView().displayMessage("An error occured during data download", "error");
+		this._view.getLMapView().doneChanging();
+		this._view.getMessagesView().display("error", "Data download failed");
 	};

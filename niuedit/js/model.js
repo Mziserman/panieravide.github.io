@@ -65,7 +65,7 @@ OapiQuery = function(potentials) {
 	}
 	
 	//Query end
-	this._query += ');out meta center;';
+	this._query += ');out body center;';
 	
 	return this;
 };
@@ -78,4 +78,134 @@ OapiQuery = function(potentials) {
 	OapiQuery.prototype.get = function(bbox) {
 		var bboxStr = normLat(bbox.getSouth())+","+normLon(bbox.getWest())+","+normLat(bbox.getNorth())+","+normLon(bbox.getEast());
 		return this._query.replace(/\{\{bbox\}\}/g, bboxStr);
+	};
+
+/**********************************************************************************/
+
+/**
+ * OSMData is a container for OSM data downloaded from Overpass API
+ */
+OSMData = function(bbox, data) {
+//ATTRIBUTES
+	/** The feature objects **/
+	this._features = {};
+	
+	/** The bounding box of the data **/
+	this._bbox = bbox;
+
+//CONSTRUCTOR
+	//Check OSM data
+	if(!data) {
+		console.error(data);
+		throw new Error("Invalid data");
+	}
+	
+	//Create features
+	var f, id, currentFeature;
+	for(var i=0, l = data.elements.length; i < l; i++) {
+		f = data.elements[i];
+		id = f.type+"/"+f.id;
+		
+		if(this._features[id] == undefined) {
+			this._features[id] = new SimpleFeature(f);
+		}
+	}
+	
+	//Clean temporary objects
+	f = null;
+	id = null;
+	currentFeature = null;
+};
+
+//ACCESSORS
+	/**
+	* @return The data bounding box
+	*/
+	OSMData.prototype.getBBox = function() {
+		return this._bbox;
+	};
+	
+	/**
+	 * @return The features as an array
+	 */
+	OSMData.prototype.getFeatures = function() {
+		return this._features;
+	};
+	
+	/**
+	 * @return The wanted feature
+	 */
+	OSMData.prototype.getFeature = function(id) {
+		return this._features[id];
+	};
+
+/**********************************************************************************/
+
+/**
+ * A simple feature is a simple version of an OSM object, with an ID, tags and a center position
+ */
+SimpleFeature = function(f) {
+//ATTRIBUTES
+	/** The OSM ID (for example "123456") **/
+	this._id = f.type+"/"+f.id;
+	
+	/** The OSM object tags **/
+	this._tags = f.tags;
+	
+	/** The position of the centroid */
+	this._center = (f.type == "node") ? L.latLng(f.lat, f.lon) : L.latLng(f.center.lat, f.center.lon);
+	
+	return this;
+};
+
+//ACCESSORS
+	/**
+	 * @return The OSM Id
+	 */
+	SimpleFeature.prototype.getId = function() {
+		return this._id;
+	};
+	
+	/**
+	 * @return The OSM tags
+	 */
+	SimpleFeature.prototype.getTags = function() {
+		return this._tags;
+	};
+	
+	/**
+	 * @param key The OSM key
+	 * @return The corresponding OSM value, or undefined if not found
+	 */
+	SimpleFeature.prototype.getTag = function(key) {
+		return this._tags[key];
+	};
+	
+	/**
+	 * @return The name of the object, or its ID if it hasn't one
+	 */
+	SimpleFeature.prototype.getName = function() {
+		var name = this._tags.name;
+		return (name == undefined) ? this._id : name;
+	};
+	
+	/**
+	 * @return The center position
+	 */
+	SimpleFeature.prototype.getCenter = function() {
+		return this._center;
+	};
+	
+	/**
+	 * Get the status of this feature, according to editable tags list
+	 * @param editables The list of editable keys, as an array
+	 * @return The completeness of the feature (full, partial, none)
+	 */
+	SimpleFeature.prototype.getStatus = function(editables) {
+		var has = 0, l = editables.length;
+		for(var i=0; i < l; i++) {
+			if(this._tags[editables[i]] != undefined) { has++; }
+		}
+		
+		return (has == 0) ? "none" : ((has == l) ? "full" : "partial");
 	};

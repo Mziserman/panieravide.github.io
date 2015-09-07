@@ -47,7 +47,16 @@
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	
+	<!-- PNotify includes -->
+	<script type="text/javascript" src="lib/pnotify/pnotify.custom.min.js"></script>
+	<link href="lib/pnotify/pnotify.custom.min.css" media="all" rel="stylesheet" type="text/css" />
+	
+	<!-- Leaflet hash includes -->
+	<script type="text/javascript" src="lib/leaflet-hash.js"></script>
+	
 	<!-- NiuEdit includes -->
+	<script src="js/utils.js"></script>
+	<script src="js/model.js"></script>
 	<script src="js/controller.js"></script>
 	<script src="js/view.js"></script>
 	<link rel="stylesheet" href="css/style.css" />
@@ -72,7 +81,10 @@
 					<li class="active"><a id="theme-title" href="#">Title</a></li>
 				</ul>
 				<form class="navbar-form navbar-right">
-					<button id="btn-options" type="button" class="btn btn-default"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Options</button>
+					<div class="btn-group" role="group">
+						<button id="btn-options" type="button" class="btn btn-default" aria-label="Options"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+						<button id="btn-help" type="button" class="btn btn-default" aria-label="Help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
+					</div>
 				</form>
 				<form class="navbar-form navbar-right">
 					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save <span class="badge">42</span></button>
@@ -134,6 +146,31 @@
 					</div>
 				</div>
 
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Object view modal -->
+	<div id="modal-view-object" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">View <small id="#view-object-name">object</small></h4>
+				</div>
+				<div class="modal-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Description</th>
+								<th>Defined value</th>
+							</tr>
+						</thead>
+						<tbody id="view-object-tags">
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -210,6 +247,22 @@
 					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login</button>
 					<a href="https://www.openstreetmap.org/user/new" target="_blank" role="button" class="btn btn-primary"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> Register</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Help modal -->
+	<div id="modal-help" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Help</h4>
+				</div>
+				<div class="modal-body">
+					<p>Just sudo it</p>
 				</div>
 			</div>
 		</div>

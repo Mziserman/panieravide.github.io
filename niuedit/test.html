@@ -122,22 +122,155 @@
 		QUnit.test("Get simple", function(assert) {
 			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
 			var q3 = new OapiQuery([ { "highway": "*" } ]);
-			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4););out meta center;');
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4););out body center;');
 		});
 		QUnit.test("Get A & B", function(assert) {
 			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
 			var q3 = new OapiQuery([ { "highway": "*", "maxspeed": "30" } ]);
-			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);way["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4););out meta center;');
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);way["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["highway"]["maxspeed"="30"](10.1,2.2,11.3,3.4););out body center;');
 		});
 		QUnit.test("Get A | B", function(assert) {
 			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
 			var q3 = new OapiQuery([ { "highway": "*" }, { "maxspeed": "30" } ]);
-			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4);node["maxspeed"="30"](10.1,2.2,11.3,3.4);way["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["maxspeed"="30"](10.1,2.2,11.3,3.4););out meta center;');
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"](10.1,2.2,11.3,3.4);way["highway"](10.1,2.2,11.3,3.4);relation["highway"](10.1,2.2,11.3,3.4);node["maxspeed"="30"](10.1,2.2,11.3,3.4);way["maxspeed"="30"](10.1,2.2,11.3,3.4);relation["maxspeed"="30"](10.1,2.2,11.3,3.4););out body center;');
 		});
 		QUnit.test("Get A=(1|2)", function(assert) {
 			var bbox = L.latLngBounds(L.latLng(10.1, 2.2), L.latLng(11.3, 3.4));
 			var q3 = new OapiQuery([ { "highway": "motorway|trunk" } ]);
-			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);way["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);relation["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4););out meta center;');
+			assert.equal(q3.get(bbox), '[out:json][timeout:25];(node["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);way["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4);relation["highway"~"^(motorway|trunk)$"](10.1,2.2,11.3,3.4););out body center;');
+		});
+		
+		/*
+		 * SimpleFeature
+		 */
+		QUnit.module("Model > SimpleFeature");
+		QUnit.test("Constructor", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			assert.ok(new SimpleFeature(f));
+		});
+		QUnit.test("Get ID", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			assert.equal(new SimpleFeature(f).getId(), "way/354");
+		});
+		QUnit.test("Get Tags", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			var sf = new SimpleFeature(f);
+			assert.equal(Object.keys(sf.getTags()).length, 2);
+			assert.equal(sf.getTags().amenity, "test");
+			assert.equal(sf.getTags().test, "foo");
+		});
+		QUnit.test("Get Tag existing", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			assert.equal(new SimpleFeature(f).getTag("amenity"), "test");
+		});
+		QUnit.test("Get Tag missing", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			assert.equal(new SimpleFeature(f).getTag("missing"), undefined);
+		});
+		QUnit.test("Get name undefined", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			assert.equal(new SimpleFeature(f).getName(), "way/354");
+		});
+		QUnit.test("Get name defined", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "name": "Fiu" } };
+			assert.equal(new SimpleFeature(f).getName(), "Fiu");
+		});
+		QUnit.test("Get Center", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo" } };
+			var sf = new SimpleFeature(f);
+			assert.equal(sf.getCenter().lat, 48.8);
+			assert.equal(sf.getCenter().lng, 2.3);
+		});
+		QUnit.test("Get status", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo", "bar": "yes" } };
+			var sf = new SimpleFeature(f);
+			
+			assert.equal(sf.getStatus([ "foo" ]), "none");
+			assert.equal(sf.getStatus([ "test", "tar" ]), "partial");
+			assert.equal(sf.getStatus([ "amenity", "test" ]), "full");
+		});
+		
+		/*
+		 * OSMData
+		 */
+		QUnit.module("Model > OSMData");
+		QUnit.test("Test", function(assert) {
+			var data = {
+				"version": 0.6,
+				"generator": "Overpass API",
+				"osm3s": {
+					"timestamp_osm_base": "2015-09-07T17:02:02Z",
+					"copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+				},
+				"elements": [
+					{
+						"type": "node",
+						"id": 252115504,
+						"lat": 48.8439502,
+						"lon": 2.3728916,
+						"tags": {
+							"amenity": "parking",
+							"name": "Parc Paris-Lyon"
+						}
+					},
+					{
+						"type": "way",
+						"id": 356086552,
+						"center": {
+							"lat": 48.8446538,
+							"lon": 2.3734868
+						},
+						"nodes": [
+							3606444186,
+							3615729831,
+							3615729701,
+							3615729885,
+							3689941433,
+							3606444186
+						],
+						"tags": {
+							"amenity": "car_rental",
+							"indoor": "room",
+							"level": "0",
+							"level:ref": "Galerie Diderot",
+							"name": "AVIS",
+							"room": "office",
+							"source:name": "Mapillary 2015",
+							"source:room": "plan archi"
+						}
+					}
+				]
+			};
+			
+			var osmdata = new OSMData(L.latLngBounds(L.latLng(1,2),L.latLng(3,4)), data);
+			
+			//Test BBOX
+			assert.ok(osmdata.getBBox().equals(L.latLngBounds(L.latLng(1,2),L.latLng(3,4))));
+			
+			//Test features
+			assert.equal(Object.keys(osmdata.getFeatures()).length, 2);
+			
+			//Test feature 1
+			var ft1 = osmdata.getFeatures()["node/252115504"];
+			assert.ok(ft1 instanceof SimpleFeature);
+			assert.equal(ft1.getId(), "node/252115504");
+			assert.equal(Object.keys(ft1.getTags()).length, 2);
+			assert.equal(ft1.getTag("amenity"), "parking");
+			assert.equal(ft1.getTag("name"), "Parc Paris-Lyon");
+			assert.equal(ft1.getCenter().lat, 48.8439502);
+			assert.equal(ft1.getCenter().lng, 2.3728916);
+			assert.equal(osmdata.getFeature("node/252115504"), ft1);
+			
+			//Test feature 2
+			var ft2 = osmdata.getFeatures()["way/356086552"];
+			assert.ok(ft2 instanceof SimpleFeature);
+			assert.equal(ft2.getId(), "way/356086552");
+			assert.equal(Object.keys(ft2.getTags()).length, 8);
+			assert.equal(ft2.getTag("amenity"), "car_rental");
+			assert.equal(ft2.getTag("source:name"), "Mapillary 2015");
+			assert.equal(ft2.getCenter().lat, 48.8446538);
+			assert.equal(ft2.getCenter().lng, 2.3734868);
+			assert.equal(osmdata.getFeature("way/356086552"), ft2);
 		});
 	</script>
 </head>

@@ -86,6 +86,9 @@ MapView = function(ctrl) {
 	
 	/** The loading view **/
 	this._vLoading = new LoadingView(this);
+	
+	/** The object view **/
+	this._vObject = new ObjectView(this);
 };
 
 //CONSTRUCTOR
@@ -103,9 +106,19 @@ MapView = function(ctrl) {
 		title.html(theme.title);
 		title.css("background-color", theme.style.background);
 		title.css("color", theme.style.text);
+		
+		//Add help button click handler
+		$("#btn-help").click(function() { $("#modal-help").modal("show"); });
 	};
 	
 //ACCESSORS
+	/**
+	 * @return The controller
+	 */
+	MapView.prototype.getController = function() {
+		return this._ctrl;
+	};
+	
 	/**
 	 * @return The URL view
 	 */
@@ -126,6 +139,20 @@ MapView = function(ctrl) {
 	MapView.prototype.getMessagesView = function() {
 		return this._vMessages;
 	};
+	
+	/**
+	 * @return The object view
+	 */
+	MapView.prototype.getObjectView = function() {
+		return this._vObject;
+	};
+	
+	/**
+	 * @return The leaflet map view
+	 */
+	MapView.prototype.getLMapView = function() {
+		return this._vMap;
+	};
 
 /**********************************************************************************/
 
@@ -142,6 +169,9 @@ LMapView = function(main) {
 	
 	/** Is the map already handling a change event **/
 	this._isChanging = false;
+	
+	/** The layer containing the shown data **/
+	this._dataLayer = L.layerGroup().addTo(this._map);
 
 //CONSTRUCTOR
 	//Tiles
@@ -151,32 +181,106 @@ LMapView = function(main) {
 		maxZoom: CONFIG.map.tiles.maxZoom
 	}).addTo(this._map);
 	
+	//Hash
+	new L.Hash(this._map);
+	
 	//Events
 	this._map.on("moveend resize", this.moved.bind(this));
 	this._map.on("zoomend", this.zoomed.bind(this));
 	
 	//First call for data download
-	this.moved();
+	this.requestData(true);
 };
 
+//MODIFIERS
+	/**
+	 * Set changing state as false
+	 */
+	LMapView.prototype.doneChanging = function() {
+		this._isChanging = false;
+	};
+	
+	/**
+	 * Displays the given OSM data on map
+	 * @param data The OSM data object
+	 */
+	LMapView.prototype.showData = function(data) {
+		//Clear data layer
+		this._dataLayer.clearLayers();
+		
+		//Get editable tags list
+		var editTags = this._mainView.getController().getTheme().editable_tags;
+		var editKeys = [];
+		for(var i=0; i < editTags.length; i++) {
+			editKeys.push(editTags[i].key);
+		}
+		
+		var features = data.getFeatures();
+		var nbFeatures = 0;
+		
+		//Read features
+		var feature, marker, text;
+		for(var fId in features) {
+			feature = features[fId];
+			status = feature.getStatus(editKeys);
+			
+			//Create marker
+			switch(status) {
+				case "none":
+					marker = L.circleMarker(feature.getCenter(), { color: "gray", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+					break;
+				case "partial":
+					marker = L.circleMarker(feature.getCenter(), { color: "orange", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+					break;
+				case "full":
+					marker = L.circleMarker(feature.getCenter(), { color: "green", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+					break;
+			}
+			
+			//Add popup
+			text = '<h3>'+feature.getName()+'</h3>';
+			text += '<a href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a>';
+			text += ' <a onclick="ctrl.getView().getObjectView().show(\''+feature.getId()+'\')"><img src="img/icon_tags.svg" alt="View" /></a>';
+			marker.bindPopup(text);
+			
+			//Add to data layer
+			this._dataLayer.addLayer(marker);
+			nbFeatures++;
+		}
+		
+		if(nbFeatures == 0) {
+			this._mainView.getMessagesView().display("alert", "No available data here");
+		}
+	};
+	
 //OTHER METHODS
 	/**
-	 * This method is called when map moves
-	 * Checks for zoom level and query data if needed
+	 * Asks for data when map moves or zoom changes
+	 * @param alert Alert user when zoom is too low ?
 	 */
-	LMapView.prototype.moved = function() {
+	LMapView.prototype.requestData = function(alert) {
 		if(!this._isChanging) {
 			this._isChanging = true;
 			
 			//Is map at the correct zoom ?
 			if(this._map.getZoom() >= CONFIG.data_view.minZoom) {
-				//TODO
-				console.log("download");
+				this._mainView.getController().downloadData(this._map.getBounds());
 			}
 			else {
 				this._isChanging = false;
+				if(alert) {
+					this._mainView.getMessagesView().display("info", "Zoom in to see data");
+				}
 			}
 		}
+	};
+	
+	/**
+	 * This method is called when map moves
+	 * Checks for zoom level and query data if needed
+	 */
+	LMapView.prototype.moved = function() {
+		this.requestData(false);
 	};
 	
 	/**
@@ -184,19 +288,7 @@ LMapView = function(main) {
 	 * Checks for zoom level and query data if needed
 	 */
 	LMapView.prototype.zoomed = function() {
-		if(!this._isChanging) {
-			this._isChanging = true;
-			
-			//Is map at the correct zoom ?
-			if(this._map.getZoom() >= CONFIG.data_view.minZoom) {
-				//TODO
-				console.log("download");
-			}
-			else {
-				this._isChanging = false;
-				this._mainView.getMessagesView().display("info", "Zoom in to see data");
-			}
-		}
+		this.requestData(true);
 	};
 
 /**********************************************************************************/
@@ -322,12 +414,12 @@ LoadingView = function() {
 	LoadingView.prototype.setLoading = function(loading) {
 		this._loading = loading;
 		if(loading) {
+			$("#loading-info").empty();
 			this._dom.modal({ keyboard: false, backdrop: 'static' });
 			this._lastTime = (new Date()).getTime();
 		}
 		else {
 			this._dom.modal("hide");
-			//$(document).trigger("loading_done");
 		}
 	};
 	
@@ -353,9 +445,9 @@ LoadingView = function() {
 /**********************************************************************************/
 
 /**
- * The messages view, alerting user about events
+ * The modal which contains one feature details
  */
-MessagesView = function(main) {
+ObjectView = function(main) {
 //ATTRIBUTES
 	/** The main view **/
 	this._mainView = main;
@@ -363,10 +455,99 @@ MessagesView = function(main) {
 
 //MODIFIERS
 	/**
+	 * Displays a given feature details
+	 * @param id The feature ID
+	 */
+	ObjectView.prototype.show = function(id) {
+		var feature = this._mainView.getController().getData().getFeature(id);
+		var theme = this._mainView.getController().getTheme();
+		var editTags = theme.editable_tags;
+		
+		if(feature != undefined) {
+			$("#modal-view-object").modal("show");
+			
+			//Title
+			$("#view-object-name").html(feature.getName());
+			
+			//Tags table
+			var dom = $("#view-object-tags");
+			dom.empty();
+			
+			//Content
+			var contentHtml = '', tag, editTag, valDesc;
+			for(var i=0; i < editTags.length; i++) {
+				editTag = editTags[i];
+				tag = feature.getTag(editTag.key);
+				
+				if(tag != undefined) {
+					switch(editTag.values.type) {
+						case "list":
+							valDesc = editTag.values.list[tag];
+							break;
+						case "int":
+						case "float":
+						default:
+							valDesc = tag;
+							break;
+					}
+					contentHtml += '<tr><td>'+editTag.description+'</td><td>'+valDesc+'</td></tr>';
+				}
+				else {
+					contentHtml += '<tr><td>'+editTag.description+'</td><td>Undefined</td></tr>';
+				}
+			}
+			dom.html(contentHtml);
+		}
+		else {
+			this._mainView.getMessagesView().display("error", "Invalid feature ID");
+		}
+	};
+
+/**********************************************************************************/
+
+/**
+ * The messages view, alerting user about events
+ */
+MessagesView = function(main) {
+//ATTRIBUTES
+	/** The main view **/
+	this._mainView = main;
+
+//CONSTRUCTOR
+	//PNotify init
+	PNotify.prototype.options.styling = "bootstrap3";
+	PNotify.prototype.options.delay = 400;
+};
+
+//MODIFIERS
+	/**
 	 * Shows a message to the user
 	 * @param level The kind of message (info, alert, error)
+	 * @param title The message title
 	 * @param msg The message to show
 	 */
-	MessagesView.prototype.display = function(level, msg) {
-		alert(level+": "+msg);
+	MessagesView.prototype.display = function(level, msg, title) {
+		//Create title if undefined
+		if(!title) {
+			switch(level) {
+				case "alert":
+					title = "Warning";
+					break;
+				case "info":
+					title = "Info";
+					break;
+				case "error":
+					title = "Error";
+					break;
+			}
+		}
+		
+		if(level == "alert") { level = undefined; }
+		
+		//Create notification
+		new PNotify({
+			title: title,
+			text: msg,
+			type: level
+		});
 	};

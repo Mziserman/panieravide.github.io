@@ -20,11 +20,11 @@
 					"values": {
 						"type": "list",
 						"multiplicity": "1",
-						"list": [
-							{ "val": "yes",	"desc": "Fully accessible" },
-							{ "val": "limited", "desc": "Limited access" },
-							{ "val": "no", "desc": "No access" }
-						]
+						"list": {
+							"yes": "Fully accessible",
+							"limited": "Limited access",
+							"no": "No access"
+						}
 					}
 				}
 			]
@@ -102,13 +102,13 @@
 					"values": {
 						"type": "list",
 						"multiplicity": "1",
-						"list": [
-							{ "val": "surface", "desc": "One level of parking on the ground" },
-							{ "val": "underground", "desc": "One level of parking in the basement" },
-							{ "val": "multi-storey", "desc": "Two or more levels of parking decks in a building structure" },
-							{ "val": "rooftop", "desc": "One level of a parking deck on top of the building" },
-							{ "val": "garage_boxes", "desc": "One level buildings with individual brick or metal boxes for one car" }
-						]
+						"list": {
+							"surface": "One level of parking on the ground",
+							"underground": "One level of parking in the basement",
+							"multi-storey": "Two or more levels of parking decks in a building structure",
+							"rooftop": "One level of a parking deck on top of the building",
+							"garage_boxes": "One level buildings with individual brick or metal boxes for one car"
+						}
 					}
 				},
 				{
@@ -117,11 +117,11 @@
 					"values": {
 						"type": "list",
 						"multiplicity": "1",
-						"list": [
-							{ "val": "yes", "desc": "Open to everyone" },
-							{ "val": "customers", "desc": "Open to associated-facility customers only" },
-							{ "val": "private", "desc": "Closed to everyone except inhabitants/workers" }
-						]
+						"list": {
+							"yes": "Open to everyone",
+							"customers": "Open to associated-facility customers only",
+							"private": "Closed to everyone except inhabitants/workers"
+						}
 					}
 				},
 				{
