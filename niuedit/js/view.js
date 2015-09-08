@@ -109,6 +109,8 @@ MapView = function(ctrl) {
 		
 		//Add help button click handler
 		$("#btn-help").click(function() { $("#modal-help").modal("show"); });
+		
+		this._vOptions.init();
 	};
 	
 //ACCESSORS
@@ -239,8 +241,9 @@ LMapView = function(main) {
 			
 			//Add popup
 			text = '<h3>'+feature.getName()+'</h3>';
-			text += '<a href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a>';
-			text += ' <a onclick="ctrl.getView().getObjectView().show(\''+feature.getId()+'\')"><img src="img/icon_tags.svg" alt="View" /></a>';
+			text += '<a onclick="ctrl.getView().getObjectView().show(\''+feature.getId()+'\')"><img src="img/icon_tags.svg" alt="View" /></a>';
+			text += ' <a onclick="ctrl.startEdit(\''+feature.getId()+'\')"><img src="img/icon_edit.svg" alt="Edit" /></a>';
+			text += ' <a href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a>';
 			marker.bindPopup(text);
 			
 			//Add to data layer
@@ -306,7 +309,27 @@ OptionsView = function(main) {
 	
 //CONSTRUCTOR
 	$("#btn-options").click(this.toggle.bind(this));
+	$("#inputFilterKey").change(this.keyChanged.bind(this));
 };
+
+	OptionsView.prototype.init = function() {
+		var theme = this._mainView.getController().getTheme();
+		
+		//Clear the key selector
+		var dom = $("#inputFilterKey");
+		dom.empty();
+		var filterHtml = '<option value="none">No filter</option>';
+		
+		//Add editable keys
+		for(var i=0; i < theme.editable_tags.length; i++) {
+			filterHtml += '<option value="'+theme.editable_tags[i].key+'">'+theme.editable_tags[i].description+'</option>';
+		}
+		
+		dom.html(filterHtml);
+		
+		//Hide filter values
+		$("#filter-values").addClass("hidden");
+	};
 
 //OTHER METHODS
 	/**
@@ -319,6 +342,21 @@ OptionsView = function(main) {
 		else {
 			this._dom.addClass("hide");
 		}
+	};
+	
+	/**
+	 * This method is called when the filter key selector value changes
+	 */
+	OptionsView.prototype.keyChanged = function() {
+		var key = $("#inputFilterKey").val();
+		if(key == "none") {
+			$("#filter-values").addClass("hidden");
+		}
+		else {
+			$("#filter-values").removeClass("hidden");
+		}
+		
+		//Create value filters
 	};
 
 /**********************************************************************************/
@@ -497,6 +535,8 @@ ObjectView = function(main) {
 				}
 			}
 			dom.html(contentHtml);
+			
+			$("#view-object-edit").click(function() { ctrl.startEdit(id); });
 		}
 		else {
 			this._mainView.getMessagesView().display("error", "Invalid feature ID");

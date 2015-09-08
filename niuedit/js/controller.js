@@ -113,9 +113,9 @@ MapController = function() {
 
 //OTHER METHODS
 
-/*******************
- * Data management *
- *******************/
+/*****************
+ * Data download *
+ *****************/
 	/**
 	 * Downloads data from Overpass API
 	 * Then calls another function to process it.
@@ -171,4 +171,17 @@ MapController = function() {
 		this._view.getLoadingView().setLoading(false);
 		this._view.getLMapView().doneChanging();
 		this._view.getMessagesView().display("error", "Data download failed");
+	};
+
+/*************
+ * Data edit *
+ *************/
+
+	/**
+	 * Start to edit the given feature
+	 * If first feature edited, connect to OSM
+	 */
+	MapController.prototype.startEdit = function(id) {
+		console.log("edit "+id);
+		//TODO
 	};
