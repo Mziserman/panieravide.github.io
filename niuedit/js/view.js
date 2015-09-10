@@ -348,6 +348,9 @@ OptionsView = function(main) {
 	 * This method is called when the filter key selector value changes
 	 */
 	OptionsView.prototype.keyChanged = function() {
+		var theme = this._mainView.getController().getTheme();
+		
+		//Show or hide values
 		var key = $("#inputFilterKey").val();
 		if(key == "none") {
 			$("#filter-values").addClass("hidden");
@@ -356,7 +359,91 @@ OptionsView = function(main) {
 			$("#filter-values").removeClass("hidden");
 		}
 		
+		//Find key in theme
+		var found = false, i=0;
+		while(!found && i < theme.editable_tags.length) {
+			if(theme.editable_tags[i].key == key) {
+				found = true;
+			}
+			else {
+				i++;
+			}
+		}
+		
 		//Create value filters
+		if(found) {
+			var dom = $("#filter-values-selectors");
+			dom.empty();
+			var valuesHtml = '';
+			
+			var valuesDef = theme.editable_tags[i].values;
+			var valuesType = valuesDef.type;
+			
+			if(valuesType == "list") {
+				//Create checkbox for each value in list
+				for(var i in valuesDef.list) {
+					valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-'+i+'" checked> '+valuesDef.list[i]+'</label>';
+				}
+				valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-undefined" checked> Undefined</label>';
+				
+				dom.html(valuesHtml);
+			}
+			else if(valuesType == "int") {
+				//Create slider HTML
+				valuesHtml = '<div id="slider"></div>From <span class="example-val" id="slider-value-lower"></span> to <span class="example-val" id="slider-value-upper"></span>';
+				dom.html(valuesHtml);
+				
+				//Create slider JS
+				var slider = document.getElementById('slider');
+				noUiSlider.create(slider, {
+					start: [ valuesDef.min, valuesDef.max ],
+					step: 1,
+					connect: true,
+					range: {
+						'min': valuesDef.min,
+						'max': valuesDef.max
+					}
+				});
+				//Values update
+				var sliderVals = [
+					document.getElementById('slider-value-lower'),
+					document.getElementById('slider-value-upper')
+				];
+				slider.noUiSlider.on('update', function(values, handle) {
+					sliderVals[handle].innerHTML = Math.round(values[handle]);
+				});
+			}
+			else if(valuesType == "float") {
+				//Create slider HTML
+				valuesHtml = '<div id="slider"></div>From <span id="slider-value-lower"></span> to <span id="slider-value-upper"></span>';
+				dom.html(valuesHtml);
+				
+				//Create slider JS
+				var slider = document.getElementById('slider');
+				noUiSlider.create(slider, {
+					start: [ valuesDef.min, valuesDef.max ],
+					connect: true,
+					range: {
+						'min': valuesDef.min,
+						'max': valuesDef.max
+					}
+				});
+				//Values update
+				var sliderVals = [
+					document.getElementById('slider-value-lower'),
+					document.getElementById('slider-value-upper')
+				];
+				slider.noUiSlider.on('update', function(values, handle) {
+					sliderVals[handle].innerHTML = values[handle];
+				});
+			}
+			else {
+				console.error("Unsupported values type: "+valuesType);
+			}
+		}
+		else {
+			console.error("Key not found in theme: "+key);
+		}
 	};
 
 /**********************************************************************************/
@@ -536,6 +623,7 @@ ObjectView = function(main) {
 			}
 			dom.html(contentHtml);
 			
+			$("#view-object-edit").off();
 			$("#view-object-edit").click(function() { ctrl.startEdit(id); });
 		}
 		else {

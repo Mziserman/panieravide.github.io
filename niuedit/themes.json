@@ -51,6 +51,8 @@
 					"description": "Floor(s) of the object",
 					"values": {
 						"type": "float",
+						"min": -20,
+						"max": 100,
 						"multiplicity": "1+"
 					}
 				}
@@ -73,6 +75,8 @@
 					"description": "Maximal authorized speed",
 					"values": {
 						"type": "int",
+						"min": 1,
+						"max": 300,
 						"multiplicity": "1",
 						"conditions": "positive",
 						"units": [
@@ -103,11 +107,11 @@
 						"type": "list",
 						"multiplicity": "1",
 						"list": {
-							"surface": "One level of parking on the ground",
-							"underground": "One level of parking in the basement",
-							"multi-storey": "Two or more levels of parking decks in a building structure",
-							"rooftop": "One level of a parking deck on top of the building",
-							"garage_boxes": "One level buildings with individual brick or metal boxes for one car"
+							"surface": "One level on the ground",
+							"underground": "One level in the basement",
+							"multi-storey": "Two or more levels in a building",
+							"rooftop": "One level on top of a building",
+							"garage_boxes": "One level with individual boxes"
 						}
 					}
 				},
@@ -129,6 +133,8 @@
 					"description": "# of parking spaces",
 					"values": {
 						"type": "int",
+						"min": 1,
+						"max": 5000,
 						"multiplicity": "1",
 						"conditions": "positive"
 					}
@@ -138,6 +144,8 @@
 					"description": "# of parking spaces for disabled",
 					"values": {
 						"type": "int",
+						"min": 1,
+						"max": 200,
 						"multiplicity": "1",
 						"conditions": "positive"
 					}
