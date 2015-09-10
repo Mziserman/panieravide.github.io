@@ -86,9 +86,6 @@ MapView = function(ctrl) {
 	
 	/** The loading view **/
 	this._vLoading = new LoadingView(this);
-	
-	/** The object view **/
-	this._vObject = new ObjectView(this);
 };
 
 //CONSTRUCTOR
@@ -143,10 +140,10 @@ MapView = function(ctrl) {
 	};
 	
 	/**
-	 * @return The object view
+	 * @return The options view
 	 */
-	MapView.prototype.getObjectView = function() {
-		return this._vObject;
+	MapView.prototype.getOptionsView = function() {
+		return this._vOptions;
 	};
 	
 	/**
@@ -219,36 +216,71 @@ LMapView = function(main) {
 		
 		var features = data.getFeatures();
 		var nbFeatures = 0;
+		var theme = this._mainView.getController().getTheme();
 		
 		//Read features
 		var feature, marker, text;
 		for(var fId in features) {
 			feature = features[fId];
-			status = feature.getStatus(editKeys);
 			
-			//Create marker
-			switch(status) {
-				case "none":
-					marker = L.circleMarker(feature.getCenter(), { color: "gray", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
-					break;
-				case "partial":
-					marker = L.circleMarker(feature.getCenter(), { color: "orange", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
-					break;
-				case "full":
-					marker = L.circleMarker(feature.getCenter(), { color: "green", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
-					break;
+			if(this._showFeature(feature)) {
+				status = feature.getStatus(editKeys);
+				
+				//Create marker
+				switch(status) {
+					case "none":
+						marker = L.circleMarker(feature.getCenter(), { color: "gray", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+						break;
+					case "partial":
+						marker = L.circleMarker(feature.getCenter(), { color: "orange", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+						break;
+					case "full":
+						marker = L.circleMarker(feature.getCenter(), { color: "green", fillColor: "white", opacity: 0.9, fillOpacity: 0.6, weight: 8, radius: 15 });
+						break;
+				}
+				
+				//Add popup
+				text = '<div class="popup-header"><span class="title">'+feature.getName()+'</span>';
+				
+				//Links
+				text += ' <a class="link" onclick="ctrl.startEdit(\''+feature.getId()+'\')"><img src="img/icon_edit.svg" alt="Edit" /></a>';
+				text += ' <a class="link" href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a></div>';
+				
+				//Table
+				text += '<table class="table popup"><thead><tr><th>Description</th><th>Value</th></tr></thead>';
+				text += '<tbody>';
+				
+				var tag, editTag, valDesc;
+				for(var i=0; i < editTags.length; i++) {
+					editTag = editTags[i];
+					tag = feature.getTag(editTag.key);
+					
+					if(tag != undefined) {
+						switch(editTag.values.type) {
+							case "list":
+								valDesc = editTag.values.list[tag];
+								break;
+							case "int":
+							case "float":
+							default:
+								valDesc = tag;
+								break;
+						}
+						text += '<tr><td>'+editTag.description+'</td><td>'+valDesc+'</td></tr>';
+					}
+					else {
+						text += '<tr><td>'+editTag.description+'</td><td>Undefined</td></tr>';
+					}
+				}
+				
+				text += '</tbody></table>';
+				
+				marker.bindPopup(L.popup({ minWidth: 250, maxWidth: 500 }).setContent(text));
+				
+				//Add to data layer
+				this._dataLayer.addLayer(marker);
+				nbFeatures++;
 			}
-			
-			//Add popup
-			text = '<h3>'+feature.getName()+'</h3>';
-			text += '<a onclick="ctrl.getView().getObjectView().show(\''+feature.getId()+'\')"><img src="img/icon_tags.svg" alt="View" /></a>';
-			text += ' <a onclick="ctrl.startEdit(\''+feature.getId()+'\')"><img src="img/icon_edit.svg" alt="Edit" /></a>';
-			text += ' <a href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a>';
-			marker.bindPopup(text);
-			
-			//Add to data layer
-			this._dataLayer.addLayer(marker);
-			nbFeatures++;
 		}
 		
 		if(nbFeatures == 0) {
@@ -279,6 +311,35 @@ LMapView = function(main) {
 	};
 	
 	/**
+	 * Must we show the given feature, according to options ?
+	 */
+	LMapView.prototype._showFeature = function(f) {
+		var options = this._mainView.getOptionsView();
+		
+		//If filter panel is hidden, we show all features
+		if(!options.isActive()) { return true; }
+		
+		//Else, look at the filter
+		var theme = this._mainView.getController().getTheme();
+		var key = options.getFilterKey();
+		
+		if(key == "none") { return true; }
+		
+		if(options.isNumericFilter()) {
+			var value = parseFloat(f.getTag(key));
+			
+			//If value is invalid, stop
+			if(isNaN(value)) { return false; }
+			else {
+				return value >= options.getSliderMin() && value <= options.getSliderMax();
+			}
+		}
+		else {
+			return options.isChecked(f.getTag(key));
+		}
+	};
+	
+	/**
 	 * This method is called when map moves
 	 * Checks for zoom level and query data if needed
 	 */
@@ -293,6 +354,13 @@ LMapView = function(main) {
 	LMapView.prototype.zoomed = function() {
 		this.requestData(true);
 	};
+	
+	/**
+	 * This method is called when options change
+	 */
+	LMapView.prototype.optionsChanged = function() {
+		this.showData(this._mainView.getController().getData());
+	};
 
 /**********************************************************************************/
 
@@ -306,6 +374,15 @@ OptionsView = function(main) {
 
 	/** The options DOM object **/
 	this._dom = $("#options");
+	
+	/** The slider for values filter **/
+	this._slider = null;
+	
+	/** The timer for map update **/
+	this._timer = null;
+	
+	/** The delay to trigger map update **/
+	this._delay = 200;
 	
 //CONSTRUCTOR
 	$("#btn-options").click(this.toggle.bind(this));
@@ -331,6 +408,51 @@ OptionsView = function(main) {
 		$("#filter-values").addClass("hidden");
 	};
 
+//ACCESSORS
+	/**
+	 * @return True if numeric value based filter
+	 */
+	OptionsView.prototype.isNumericFilter = function() {
+		return this._slider != null;
+	};
+	
+	/**
+	 * @return The minimal value of the slider
+	 */
+	OptionsView.prototype.getSliderMin = function() {
+		return (this._slider != null) ? this._slider.noUiSlider.get()[0] : null;
+	};
+	
+	/**
+	 * @return The maximal value of the slider
+	 */
+	OptionsView.prototype.getSliderMax = function() {
+		return (this._slider != null) ? this._slider.noUiSlider.get()[1] : null;
+	};
+	
+	/**
+	 * @return True if some options are appliable
+	 */
+	OptionsView.prototype.isActive = function() {
+		return !this._dom.hasClass("hide") || $("#inputFilterKey").val() != "none";
+	};
+	
+	/**
+	 * @return The filter key
+	 */
+	OptionsView.prototype.getFilterKey = function() {
+		return $("#inputFilterKey").val();
+	};
+	
+	/**
+	 * Is the checkbox for the given value checked ?
+	 */
+	OptionsView.prototype.isChecked = function(val) {
+		if(val == undefined) { val = "undefined"; }
+		var dom = $("#val-"+val);
+		return dom.length > 0 && dom.is(":checked");
+	};
+	
 //OTHER METHODS
 	/**
 	 * Toggles the view
@@ -357,93 +479,122 @@ OptionsView = function(main) {
 		}
 		else {
 			$("#filter-values").removeClass("hidden");
-		}
-		
-		//Find key in theme
-		var found = false, i=0;
-		while(!found && i < theme.editable_tags.length) {
-			if(theme.editable_tags[i].key == key) {
-				found = true;
-			}
-			else {
-				i++;
-			}
-		}
-		
-		//Create value filters
-		if(found) {
-			var dom = $("#filter-values-selectors");
-			dom.empty();
-			var valuesHtml = '';
 			
-			var valuesDef = theme.editable_tags[i].values;
-			var valuesType = valuesDef.type;
-			
-			if(valuesType == "list") {
-				//Create checkbox for each value in list
-				for(var i in valuesDef.list) {
-					valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-'+i+'" checked> '+valuesDef.list[i]+'</label>';
+			//Find key in theme
+			var found = false, i=0;
+			while(!found && i < theme.editable_tags.length) {
+				if(theme.editable_tags[i].key == key) {
+					found = true;
 				}
-				valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-undefined" checked> Undefined</label>';
-				
-				dom.html(valuesHtml);
+				else {
+					i++;
+				}
 			}
-			else if(valuesType == "int") {
-				//Create slider HTML
-				valuesHtml = '<div id="slider"></div>From <span class="example-val" id="slider-value-lower"></span> to <span class="example-val" id="slider-value-upper"></span>';
-				dom.html(valuesHtml);
+			
+			//Create value filters
+			if(found) {
+				var dom = $("#filter-values-selectors");
+				dom.empty();
+				var valuesHtml = '';
 				
-				//Create slider JS
-				var slider = document.getElementById('slider');
-				noUiSlider.create(slider, {
-					start: [ valuesDef.min, valuesDef.max ],
-					step: 1,
-					connect: true,
-					range: {
-						'min': valuesDef.min,
-						'max': valuesDef.max
+				var valuesDef = theme.editable_tags[i].values;
+				var valuesType = valuesDef.type;
+				
+				if(valuesType == "list") {
+					//Checkbox to add events to
+					var cb = [];
+					//Create checkbox for each value in list
+					for(var i in valuesDef.list) {
+						valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-'+i+'" checked> '+valuesDef.list[i]+'</label>';
+						cb.push("#val-"+i);
 					}
-				});
-				//Values update
-				var sliderVals = [
+					valuesHtml += '<label class="checkbox-inline"><input type="checkbox" id="val-undefined" checked> Undefined</label>';
+					cb.push("#val-undefined");
+					
+					dom.html(valuesHtml);
+					
+					for(var i=0; i < cb.length; i++) {
+						$(cb[i]).off();
+						$(cb[i]).change(this._notifyMap.bind(this));
+					}
+					
+					this._slider = null;
+				}
+				else if(valuesType == "int") {
+					//Create slider HTML
+					valuesHtml = '<div id="slider"></div>From <span class="example-val" id="slider-value-lower"></span> to <span class="example-val" id="slider-value-upper"></span>';
+					dom.html(valuesHtml);
+					
+					//Create slider JS
+					this._slider = document.getElementById('slider');
+					noUiSlider.create(this._slider, {
+						start: [ valuesDef.min, valuesDef.max ],
+		       step: 1,
+		       connect: true,
+		       range: {
+			       'min': valuesDef.min,
+		       'max': valuesDef.max
+		       }
+					});
+					//Values update
+					var sliderVals = [
 					document.getElementById('slider-value-lower'),
 					document.getElementById('slider-value-upper')
-				];
-				slider.noUiSlider.on('update', function(values, handle) {
-					sliderVals[handle].innerHTML = Math.round(values[handle]);
-				});
-			}
-			else if(valuesType == "float") {
-				//Create slider HTML
-				valuesHtml = '<div id="slider"></div>From <span id="slider-value-lower"></span> to <span id="slider-value-upper"></span>';
-				dom.html(valuesHtml);
-				
-				//Create slider JS
-				var slider = document.getElementById('slider');
-				noUiSlider.create(slider, {
-					start: [ valuesDef.min, valuesDef.max ],
-					connect: true,
-					range: {
-						'min': valuesDef.min,
-						'max': valuesDef.max
-					}
-				});
-				//Values update
-				var sliderVals = [
+					];
+					this._slider.noUiSlider.on('update', function(values, handle) {
+						sliderVals[handle].innerHTML = Math.round(values[handle]);
+						this._notifyMap();
+					}.bind(this));
+				}
+				else if(valuesType == "float") {
+					//Create slider HTML
+					valuesHtml = '<div id="slider"></div>From <span id="slider-value-lower"></span> to <span id="slider-value-upper"></span>';
+					dom.html(valuesHtml);
+					
+					//Create slider JS
+					this._slider = document.getElementById('slider');
+					noUiSlider.create(this._slider, {
+						start: [ valuesDef.min, valuesDef.max ],
+		       step: 0.1,
+		       connect: true,
+		       range: {
+			       'min': valuesDef.min,
+		       'max': valuesDef.max
+		       }
+					});
+					//Values update
+					var sliderVals = [
 					document.getElementById('slider-value-lower'),
 					document.getElementById('slider-value-upper')
-				];
-				slider.noUiSlider.on('update', function(values, handle) {
-					sliderVals[handle].innerHTML = values[handle];
-				});
+					];
+					this._slider.noUiSlider.on('update', function(values, handle) {
+						sliderVals[handle].innerHTML = values[handle];
+						this._notifyMap();
+					}.bind(this));
+				}
+				else {
+					console.error("Unsupported values type: "+valuesType);
+				}
 			}
 			else {
-				console.error("Unsupported values type: "+valuesType);
+				console.error("Key not found in theme: "+key);
 			}
 		}
-		else {
-			console.error("Key not found in theme: "+key);
-		}
+		
+		this._notifyMap();
+	};
+	
+	/**
+	 * Notify map that options changed, after a delay
+	 */
+	OptionsView.prototype._notifyMap = function() {
+		window.clearTimeout(this._timer);
+		this._timer = window.setTimeout(
+			function() {
+				this._mainView.getLMapView().optionsChanged();
+			}.bind(this),
+			this._delay
+		);
 	};
 
 /**********************************************************************************/
@@ -565,70 +716,6 @@ LoadingView = function() {
 		$("#loading-info li:last-child").html(info);
 		
 		this._lastTime = currentTime;
-	};
-
-/**********************************************************************************/
-
-/**
- * The modal which contains one feature details
- */
-ObjectView = function(main) {
-//ATTRIBUTES
-	/** The main view **/
-	this._mainView = main;
-};
-
-//MODIFIERS
-	/**
-	 * Displays a given feature details
-	 * @param id The feature ID
-	 */
-	ObjectView.prototype.show = function(id) {
-		var feature = this._mainView.getController().getData().getFeature(id);
-		var theme = this._mainView.getController().getTheme();
-		var editTags = theme.editable_tags;
-		
-		if(feature != undefined) {
-			$("#modal-view-object").modal("show");
-			
-			//Title
-			$("#view-object-name").html(feature.getName());
-			
-			//Tags table
-			var dom = $("#view-object-tags");
-			dom.empty();
-			
-			//Content
-			var contentHtml = '', tag, editTag, valDesc;
-			for(var i=0; i < editTags.length; i++) {
-				editTag = editTags[i];
-				tag = feature.getTag(editTag.key);
-				
-				if(tag != undefined) {
-					switch(editTag.values.type) {
-						case "list":
-							valDesc = editTag.values.list[tag];
-							break;
-						case "int":
-						case "float":
-						default:
-							valDesc = tag;
-							break;
-					}
-					contentHtml += '<tr><td>'+editTag.description+'</td><td>'+valDesc+'</td></tr>';
-				}
-				else {
-					contentHtml += '<tr><td>'+editTag.description+'</td><td>Undefined</td></tr>';
-				}
-			}
-			dom.html(contentHtml);
-			
-			$("#view-object-edit").off();
-			$("#view-object-edit").click(function() { ctrl.startEdit(id); });
-		}
-		else {
-			this._mainView.getMessagesView().display("error", "Invalid feature ID");
-		}
 	};
 
 /**********************************************************************************/

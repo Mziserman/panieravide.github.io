@@ -163,6 +163,34 @@ a.theme:hover {
 	width: 90%;
 }
 
+/*********
+ * Popup *
+ *********/
+
+.popup-header {
+	display: table;
+	width: 100%;
+}
+
+.popup-header > * {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.popup-header .title {
+	font-size: 130%;
+}
+
+.table.popup {
+	font-size: 90%;
+}
+
+.popup-header .link {
+	cursor: pointer;
+	width: 40px;
+	text-align: right;
+}
+
 /**********
  * Footer *
  **********/
