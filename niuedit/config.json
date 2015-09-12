@@ -5,7 +5,11 @@
 		"oapi": "http://www.overpass-api.de/api/interpreter?data=",
 		"api": "https://api.openstreetmap.org/api/0.6/",
 		"api_dev": "https://api06.dev.openstreetmap.org/api/0.6/",
-		"attribution": "Map data © <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors"
+		"attribution": "Map data © <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors",
+		"oauth": {
+			"consumer_key": "wUhOCaq08AOVt1LjuRQW1frNBpkzff2LCRGbgWpf",
+			"secret": "XTNzI8QjGQ0kyyoS8Yi3CPkXquDfZkYLFeFV0EZ8"
+		}
 	},
 	
 	"map": {

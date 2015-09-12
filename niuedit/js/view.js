@@ -86,6 +86,9 @@ MapView = function(ctrl) {
 	
 	/** The loading view **/
 	this._vLoading = new LoadingView(this);
+	
+	/** The account view **/
+	this._vAccount = new AccountView(this);
 };
 
 //CONSTRUCTOR
@@ -144,6 +147,13 @@ MapView = function(ctrl) {
 	 */
 	MapView.prototype.getOptionsView = function() {
 		return this._vOptions;
+	};
+	
+	/**
+	 * @return The account view
+	 */
+	MapView.prototype.getAccountView = function() {
+		return this._vAccount;
 	};
 	
 	/**
@@ -633,6 +643,13 @@ URLView = function(main) {
 	};
 	
 	/**
+	 * @return The full parameters (params + hash) of the page
+	 */
+	URLView.prototype.getFullParams = function() {
+		return $(location).attr('href').split('?')[1];
+	};
+	
+	/**
 	 * @return The URL hash
 	 */
 	URLView.prototype._getUrlHash = function() {
@@ -765,4 +782,26 @@ MessagesView = function(main) {
 			text: msg,
 			type: level
 		});
+	};
+
+/**********************************************************************************/
+	
+/**
+ * The loading overlay panel component
+ */
+AccountView = function(main) {
+//ATTRIBUTES
+	/** The main view **/
+	this._mainView = main;
+	
+	/** The DOM object **/
+	this._dom = $("#modal-account");
+
+//CONSTRUCTOR
+	$("#button-login").click(this._mainView.getController().login.bind(this._mainView.getController()));
+};
+
+//MODIFIERS
+	AccountView.prototype.show = function() {
+		this._dom.modal("show");
 	};

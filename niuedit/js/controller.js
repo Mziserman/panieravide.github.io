@@ -71,6 +71,9 @@ MapController = function() {
 	
 	/** The OSM data **/
 	this._data = null;
+	
+	/** The authentication token **/
+	this._auth = null;
 
 //CONSTRUCTOR
 	//Get theme
@@ -173,6 +176,17 @@ MapController = function() {
 		this._view.getMessagesView().display("error", "Data download failed");
 	};
 
+/******************
+ * Authentication *
+ ******************/
+
+	/**
+	 * Authenticates the user
+	 */
+	MapController.prototype.login = function() {
+		console.log("login");
+	};
+
 /*************
  * Data edit *
  *************/
@@ -182,6 +196,13 @@ MapController = function() {
 	 * If first feature edited, connect to OSM
 	 */
 	MapController.prototype.startEdit = function(id) {
-		console.log("edit "+id);
-		//TODO
+		//If not authenticated, show auth dialog
+		if(this._auth == null || !this._auth.authenticated()) {
+			this._view.getAccountView().show();
+		}
+		//If authenticated, start edit
+		else {
+			//TODO
+			console.log("start edit "+id);
+		}
 	};

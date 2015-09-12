@@ -54,9 +54,12 @@
 	<!-- Leaflet hash includes -->
 	<script type="text/javascript" src="lib/leaflet-hash.js"></script>
 	
-	<!-- NoUISlider -->
+	<!-- NoUISlider includes -->
 	<link href="lib/nouislider/nouislider.min.css" rel="stylesheet">
 	<script src="lib/nouislider/nouislider.min.js"></script>
+	
+	<!-- OSMAuth includes -->
+	<script src="lib/osmauth.min.js"></script>
 
 	<!-- NiuEdit includes -->
 	<script src="js/utils.js"></script>
@@ -223,7 +226,7 @@
 					<p class="text-primary">In order to edit map data, you should have an OpenStreetMap account.</p><p class="text-info">Create one or log-in with your existing account to start editing.</p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login</button>
+					<button type="button" id="button-login" class="btn btn-success"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login</button>
 					<a href="https://www.openstreetmap.org/user/new" target="_blank" role="button" class="btn btn-primary"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> Register</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
 				</div>
