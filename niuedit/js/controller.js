@@ -76,21 +76,32 @@ MapController = function() {
 	this._auth = null;
 
 //CONSTRUCTOR
-	//Get theme
-	var themeId = this._view.getURLView().getTheme();
-	if(themeId == -1) {
-		alert("Invalid theme ID");
-		window.location.replace("index.html");
+	//Check if not logging in
+	var urlParams = this._view.getURLView()._getParameters();
+	if(urlParams.oauth_token != undefined) {
+		this.doneLogin(urlParams.oauth_token);
 	}
 	else {
-		this._theme = THEMES[themeId];
+		this.initThemeView();
 	}
 	
 	//Ajax errors handling
 	$(document).ajaxError(function( event, jqxhr, settings, thrownError ) { console.log("Error: "+thrownError+"\nURL: "+settings.url); });
-	
-	this._view.init();
 };
+
+	MapController.initThemeView = function() {
+		//Get theme
+		var themeId = this._view.getURLView().getTheme();
+		if(themeId == -1) {
+			alert("Invalid theme ID");
+			window.location.replace("index.html");
+		}
+		else {
+			this._theme = THEMES[themeId];
+		}
+		
+		this._view.init();
+	};
 
 //ACCESSORS
 	/**
@@ -184,7 +195,47 @@ MapController = function() {
 	 * Authenticates the user
 	 */
 	MapController.prototype.login = function() {
-		console.log("login");
+		//Save current map params in a cookie (to restore after login)
+		var map = this._view.getLMapView().get();
+		Cookie.set('niuedit-lat', map.getCenter().lat);
+		Cookie.set('niuedit-lon', map.getCenter().lng);
+		Cookie.set('niuedit-zoom', map.getZoom());
+		Cookie.set('niuedit-theme', this._view.getURLView().getTheme());
+		
+		//Authenticate
+		this._auth = osmAuth({
+			oauth_consumer_key: CONFIG.osm.oauth.consumer_key,
+			oauth_secret: CONFIG.osm.oauth.secret,
+			auto: true,
+			singlepage: true,
+			landing: ''
+		}).authenticate();
+	};
+	
+	/**
+	 * End user authentication
+	 */
+	MapController.prototype.doneLogin = function(oauth_token) {
+		//Create auth object
+		this._auth = osmAuth({
+			oauth_consumer_key: CONFIG.osm.oauth.consumer_key,
+			oauth_secret: CONFIG.osm.oauth.secret
+		});
+		
+		//Set auth token
+		this._auth.bootstrapToken(oauth_token, function() {
+			//Check authentication
+			if(this._auth.authenticated()) {
+				this._view.getMessagesView().display("info", "Log-in succeed");
+			}
+			else {
+				this._view.getMessagesView().display("error", "Authentication failed");
+			}
+			
+			//TODO Restore map state
+			
+			this.initThemeView();
+		}.bind(this));
 	};
 
 /*************
