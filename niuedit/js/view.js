@@ -110,6 +110,12 @@ MapView = function(ctrl) {
 		//Add help button click handler
 		$("#btn-help").click(function() { $("#modal-help").modal("show"); });
 		
+		//Set logged text
+		this.setUser(null);
+		
+		//Log out button
+		$("#btn-logout").click(function() { this._ctrl.logOut(); }.bind(this));
+		
 		this._vOptions.init();
 	};
 	
@@ -163,6 +169,23 @@ MapView = function(ctrl) {
 		return this._vMap;
 	};
 
+//MODIFIERS
+	/**
+	 * Sets the logged user name
+	 * @param user The user name, or null to unset
+	 */
+	MapView.prototype.setUser = function(user) {
+		if(user != null) {
+			$("#logged-text").show();
+			$("#logged-text span").html(user);
+			$("#btn-logout").show();
+		}
+		else {
+			$("#logged-text").hide();
+			$("#btn-logout").hide();
+		}
+	};
+	
 /**********************************************************************************/
 
 /**
@@ -201,6 +224,14 @@ LMapView = function(main) {
 	this.requestData(true);
 };
 
+//ACCESSORS
+	/**
+	 * @return The leaflet map
+	 */
+	LMapView.prototype.get = function() {
+		return this._map;
+	};
+	
 //MODIFIERS
 	/**
 	 * Set changing state as false

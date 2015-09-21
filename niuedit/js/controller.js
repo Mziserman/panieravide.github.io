@@ -87,9 +87,23 @@ MapController = function() {
 	
 	//Ajax errors handling
 	$(document).ajaxError(function( event, jqxhr, settings, thrownError ) { console.log("Error: "+thrownError+"\nURL: "+settings.url); });
+	
+	//OSM Auth
+	this._auth = osmAuth({
+		oauth_consumer_key: CONFIG.osm.oauth.consumer_key,
+		oauth_secret: CONFIG.osm.oauth.secret,
+		auto: true,
+		singlepage: true,
+		landing: ''
+	});
+	
+	//Update user name
+	if(this.isAuthenticated()) {
+		this.retrieveUserName();
+	}
 };
 
-	MapController.initThemeView = function() {
+	MapController.prototype.initThemeView = function() {
 		//Get theme
 		var themeId = this._view.getURLView().getTheme();
 		if(themeId == -1) {
@@ -123,6 +137,13 @@ MapController = function() {
 	 */
 	MapController.prototype.getData = function() {
 		return this._data;
+	};
+	
+	/**
+	 * @return True if the user is authenticated
+	 */
+	MapController.prototype.isAuthenticated = function() {
+		return this._auth != null && this._auth.authenticated();
 	};
 
 //OTHER METHODS
@@ -197,19 +218,15 @@ MapController = function() {
 	MapController.prototype.login = function() {
 		//Save current map params in a cookie (to restore after login)
 		var map = this._view.getLMapView().get();
-		Cookie.set('niuedit-lat', map.getCenter().lat);
-		Cookie.set('niuedit-lon', map.getCenter().lng);
-		Cookie.set('niuedit-zoom', map.getZoom());
-		Cookie.set('niuedit-theme', this._view.getURLView().getTheme());
+		Cookies.set('niuedit-lat', map.getCenter().lat);
+		Cookies.set('niuedit-lon', map.getCenter().lng);
+		Cookies.set('niuedit-zoom', map.getZoom());
+		Cookies.set('niuedit-theme', this._view.getURLView().getTheme());
 		
 		//Authenticate
-		this._auth = osmAuth({
-			oauth_consumer_key: CONFIG.osm.oauth.consumer_key,
-			oauth_secret: CONFIG.osm.oauth.secret,
-			auto: true,
-			singlepage: true,
-			landing: ''
-		}).authenticate();
+		if(!this._auth.authenticated()) {
+			this._auth.authenticate();
+		}
 	};
 	
 	/**
@@ -227,15 +244,55 @@ MapController = function() {
 			//Check authentication
 			if(this._auth.authenticated()) {
 				this._view.getMessagesView().display("info", "Log-in succeed");
+				this.retrieveUserName();
 			}
 			else {
 				this._view.getMessagesView().display("error", "Authentication failed");
 			}
 			
-			//TODO Restore map state
+			//Restore map state
+			if(Cookies.get('niuedit-lat') != undefined && Cookies.get('niuedit-lon') != undefined && Cookies.get('niuedit-zoom') != undefined && Cookies.get('niuedit-theme') != undefined) {
+				window.history.replaceState({}, "NiuEdit", $(location).attr('href').split('?')[0]+"?t="+Cookies.get('niuedit-theme')+"#"+Cookies.get('niuedit-zoom')+"/"+Cookies.get('niuedit-lat')+"/"+Cookies.get('niuedit-lon'));
+				this.initThemeView();
+			}
+			else {
+				alert("Can't reload previous map");
+				window.location.replace("index.html");
+			}
 			
-			this.initThemeView();
 		}.bind(this));
+	};
+	
+	/**
+	 * Retrieve user name
+	 */
+	MapController.prototype.retrieveUserName = function() {
+		if(this.isAuthenticated()) {
+			this._auth.xhr({
+				method: 'GET',
+				path: '/api/0.6/user/details'
+			}, function(err, res) {
+				if(err) {
+					this._view.setUser(null);
+					this._view.getMessagesView().display("error", "Error when retrieving user data");
+				}
+				else {
+					var userTag = res.getElementsByTagName('user')[0];
+					this._view.setUser(userTag.getAttribute('display_name'));
+				}
+			}.bind(this));
+		}
+	};
+	
+	/**
+	 * Logs out the user
+	 */
+	MapController.prototype.logOut = function() {
+		if(this._auth != null) {
+			this._auth.logout();
+		}
+		this._view.getMessagesView().display("info", "Successfully logged out");
+		this._view.setUser(null);
 	};
 
 /*************

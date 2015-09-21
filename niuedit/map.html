@@ -93,13 +93,15 @@
 				<form class="navbar-form navbar-right">
 					<div class="btn-group" role="group">
 						<button id="btn-options" type="button" class="btn btn-default" aria-label="Options"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+						<button id="btn-logout" type="button" class="btn btn-default" aria-label="Log out"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></button>
 						<button id="btn-help" type="button" class="btn btn-default" aria-label="Help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
 					</div>
 				</form>
-				<form class="navbar-form navbar-right">
+				<form class="navbar-form navbar-right hidden">
 					<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save <span class="badge">42</span></button>
 					<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Cancel</button>
 				</form>
+				<p id="logged-text" class="navbar-text navbar-right">Signed in as <span></span></p>
 			</div>
 		</div>
 	</nav>
