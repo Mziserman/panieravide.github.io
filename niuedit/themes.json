@@ -51,8 +51,8 @@
 					"description": "Floor(s) of the object",
 					"values": {
 						"type": "float",
-						"min": -20,
-						"max": 100,
+						"min": -10,
+						"max": 30,
 						"multiplicity": "1+"
 					}
 				}
