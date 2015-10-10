@@ -89,6 +89,9 @@ MapView = function(ctrl) {
 	
 	/** The account view **/
 	this._vAccount = new AccountView(this);
+	
+	/** The object edit view **/
+	this._vObjEdit = new ObjectEditView(this);
 };
 
 //CONSTRUCTOR
@@ -160,6 +163,13 @@ MapView = function(ctrl) {
 	 */
 	MapView.prototype.getAccountView = function() {
 		return this._vAccount;
+	};
+	
+	/**
+	 * @return The object edit view
+	 */
+	MapView.prototype.getObjectEditView = function() {
+		return this._vObjEdit;
 	};
 	
 	/**
@@ -816,7 +826,7 @@ MessagesView = function(main) {
 	};
 
 /**********************************************************************************/
-	
+
 /**
  * The loading overlay panel component
  */
@@ -833,6 +843,101 @@ AccountView = function(main) {
 };
 
 //MODIFIERS
+	/**
+	 * Show the modal
+	 */
 	AccountView.prototype.show = function() {
 		this._dom.modal("show");
+	};
+
+/**********************************************************************************/
+
+/**
+ * The edit overlay panel component
+ */
+ObjectEditView = function(main) {
+//ATTRIBUTES
+	/** The main view **/
+	this._mainView = main;
+	
+	/** The DOM object **/
+	this._dom = $("#modal-edit-object");
+};
+
+//MODIFIERS
+	/**
+	 * Show the modal
+	 * @param id The object ID
+	 */
+	ObjectEditView.prototype.show = function(id) {
+		this._dom.modal("show");
+		
+		//Change modal data in function of object to edit
+		var ft = this._mainView.getController().getData().getFeature(id);
+		$("#modal-edit-object-name").html(ft.getName());
+		
+		//Create attributes fields
+		var formHtml = '';
+		var themeTags = this._mainView.getController().getTheme().editable_tags;
+		
+		var themeTag, valuesType, tagVal, valuesList;
+		for(var tagId = 0; tagId < themeTags.length; tagId++) {
+			themeTag = themeTags[tagId];
+			
+			formHtml += '<div class="form-group">';
+			
+			valuesType = themeTag.values.type;
+			tagVal = ft.getTag(themeTag.key);
+			
+			//TODO Handle multiplicity
+			switch(valuesType) {
+				case "list":
+					formHtml += '<label for="input-'+themeTag.key+'" class="col-sm-3 control-label">'+themeTag.description+'</label>'
+							+'<div class="col-sm-9">'
+							+'<select class="form-control" id="input-'+themeTag.key+'">'
+							+'<option value="null">Undefined</option>';
+					
+					valuesList = themeTag.values.list;
+					for(var v in valuesList) {
+						formHtml += '<option value="'+v+'"';
+						if(tagVal == v) { formHtml += ' selected'; }
+						formHtml += '>'+valuesList[v]+'</option>';
+					}
+					
+					formHtml += '</select>'
+							+'</div>';
+					break;
+				
+				case "float":
+					formHtml += '<label for="input-'+themeTag.key+'" class="col-sm-3 control-label">'+themeTag.description+'</label>'
+						+'<div class="col-sm-9">'
+						+'<input type="number" class="form-control" id="input-'+themeTag.key+'" placeholder="Undefined" step="0.1" min="'+themeTag.values.min+'" max="'+themeTag.values.max+'" ';
+					
+					if(tagVal != undefined) {
+						formHtml += 'value="'+tagVal+'" ';
+					}
+					
+					formHtml += '/></div>';
+					break;
+				
+				case "int":
+					formHtml += '<label for="input-'+themeTag.key+'" class="col-sm-3 control-label">'+themeTag.description+'</label>'
+						+'<div class="col-sm-9">'
+						+'<input type="number" class="form-control" id="input-'+themeTag.key+'" placeholder="Undefined" step="1" min="'+themeTag.values.min+'" max="'+themeTag.values.max+'" ';
+					
+					if(tagVal != undefined) {
+						formHtml += 'value="'+tagVal+'" ';
+					}
+					
+					formHtml += '/></div>';
+					break;
+				
+				default:
+					console.error("[Edit] Invalid type for values: "+valuesType);
+			}
+			
+			formHtml += '</div>';
+		}
+		
+		$("#modal-edit-object-form").html(formHtml);
 	};

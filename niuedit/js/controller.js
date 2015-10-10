@@ -310,7 +310,6 @@ MapController = function() {
 		}
 		//If authenticated, start edit
 		else {
-			//TODO
-			console.log("start edit "+id);
+			this._view.getObjectEditView().show(id);
 		}
 	};
