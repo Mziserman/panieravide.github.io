@@ -155,6 +155,9 @@ SimpleFeature = function(f) {
 	/** The position of the centroid */
 	this._center = (f.type == "node") ? L.latLng(f.lat, f.lon) : L.latLng(f.center.lat, f.center.lon);
 	
+	/** The list of tags edited by user **/
+	this._editedTags = null;
+	
 	return this;
 };
 
@@ -178,7 +181,9 @@ SimpleFeature = function(f) {
 	 * @return The corresponding OSM value, or undefined if not found
 	 */
 	SimpleFeature.prototype.getTag = function(key) {
-		return this._tags[key];
+		return (this._editedTags != null && this._editedTags[key] !== undefined) ?
+			this._editedTags[key]
+			: this._tags[key];
 	};
 	
 	/**
@@ -208,4 +213,25 @@ SimpleFeature = function(f) {
 		}
 		
 		return (has == 0) ? "none" : ((has == l) ? "full" : "partial");
+	};
+	
+	/**
+	 * @return True if edited by user
+	 */
+	SimpleFeature.prototype.isEdited = function() {
+		return this._editedTags != null;
+	};
+
+//MODIFIERS
+	/**
+	 * Edit a given tag
+	 * @param k The tag key
+	 * @param v The tag value
+	 */
+	SimpleFeature.prototype.editTag = function(k, v) {
+		if(this._editedTags == null) {
+			this._editedTags = {};
+		}
+		
+		this._editedTags[k] = v;
 	};

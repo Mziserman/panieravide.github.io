@@ -291,42 +291,7 @@ LMapView = function(main) {
 				}
 				
 				//Add popup
-				text = '<div class="popup-header"><span class="title">'+feature.getName()+'</span>';
-				
-				//Links
-				text += ' <a class="link" onclick="ctrl.startEdit(\''+feature.getId()+'\')"><img src="img/icon_edit.svg" alt="Edit" /></a>';
-				text += ' <a class="link" href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a></div>';
-				
-				//Table
-				text += '<table class="table popup"><thead><tr><th>Description</th><th>Value</th></tr></thead>';
-				text += '<tbody>';
-				
-				var tag, editTag, valDesc;
-				for(var i=0; i < editTags.length; i++) {
-					editTag = editTags[i];
-					tag = feature.getTag(editTag.key);
-					
-					if(tag != undefined) {
-						switch(editTag.values.type) {
-							case "list":
-								valDesc = editTag.values.list[tag];
-								break;
-							case "int":
-							case "float":
-							default:
-								valDesc = tag;
-								break;
-						}
-						text += '<tr><td>'+editTag.description+'</td><td>'+valDesc+'</td></tr>';
-					}
-					else {
-						text += '<tr><td>'+editTag.description+'</td><td>Undefined</td></tr>';
-					}
-				}
-				
-				text += '</tbody></table>';
-				
-				marker.bindPopup(L.popup({ minWidth: 250, maxWidth: 500 }).setContent(text));
+				marker.bindPopup(this.createPopup(feature));
 				
 				//Add to data layer
 				this._dataLayer.addLayer(marker);
@@ -337,6 +302,15 @@ LMapView = function(main) {
 		if(nbFeatures == 0) {
 			this._mainView.getMessagesView().display("alert", "No available data here");
 		}
+	};
+	
+	/**
+	 * Updates the popup for the given feature
+	 * @param feature The feature
+	 */
+	LMapView.prototype.updatePopup = function(feature) {
+		//TODO Make popup update less brutal
+		this.showData(this._mainView.getController().getData());
 	};
 	
 //OTHER METHODS
@@ -411,6 +385,54 @@ LMapView = function(main) {
 	 */
 	LMapView.prototype.optionsChanged = function() {
 		this.showData(this._mainView.getController().getData());
+	};
+	
+	/**
+	 * Creates the popup for a given feature
+	 * @param feature The feature
+	 * @return The leaflet popup
+	 */
+	LMapView.prototype.createPopup = function(feature) {
+		//Add popup
+		var text = '<div class="popup-header"><span class="title">'+feature.getName();
+		if(feature.isEdited()) { text += ' <small>(edited)</small>'; }
+		text += '</span>';
+		
+		//Links
+		text += ' <a class="link" onclick="ctrl.startEdit(\''+feature.getId()+'\')"><img src="img/icon_edit.svg" alt="Edit" /></a>';
+		text += ' <a class="link" href="http://openstreetmap.org/'+feature.getId()+'" target="_blank"><img src="img/icon_osm.svg" alt="OSM.org" /></a></div>';
+		
+		//Table
+		text += '<table class="table popup"><thead><tr><th>Description</th><th>Value</th></tr></thead>';
+		text += '<tbody>';
+		
+		var editTags = this._mainView.getController().getTheme().editable_tags;
+		var tag, editTag, valDesc;
+		for(var i=0; i < editTags.length; i++) {
+			editTag = editTags[i];
+			tag = feature.getTag(editTag.key);
+			
+			if(tag != undefined) {
+				switch(editTag.values.type) {
+					case "list":
+						valDesc = editTag.values.list[tag];
+						break;
+					case "int":
+					case "float":
+					default:
+						valDesc = tag;
+						break;
+				}
+				text += '<tr><td>'+editTag.description+'</td><td>'+valDesc+'</td></tr>';
+			}
+			else {
+				text += '<tr><td>'+editTag.description+'</td><td>Undefined</td></tr>';
+			}
+		}
+		
+		text += '</tbody></table>';
+		
+		return L.popup({ minWidth: 250, maxWidth: 500 }).setContent(text);
 	};
 
 /**********************************************************************************/
@@ -862,6 +884,12 @@ ObjectEditView = function(main) {
 	
 	/** The DOM object **/
 	this._dom = $("#modal-edit-object");
+	
+	/** The feature being edited **/
+	this._editingFeature = null;
+
+//CONSTRUCTOR
+	$("#modal-edit-object-submit").click(this.submit.bind(this));
 };
 
 //MODIFIERS
@@ -940,4 +968,33 @@ ObjectEditView = function(main) {
 		}
 		
 		$("#modal-edit-object-form").html(formHtml);
+		this._editingFeature = ft;
+	};
+
+	/**
+	 * Save edits made in modal
+	 */
+	ObjectEditView.prototype.submit = function() {
+		var themeTags = this._mainView.getController().getTheme().editable_tags;
+		
+		//Get new values
+		var themeTag, valuesType, tagVal, valuesList, formVal;
+		for(var tagId = 0; tagId < themeTags.length; tagId++) {
+			themeTag = themeTags[tagId];
+			
+			valuesType = themeTag.values.type;
+			tagVal = this._editingFeature.getTag(themeTag.key);
+			formVal = $("#input-"+themeTag.key).val();
+			
+			//Compare old and new value
+			if(tagVal != formVal) {
+				if(formVal == "null") { formVal = null; }
+				this._editingFeature.editTag(themeTag.key, formVal);
+			}
+		}
+		
+		//Done editing
+		this._editingFeature = null;
+		this._mainView.getLMapView().updatePopup(this._editingFeature);
+		this._dom.modal("hide");
 	};

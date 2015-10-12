@@ -189,6 +189,26 @@
 			assert.equal(sf.getStatus([ "test", "tar" ]), "partial");
 			assert.equal(sf.getStatus([ "amenity", "test" ]), "full");
 		});
+		QUnit.test("Is edited", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo", "bar": "yes" } };
+			var sf = new SimpleFeature(f);
+			assert.notOk(sf.isEdited());
+			sf.editTag("test", "bar");
+			assert.ok(sf.isEdited());
+		});
+		QUnit.test("Edit tag simple", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo", "bar": "yes" } };
+			var sf = new SimpleFeature(f);
+			sf.editTag("test", "bar");
+			assert.equal(sf.getTag("test"), "bar");
+			assert.equal(sf.getTag("amenity"), "test");
+		});
+		QUnit.test("Edit tag erase", function(assert) {
+			var f = { "type": "way", "id": 354, "center": { "lat": 48.8, "lon": 2.3 }, "nodes": [ 31, 36 ], "tags": { "amenity": "test", "test": "foo", "bar": "yes" } };
+			var sf = new SimpleFeature(f);
+			sf.editTag("test", null);
+			assert.equal(sf.getTag("test"), undefined);
+		});
 		
 		/*
 		 * OSMData
