@@ -1,0 +1,3777 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2015-11-06T12:22:01Z",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "way/5069328",
+      "properties": {
+        "@id": "way/5069328",
+        "highway": "unclassified",
+        "name": "Rue du Nivernais",
+        "oneway": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7087739,
+            48.1220175
+          ],
+          [
+            -1.708865,
+            48.1220121
+          ],
+          [
+            -1.7104263,
+            48.1220192
+          ],
+          [
+            -1.7106523,
+            48.1220222
+          ],
+          [
+            -1.7134417,
+            48.1220577
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5069330",
+      "properties": {
+        "@id": "way/5069330",
+        "highway": "tertiary",
+        "junction": "roundabout",
+        "maxspeed": "30"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7133776,
+            48.1205455
+          ],
+          [
+            -1.7133826,
+            48.1205681
+          ],
+          [
+            -1.7133989,
+            48.1205881
+          ],
+          [
+            -1.7134245,
+            48.1206032
+          ],
+          [
+            -1.7134562,
+            48.1206116
+          ],
+          [
+            -1.7134842,
+            48.1206107
+          ],
+          [
+            -1.7135172,
+            48.1206068
+          ],
+          [
+            -1.7135452,
+            48.1205938
+          ],
+          [
+            -1.7135649,
+            48.1205752
+          ],
+          [
+            -1.7135741,
+            48.120544
+          ],
+          [
+            -1.7135664,
+            48.1205217
+          ],
+          [
+            -1.7135479,
+            48.1205026
+          ],
+          [
+            -1.7135207,
+            48.1204889
+          ],
+          [
+            -1.7134768,
+            48.1204817
+          ],
+          [
+            -1.7134431,
+            48.1204854
+          ],
+          [
+            -1.7134134,
+            48.1204966
+          ],
+          [
+            -1.7133912,
+            48.1205139
+          ],
+          [
+            -1.7133776,
+            48.1205455
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5069331",
+      "properties": {
+        "@id": "way/5069331",
+        "highway": "unclassified",
+        "name": "Rue du Bourbonnais"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7133776,
+            48.1205455
+          ],
+          [
+            -1.713291,
+            48.1205531
+          ],
+          [
+            -1.7132243,
+            48.120559
+          ],
+          [
+            -1.7121107,
+            48.1205477
+          ],
+          [
+            -1.7120608,
+            48.1205487
+          ],
+          [
+            -1.7120118,
+            48.1205497
+          ],
+          [
+            -1.7114718,
+            48.1205418
+          ],
+          [
+            -1.7112382,
+            48.1205374
+          ],
+          [
+            -1.710796,
+            48.120529
+          ],
+          [
+            -1.7106345,
+            48.1205224
+          ],
+          [
+            -1.7104773,
+            48.1205172
+          ],
+          [
+            -1.7103255,
+            48.1205165
+          ],
+          [
+            -1.7102648,
+            48.1205147
+          ],
+          [
+            -1.7102037,
+            48.1205149
+          ],
+          [
+            -1.7101608,
+            48.1205145
+          ],
+          [
+            -1.7101176,
+            48.1205142
+          ],
+          [
+            -1.7100446,
+            48.1205136
+          ],
+          [
+            -1.7099057,
+            48.120513
+          ],
+          [
+            -1.7089631,
+            48.1205088
+          ],
+          [
+            -1.7085953,
+            48.1205032
+          ],
+          [
+            -1.7084547,
+            48.1205024
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5106976",
+      "properties": {
+        "@id": "way/5106976",
+        "highway": "residential",
+        "maxspeed": "30",
+        "name": "Avenue du Doyen Colas",
+        "ref:FR:FANTOIR": "352382600C",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7084336,
+            48.1203565
+          ],
+          [
+            -1.7082466,
+            48.1203528
+          ],
+          [
+            -1.7075398,
+            48.1203388
+          ],
+          [
+            -1.70672,
+            48.1203225
+          ],
+          [
+            -1.706498,
+            48.1203181
+          ],
+          [
+            -1.7063747,
+            48.1203157
+          ],
+          [
+            -1.7062141,
+            48.1203104
+          ],
+          [
+            -1.7060575,
+            48.1203056
+          ],
+          [
+            -1.7058727,
+            48.1203019
+          ],
+          [
+            -1.7057237,
+            48.1203009
+          ],
+          [
+            -1.7049055,
+            48.1202827
+          ],
+          [
+            -1.7047992,
+            48.1202793
+          ],
+          [
+            -1.7047597,
+            48.1202798
+          ],
+          [
+            -1.7046552,
+            48.1202764
+          ],
+          [
+            -1.7045707,
+            48.1202736
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5106982",
+      "properties": {
+        "@id": "way/5106982",
+        "highway": "tertiary",
+        "maxspeed": "30",
+        "name": "Boulevard d'Anjou"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134768,
+            48.1204817
+          ],
+          [
+            -1.7134809,
+            48.1202923
+          ],
+          [
+            -1.7134817,
+            48.120255
+          ],
+          [
+            -1.7134829,
+            48.1201067
+          ],
+          [
+            -1.7134862,
+            48.1199506
+          ],
+          [
+            -1.7134874,
+            48.1199255
+          ],
+          [
+            -1.7134892,
+            48.1198854
+          ],
+          [
+            -1.7134938,
+            48.1197863
+          ],
+          [
+            -1.7135072,
+            48.1193533
+          ],
+          [
+            -1.7135156,
+            48.1191227
+          ],
+          [
+            -1.7135186,
+            48.119042
+          ],
+          [
+            -1.7135332,
+            48.1189982
+          ],
+          [
+            -1.7136057,
+            48.1187798
+          ],
+          [
+            -1.7136444,
+            48.1186632
+          ],
+          [
+            -1.7137341,
+            48.1183206
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5106985",
+      "properties": {
+        "@id": "way/5106985",
+        "highway": "unclassified",
+        "name": "Square du Nivernais",
+        "oneway": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7104263,
+            48.1220192
+          ],
+          [
+            -1.7104268,
+            48.122137
+          ],
+          [
+            -1.7104161,
+            48.1226047
+          ],
+          [
+            -1.710621,
+            48.1226013
+          ],
+          [
+            -1.7106459,
+            48.1221401
+          ],
+          [
+            -1.7106523,
+            48.1220222
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5106994",
+      "properties": {
+        "@id": "way/5106994",
+        "highway": "tertiary",
+        "maxspeed": "30",
+        "name": "Boulevard d'Anjou"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134184,
+            48.123047
+          ],
+          [
+            -1.713425,
+            48.1226441
+          ],
+          [
+            -1.7134262,
+            48.1226074
+          ],
+          [
+            -1.7134399,
+            48.1221741
+          ],
+          [
+            -1.7134417,
+            48.1220577
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5106995",
+      "properties": {
+        "@id": "way/5106995",
+        "highway": "residential",
+        "name": "Square de Gascogne"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134435,
+            48.1219442
+          ],
+          [
+            -1.7137701,
+            48.1219498
+          ],
+          [
+            -1.714623,
+            48.1219643
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/5107006",
+      "properties": {
+        "@id": "way/5107006",
+        "highway": "pedestrian"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134743,
+            48.1213492
+          ],
+          [
+            -1.7132526,
+            48.1213518
+          ],
+          [
+            -1.7125603,
+            48.1213445
+          ],
+          [
+            -1.7119916,
+            48.121338
+          ],
+          [
+            -1.7107565,
+            48.1213238
+          ],
+          [
+            -1.7104971,
+            48.1213208
+          ],
+          [
+            -1.7101769,
+            48.1213171
+          ],
+          [
+            -1.7090594,
+            48.1213043
+          ],
+          [
+            -1.70861,
+            48.1213008
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/23296610",
+      "properties": {
+        "@id": "way/23296610",
+        "highway": "residential",
+        "name": "Rue du Limousin"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7148836,
+            48.1230682
+          ],
+          [
+            -1.7148883,
+            48.1226772
+          ],
+          [
+            -1.7146677,
+            48.1226689
+          ],
+          [
+            -1.7139551,
+            48.1226547
+          ],
+          [
+            -1.7138964,
+            48.1226535
+          ],
+          [
+            -1.7137305,
+            48.1226502
+          ],
+          [
+            -1.7135777,
+            48.1226471
+          ],
+          [
+            -1.713425,
+            48.1226441
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/27623193",
+      "properties": {
+        "@id": "way/27623193",
+        "highway": "service",
+        "oneway": "yes",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7120608,
+            48.1205487
+          ],
+          [
+            -1.7120604,
+            48.1206166
+          ],
+          [
+            -1.7120861,
+            48.1206393
+          ],
+          [
+            -1.712331,
+            48.1206438
+          ],
+          [
+            -1.7123399,
+            48.1206638
+          ],
+          [
+            -1.7123707,
+            48.1207331
+          ],
+          [
+            -1.7123992,
+            48.1207784
+          ],
+          [
+            -1.7123917,
+            48.1209281
+          ],
+          [
+            -1.7125833,
+            48.1209306
+          ],
+          [
+            -1.712793,
+            48.1209326
+          ],
+          [
+            -1.7128027,
+            48.1207839
+          ],
+          [
+            -1.7128471,
+            48.1207395
+          ],
+          [
+            -1.7128961,
+            48.1206725
+          ],
+          [
+            -1.712911,
+            48.1206521
+          ],
+          [
+            -1.7131819,
+            48.1206535
+          ],
+          [
+            -1.7132216,
+            48.1206284
+          ],
+          [
+            -1.7132243,
+            48.120559
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/27623194",
+      "properties": {
+        "@id": "way/27623194",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7123992,
+            48.1207784
+          ],
+          [
+            -1.7128027,
+            48.1207839
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/27623195",
+      "properties": {
+        "@id": "way/27623195",
+        "highway": "footway",
+        "tunnel": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7125833,
+            48.1209306
+          ],
+          [
+            -1.7125603,
+            48.1213445
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/27623196",
+      "properties": {
+        "@id": "way/27623196",
+        "cycleway:left": "lane",
+        "highway": "tertiary",
+        "name": "Cours Président John Fitzgerald Kennedy",
+        "ref:FR:FANTOIR": "352385164P"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.70861,
+            48.1213008
+          ],
+          [
+            -1.7084417,
+            48.1212922
+          ],
+          [
+            -1.7083646,
+            48.1212898
+          ],
+          [
+            -1.7062308,
+            48.121253
+          ],
+          [
+            -1.7061507,
+            48.1212516
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809701",
+      "properties": {
+        "@id": "way/32809701",
+        "highway": "service",
+        "name": "Placis de l'Orléanais",
+        "ref:FR:FANTOIR": "352385803J",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134817,
+            48.120255
+          ],
+          [
+            -1.7126672,
+            48.120239
+          ],
+          [
+            -1.7126024,
+            48.1201999
+          ],
+          [
+            -1.71261,
+            48.1200909
+          ],
+          [
+            -1.7126203,
+            48.1199573
+          ],
+          [
+            -1.7126709,
+            48.119931
+          ],
+          [
+            -1.7134862,
+            48.1199506
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809702",
+      "properties": {
+        "@id": "way/32809702",
+        "highway": "service",
+        "name": "Placis de l'Orléanais",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134829,
+            48.1201067
+          ],
+          [
+            -1.71261,
+            48.1200909
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809703",
+      "properties": {
+        "@id": "way/32809703",
+        "highway": "service",
+        "service": "parking_aisle",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134938,
+            48.1197863
+          ],
+          [
+            -1.713767,
+            48.1197909
+          ],
+          [
+            -1.7139933,
+            48.1197925
+          ],
+          [
+            -1.7140137,
+            48.1193609
+          ],
+          [
+            -1.7137856,
+            48.1193558
+          ],
+          [
+            -1.7135072,
+            48.1193533
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809704",
+      "properties": {
+        "@id": "way/32809704",
+        "highway": "service",
+        "service": "parking_aisle",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.713767,
+            48.1197909
+          ],
+          [
+            -1.7137856,
+            48.1193558
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809706",
+      "properties": {
+        "@id": "way/32809706",
+        "highway": "service",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134399,
+            48.1221741
+          ],
+          [
+            -1.7132913,
+            48.1221732
+          ],
+          [
+            -1.7125363,
+            48.1221689
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32809707",
+      "properties": {
+        "@id": "way/32809707",
+        "highway": "service",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7112442,
+            48.1221487
+          ],
+          [
+            -1.7106459,
+            48.1221401
+          ],
+          [
+            -1.7104268,
+            48.122137
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32810889",
+      "properties": {
+        "@id": "way/32810889",
+        "highway": "service",
+        "name": "Square de Champagne",
+        "service": "parking_aisle",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7100446,
+            48.1205136
+          ],
+          [
+            -1.7100457,
+            48.1203649
+          ],
+          [
+            -1.7100478,
+            48.1200945
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32820173",
+      "properties": {
+        "@id": "way/32820173",
+        "highway": "residential",
+        "maxspeed": "30",
+        "name": "Rue Vincent Auriol",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7085247,
+            48.1208603
+          ],
+          [
+            -1.7081287,
+            48.1208738
+          ],
+          [
+            -1.707638,
+            48.1208681
+          ],
+          [
+            -1.7070798,
+            48.1208548
+          ],
+          [
+            -1.7070304,
+            48.1208537
+          ],
+          [
+            -1.7066119,
+            48.1208526
+          ],
+          [
+            -1.7065813,
+            48.1208629
+          ],
+          [
+            -1.7064905,
+            48.1208933
+          ],
+          [
+            -1.7064211,
+            48.1209166
+          ],
+          [
+            -1.7061116,
+            48.1209172
+          ],
+          [
+            -1.7060675,
+            48.1209173
+          ],
+          [
+            -1.706057,
+            48.1210877
+          ],
+          [
+            -1.7060505,
+            48.121194
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32820175",
+      "properties": {
+        "@id": "way/32820175",
+        "highway": "service",
+        "name": "Villa d'Artois",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7087031,
+            48.12171
+          ],
+          [
+            -1.7079608,
+            48.1216909
+          ],
+          [
+            -1.7079698,
+            48.1218776
+          ],
+          [
+            -1.7087381,
+            48.121918
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32820176",
+      "properties": {
+        "@id": "way/32820176",
+        "highway": "service",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7092897,
+            48.1229988
+          ],
+          [
+            -1.7092902,
+            48.1229698
+          ],
+          [
+            -1.7092969,
+            48.1225609
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32839998",
+      "properties": {
+        "@id": "way/32839998",
+        "highway": "footway",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7151155,
+            48.1204132
+          ],
+          [
+            -1.7147874,
+            48.1203809
+          ],
+          [
+            -1.7146149,
+            48.1203624
+          ],
+          [
+            -1.7143803,
+            48.1203734
+          ],
+          [
+            -1.7141995,
+            48.1204407
+          ],
+          [
+            -1.714017,
+            48.1202614
+          ],
+          [
+            -1.7140567,
+            48.1201067
+          ],
+          [
+            -1.7142663,
+            48.1199888
+          ],
+          [
+            -1.7143756,
+            48.1200061
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/32839999",
+      "properties": {
+        "@id": "way/32839999",
+        "highway": "footway",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7142663,
+            48.1199888
+          ],
+          [
+            -1.7141004,
+            48.1199369
+          ],
+          [
+            -1.7140568,
+            48.1198782
+          ],
+          [
+            -1.7139933,
+            48.1197925
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/49424510",
+      "properties": {
+        "@id": "way/49424510",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.70861,
+            48.1213008
+          ],
+          [
+            -1.7086299,
+            48.1214149
+          ],
+          [
+            -1.7086458,
+            48.1215062
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/50659605",
+      "properties": {
+        "@id": "way/50659605",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7084547,
+            48.1205024
+          ],
+          [
+            -1.7084665,
+            48.120589
+          ],
+          [
+            -1.7085247,
+            48.1208603
+          ],
+          [
+            -1.7085935,
+            48.1212051
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/81004663",
+      "properties": {
+        "@id": "way/81004663",
+        "highway": "residential",
+        "name": "Avenue de Guyenne",
+        "oneway": "yes",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134756,
+            48.1214011
+          ],
+          [
+            -1.7136078,
+            48.1214042
+          ],
+          [
+            -1.714023,
+            48.1214079
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371089",
+      "properties": {
+        "@id": "way/98371089",
+        "highway": "pedestrian"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7105125,
+            48.1209153
+          ],
+          [
+            -1.7101862,
+            48.120915
+          ],
+          [
+            -1.7101897,
+            48.1208561
+          ],
+          [
+            -1.7101962,
+            48.1206396
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371096",
+      "properties": {
+        "@id": "way/98371096",
+        "highway": "steps"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7101962,
+            48.1206396
+          ],
+          [
+            -1.7102037,
+            48.1205149
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371100",
+      "properties": {
+        "@id": "way/98371100",
+        "highway": "footway",
+        "surface": "compacted"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7103255,
+            48.1205165
+          ],
+          [
+            -1.7103482,
+            48.1200191
+          ],
+          [
+            -1.7103688,
+            48.1195686
+          ],
+          [
+            -1.7102173,
+            48.1195556
+          ],
+          [
+            -1.7100643,
+            48.1195423
+          ],
+          [
+            -1.709605,
+            48.1194826
+          ],
+          [
+            -1.7095569,
+            48.1194768
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371103",
+      "properties": {
+        "@id": "way/98371103",
+        "highway": "pedestrian"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7107565,
+            48.1213238
+          ],
+          [
+            -1.7107679,
+            48.1209179
+          ],
+          [
+            -1.7105125,
+            48.1209153
+          ],
+          [
+            -1.7104971,
+            48.1213208
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371104",
+      "properties": {
+        "@id": "way/98371104",
+        "highway": "steps"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7120148,
+            48.1206613
+          ],
+          [
+            -1.7120118,
+            48.1205497
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371109",
+      "properties": {
+        "@id": "way/98371109",
+        "highway": "pedestrian"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7101862,
+            48.120915
+          ],
+          [
+            -1.7101769,
+            48.1213171
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98371111",
+      "properties": {
+        "@id": "way/98371111",
+        "highway": "pedestrian"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7119916,
+            48.121338
+          ],
+          [
+            -1.7120148,
+            48.1206613
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98784049",
+      "properties": {
+        "@id": "way/98784049",
+        "highway": "path"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7104942,
+            48.1195703
+          ],
+          [
+            -1.7103688,
+            48.1195686
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/98784056",
+      "properties": {
+        "@id": "way/98784056",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7105138,
+            48.1190985
+          ],
+          [
+            -1.710502,
+            48.1193821
+          ],
+          [
+            -1.7104957,
+            48.1195368
+          ],
+          [
+            -1.7104942,
+            48.1195703
+          ],
+          [
+            -1.7104804,
+            48.1198883
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/105213941",
+      "properties": {
+        "@id": "way/105213941",
+        "highway": "service",
+        "oneway": "yes",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.708802,
+            48.1221205
+          ],
+          [
+            -1.7104268,
+            48.122137
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/107469354",
+      "properties": {
+        "@id": "way/107469354",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7088478,
+            48.1197049
+          ],
+          [
+            -1.7092152,
+            48.1196082
+          ],
+          [
+            -1.7091991,
+            48.1198394
+          ],
+          [
+            -1.7092007,
+            48.1198866
+          ],
+          [
+            -1.7093481,
+            48.1199662
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/107474937",
+      "properties": {
+        "@id": "way/107474937",
+        "highway": "path"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7103482,
+            48.1200191
+          ],
+          [
+            -1.7104847,
+            48.1200208
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/107585143",
+      "properties": {
+        "@id": "way/107585143",
+        "highway": "residential",
+        "name": "Allée de Touraine"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7135186,
+            48.119042
+          ],
+          [
+            -1.7133999,
+            48.1190414
+          ],
+          [
+            -1.7133421,
+            48.1190411
+          ],
+          [
+            -1.7130605,
+            48.1190412
+          ],
+          [
+            -1.7129758,
+            48.1190779
+          ],
+          [
+            -1.7129553,
+            48.1196499
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546388",
+      "properties": {
+        "@id": "way/136546388",
+        "bicycle": "yes",
+        "highway": "service",
+        "horse": "no",
+        "name": "Promenade du Comte de Nice",
+        "service": "parking_aisle",
+        "surface": "paved",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7121107,
+            48.1205477
+          ],
+          [
+            -1.7121354,
+            48.1203181
+          ],
+          [
+            -1.7121491,
+            48.1202572
+          ],
+          [
+            -1.7121626,
+            48.1201968
+          ],
+          [
+            -1.7121876,
+            48.1198376
+          ],
+          [
+            -1.7122239,
+            48.11973
+          ],
+          [
+            -1.7123284,
+            48.1196754
+          ],
+          [
+            -1.7125509,
+            48.1196512
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546390",
+      "properties": {
+        "@id": "way/136546390",
+        "highway": "service",
+        "name": "Square de Champagne",
+        "oneway": "yes",
+        "service": "parking_aisle",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7100478,
+            48.1200945
+          ],
+          [
+            -1.7100455,
+            48.1199725
+          ],
+          [
+            -1.7099919,
+            48.1199591
+          ],
+          [
+            -1.7094098,
+            48.1199465
+          ],
+          [
+            -1.7093481,
+            48.1199662
+          ],
+          [
+            -1.709344,
+            48.1200528
+          ],
+          [
+            -1.7093597,
+            48.1200686
+          ],
+          [
+            -1.7093858,
+            48.120083
+          ],
+          [
+            -1.7100478,
+            48.1200945
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546392",
+      "properties": {
+        "@id": "way/136546392",
+        "highway": "service",
+        "oneway": "yes",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7089631,
+            48.1205088
+          ],
+          [
+            -1.7089653,
+            48.1205834
+          ],
+          [
+            -1.709005,
+            48.1206023
+          ],
+          [
+            -1.7092957,
+            48.1206091
+          ],
+          [
+            -1.7093138,
+            48.1206308
+          ],
+          [
+            -1.7093682,
+            48.1206961
+          ],
+          [
+            -1.7093956,
+            48.120746
+          ],
+          [
+            -1.709391,
+            48.1208903
+          ],
+          [
+            -1.7097815,
+            48.1208911
+          ],
+          [
+            -1.7097841,
+            48.1207464
+          ],
+          [
+            -1.7098164,
+            48.1207023
+          ],
+          [
+            -1.7098717,
+            48.1206357
+          ],
+          [
+            -1.7098894,
+            48.1206144
+          ],
+          [
+            -1.710113,
+            48.1206167
+          ],
+          [
+            -1.7101562,
+            48.1206
+          ],
+          [
+            -1.7101608,
+            48.1205145
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546393",
+      "properties": {
+        "@id": "way/136546393",
+        "bicycle": "yes",
+        "highway": "path",
+        "horse": "no",
+        "surface": "paved",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7125509,
+            48.1196512
+          ],
+          [
+            -1.7129553,
+            48.1196499
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546394",
+      "properties": {
+        "@id": "way/136546394",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7093682,
+            48.1206961
+          ],
+          [
+            -1.7090811,
+            48.1206963
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546395",
+      "properties": {
+        "@id": "way/136546395",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7128471,
+            48.1207395
+          ],
+          [
+            -1.713239,
+            48.120744
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546396",
+      "properties": {
+        "@id": "way/136546396",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7093956,
+            48.120746
+          ],
+          [
+            -1.7097841,
+            48.1207464
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546398",
+      "properties": {
+        "@id": "way/136546398",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7098164,
+            48.1207023
+          ],
+          [
+            -1.710093,
+            48.1207027
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546399",
+      "properties": {
+        "@id": "way/136546399",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7123707,
+            48.1207331
+          ],
+          [
+            -1.7121071,
+            48.12073
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136546400",
+      "properties": {
+        "@id": "way/136546400",
+        "highway": "path",
+        "surface": "paved"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7085953,
+            48.1205032
+          ],
+          [
+            -1.7086396,
+            48.120462
+          ],
+          [
+            -1.7088551,
+            48.1202615
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/136547831",
+      "properties": {
+        "@id": "way/136547831",
+        "bicycle": "yes",
+        "foot": "yes",
+        "highway": "path",
+        "horse": "no",
+        "surface": "paved",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7125535,
+            48.1202624
+          ],
+          [
+            -1.7121491,
+            48.1202572
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/149494026",
+      "properties": {
+        "@id": "way/149494026",
+        "highway": "elevator",
+        "level": "-2;-1;0",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2012",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7113634,
+            48.121387
+          ],
+          [
+            -1.711351,
+            48.1213868
+          ],
+          [
+            -1.7113379,
+            48.1213867
+          ],
+          [
+            -1.7113372,
+            48.1214128
+          ],
+          [
+            -1.7113627,
+            48.1214131
+          ],
+          [
+            -1.7113634,
+            48.121387
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/169224420",
+      "properties": {
+        "@id": "way/169224420",
+        "highway": "residential",
+        "name": "Avenue de Guyenne",
+        "oneway": "yes",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7140223,
+            48.1213524
+          ],
+          [
+            -1.7136064,
+            48.1213459
+          ],
+          [
+            -1.7134743,
+            48.1213492
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/169224421",
+      "properties": {
+        "@id": "way/169224421",
+        "covered": "yes",
+        "highway": "residential",
+        "name": "Avenue de Guyenne",
+        "oneway": "yes",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.714023,
+            48.1214079
+          ],
+          [
+            -1.7142141,
+            48.1214101
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/169224422",
+      "properties": {
+        "@id": "way/169224422",
+        "covered": "yes",
+        "highway": "residential",
+        "name": "Avenue de Guyenne",
+        "oneway": "yes",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7142154,
+            48.1213533
+          ],
+          [
+            -1.7140223,
+            48.1213524
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/313961976",
+      "properties": {
+        "@id": "way/313961976",
+        "highway": "tertiary",
+        "maxspeed": "30",
+        "name": "Boulevard d'Anjou"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134417,
+            48.1220577
+          ],
+          [
+            -1.7134435,
+            48.1219442
+          ],
+          [
+            -1.713473,
+            48.1214342
+          ],
+          [
+            -1.7134756,
+            48.1214011
+          ],
+          [
+            -1.7134743,
+            48.1213492
+          ],
+          [
+            -1.7134743,
+            48.1213196
+          ],
+          [
+            -1.7134811,
+            48.1208326
+          ],
+          [
+            -1.7134817,
+            48.1207923
+          ],
+          [
+            -1.7134842,
+            48.1206107
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/313963261",
+      "properties": {
+        "@id": "way/313963261",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7085935,
+            48.1212051
+          ],
+          [
+            -1.70861,
+            48.1213008
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/313963262",
+      "properties": {
+        "@id": "way/313963262",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7086458,
+            48.1215062
+          ],
+          [
+            -1.7087031,
+            48.12171
+          ],
+          [
+            -1.7087381,
+            48.121918
+          ],
+          [
+            -1.7087739,
+            48.1220175
+          ],
+          [
+            -1.708802,
+            48.1221205
+          ],
+          [
+            -1.7089497,
+            48.1229412
+          ],
+          [
+            -1.7089596,
+            48.122989
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/317781026",
+      "properties": {
+        "@id": "way/317781026",
+        "handrail": "yes",
+        "highway": "steps",
+        "incline": "down",
+        "indoor": "yes",
+        "level": "0;-1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7109829,
+            48.1213188
+          ],
+          [
+            -1.7111074,
+            48.1213196
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/317781027",
+      "properties": {
+        "@id": "way/317781027",
+        "handrail": "yes",
+        "highway": "steps",
+        "incline": "down",
+        "indoor": "yes",
+        "level": "0;-1",
+        "width": "1.9"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7115729,
+            48.1213123
+          ],
+          [
+            -1.7114476,
+            48.1213112
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484397",
+      "properties": {
+        "@id": "way/319484397",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.710133,
+            48.1197095
+          ],
+          [
+            -1.7096647,
+            48.1195935
+          ],
+          [
+            -1.7094432,
+            48.1195742
+          ],
+          [
+            -1.7092152,
+            48.1196082
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484398",
+      "properties": {
+        "@id": "way/319484398",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7100455,
+            48.1199725
+          ],
+          [
+            -1.7101214,
+            48.1198983
+          ],
+          [
+            -1.710133,
+            48.1197095
+          ],
+          [
+            -1.7100643,
+            48.1195423
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484401",
+      "properties": {
+        "@id": "way/319484401",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7104957,
+            48.1195368
+          ],
+          [
+            -1.7109461,
+            48.1195368
+          ],
+          [
+            -1.7110031,
+            48.1195718
+          ],
+          [
+            -1.711,
+            48.1197353
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484424",
+      "properties": {
+        "@id": "way/319484424",
+        "highway": "service"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7139356,
+            48.1230557
+          ],
+          [
+            -1.7139551,
+            48.1226547
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484425",
+      "properties": {
+        "@id": "way/319484425",
+        "highway": "service"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.713709,
+            48.1230519
+          ],
+          [
+            -1.7137305,
+            48.1226502
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484432",
+      "properties": {
+        "@id": "way/319484432",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.710405,
+            48.122741
+          ],
+          [
+            -1.7100107,
+            48.1227396
+          ],
+          [
+            -1.7098785,
+            48.1226568
+          ],
+          [
+            -1.7098399,
+            48.1225144
+          ],
+          [
+            -1.7095655,
+            48.1224506
+          ],
+          [
+            -1.7094049,
+            48.1225239
+          ],
+          [
+            -1.7092969,
+            48.1225609
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319484434",
+      "properties": {
+        "@id": "way/319484434",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7104161,
+            48.1226047
+          ],
+          [
+            -1.710405,
+            48.122741
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319927823",
+      "properties": {
+        "@id": "way/319927823",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7089269,
+            48.1201928
+          ],
+          [
+            -1.7092322,
+            48.1201663
+          ],
+          [
+            -1.7093597,
+            48.1200686
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319927825",
+      "properties": {
+        "@id": "way/319927825",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7103688,
+            48.1195686
+          ],
+          [
+            -1.7103707,
+            48.1193788
+          ],
+          [
+            -1.7103749,
+            48.1190956
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319932093",
+      "properties": {
+        "@id": "way/319932093",
+        "highway": "footway",
+        "surface": "compacted"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7088287,
+            48.1194032
+          ],
+          [
+            -1.708802,
+            48.1194709
+          ],
+          [
+            -1.7087952,
+            48.1195634
+          ],
+          [
+            -1.708817,
+            48.1196311
+          ],
+          [
+            -1.7088478,
+            48.1197049
+          ],
+          [
+            -1.7089461,
+            48.1199132
+          ],
+          [
+            -1.708953,
+            48.1201474
+          ],
+          [
+            -1.7089269,
+            48.1201928
+          ],
+          [
+            -1.7089213,
+            48.1202644
+          ],
+          [
+            -1.7088551,
+            48.1202615
+          ],
+          [
+            -1.7086051,
+            48.1202496
+          ],
+          [
+            -1.7084098,
+            48.1202404
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/319932095",
+      "properties": {
+        "@id": "way/319932095",
+        "highway": "path"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7100643,
+            48.1195423
+          ],
+          [
+            -1.710063,
+            48.1194237
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/323828355",
+      "properties": {
+        "@id": "way/323828355",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill",
+        "source": "https://twitter.com/metropolerennes/statuses/558644405952081922"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7082094,
+            48.119264
+          ],
+          [
+            -1.7083024,
+            48.119717
+          ],
+          [
+            -1.7084098,
+            48.1202404
+          ],
+          [
+            -1.7084336,
+            48.1203565
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/323828356",
+      "properties": {
+        "@id": "way/323828356",
+        "cycleway": "lane",
+        "highway": "secondary",
+        "name": "Avenue Sir Winston Churchill"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7084336,
+            48.1203565
+          ],
+          [
+            -1.7084547,
+            48.1205024
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432076",
+      "properties": {
+        "@id": "way/325432076",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7138964,
+            48.1226535
+          ],
+          [
+            -1.7139353,
+            48.1225256
+          ],
+          [
+            -1.7140015,
+            48.1224658
+          ],
+          [
+            -1.714228,
+            48.1223553
+          ],
+          [
+            -1.7143317,
+            48.122339
+          ],
+          [
+            -1.714618,
+            48.1223275
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432077",
+      "properties": {
+        "@id": "way/325432077",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7125363,
+            48.1221689
+          ],
+          [
+            -1.7125404,
+            48.122532
+          ],
+          [
+            -1.7127561,
+            48.1226287
+          ],
+          [
+            -1.7128362,
+            48.1227027
+          ],
+          [
+            -1.71279,
+            48.1227459
+          ],
+          [
+            -1.7125312,
+            48.12282
+          ],
+          [
+            -1.7124516,
+            48.1228254
+          ],
+          [
+            -1.7122601,
+            48.1228385
+          ],
+          [
+            -1.7121029,
+            48.1228549
+          ],
+          [
+            -1.7120783,
+            48.1228981
+          ],
+          [
+            -1.7120936,
+            48.1230319
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432081",
+      "properties": {
+        "@id": "way/325432081",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7125404,
+            48.122532
+          ],
+          [
+            -1.7125281,
+            48.1226472
+          ],
+          [
+            -1.7124727,
+            48.1227706
+          ],
+          [
+            -1.7124516,
+            48.1228254
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432097",
+      "properties": {
+        "@id": "way/325432097",
+        "highway": "footway"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.714017,
+            48.1202614
+          ],
+          [
+            -1.7139709,
+            48.1201032
+          ],
+          [
+            -1.7139802,
+            48.1199881
+          ],
+          [
+            -1.7140568,
+            48.1198782
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432099",
+      "properties": {
+        "@id": "way/325432099",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7134817,
+            48.1207923
+          ],
+          [
+            -1.7138015,
+            48.1207984
+          ],
+          [
+            -1.713799,
+            48.1209502
+          ],
+          [
+            -1.7137953,
+            48.121181
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432101",
+      "properties": {
+        "@id": "way/325432101",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.713799,
+            48.1209502
+          ],
+          [
+            -1.7145384,
+            48.1209628
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432102",
+      "properties": {
+        "@id": "way/325432102",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7138015,
+            48.1207984
+          ],
+          [
+            -1.7144123,
+            48.1207944
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432105",
+      "properties": {
+        "@id": "way/325432105",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7137701,
+            48.1219498
+          ],
+          [
+            -1.713781,
+            48.121579
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/325432106",
+      "properties": {
+        "@id": "way/325432106",
+        "highway": "service",
+        "service": "parking_aisle"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7146284,
+            48.1218405
+          ],
+          [
+            -1.7140063,
+            48.1218279
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/328649646",
+      "properties": {
+        "@id": "way/328649646",
+        "handrail": "yes",
+        "highway": "steps",
+        "incline": "down",
+        "indoor": "yes",
+        "level": "-1;-2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7111542,
+            48.1213541
+          ],
+          [
+            -1.7110397,
+            48.1213529
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/330547093",
+      "properties": {
+        "@id": "way/330547093",
+        "conveying": "backward",
+        "highway": "steps",
+        "incline": "down",
+        "indoor": "yes",
+        "level": "0;-1",
+        "width": "1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7109827,
+            48.1213003
+          ],
+          [
+            -1.7111531,
+            48.121303
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/330547095",
+      "properties": {
+        "@id": "way/330547095",
+        "conveying": "forward",
+        "highway": "steps",
+        "incline": "up",
+        "indoor": "yes",
+        "level": "-1;-2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -1.7111544,
+            48.1213541
+          ],
+          [
+            -1.711319,
+            48.1213564
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/34210270",
+      "properties": {
+        "@id": "node/34210270",
+        "highway": "traffic_signals"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084547,
+          48.1205024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/34958217",
+      "properties": {
+        "@id": "node/34958217",
+        "highway": "traffic_signals"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.70861,
+          48.1213008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1138076498",
+      "properties": {
+        "@id": "node/1138076498",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7120118,
+          48.1205497
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1425715757",
+      "properties": {
+        "@id": "node/1425715757",
+        "highway": "bus_stop",
+        "lines": "52 65 77 STN TTZ",
+        "name": "Bourbonnais",
+        "ref": "1520",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7097399,
+          48.1205024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1425715760",
+      "properties": {
+        "@id": "node/1425715760",
+        "highway": "bus_stop",
+        "lines": "52 65 68 77",
+        "name": "Bourbonnais",
+        "ref": "1518",
+        "wheelchair": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7104645,
+          48.1206267
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1425716400",
+      "properties": {
+        "@id": "node/1425716400",
+        "highway": "bus_stop",
+        "lines": "STN TTZ",
+        "name": "Kennedy Guyenne",
+        "ref": "1568"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.71352,
+          48.1210724
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1497848693",
+      "properties": {
+        "@id": "node/1497848693",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084098,
+          48.1202404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309946",
+      "properties": {
+        "@id": "node/2356309946",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084665,
+          48.120589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309957",
+      "properties": {
+        "@id": "node/2356309957",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7085935,
+          48.1212051
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309960",
+      "properties": {
+        "@id": "node/2356309960",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084417,
+          48.1212922
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309971",
+      "properties": {
+        "@id": "node/2356309971",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7086458,
+          48.1215062
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2731320682",
+      "properties": {
+        "@id": "node/2731320682",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7085953,
+          48.1205032
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3066254001",
+      "properties": {
+        "@id": "node/3066254001",
+        "highway": "bus_stop",
+        "name": "Kennedy Guyenne",
+        "ref": "1594",
+        "source": "Keolis septembre 2014"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134246,
+          48.1211027
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992781",
+      "properties": {
+        "@id": "node/3258992781",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7099057,
+          48.120513
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992782",
+      "properties": {
+        "@id": "node/3258992782",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7101176,
+          48.1205142
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992861",
+      "properties": {
+        "@id": "node/3258992861",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.708865,
+          48.1220121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992862",
+      "properties": {
+        "@id": "node/3258992862",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7086299,
+          48.1214149
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992863",
+      "properties": {
+        "@id": "node/3258992863",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.713473,
+          48.1214342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992888",
+      "properties": {
+        "@id": "node/3258992888",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7135777,
+          48.1226471
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992889",
+      "properties": {
+        "@id": "node/3258992889",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7132913,
+          48.1221732
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992890",
+      "properties": {
+        "@id": "node/3258992890",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7136078,
+          48.1214042
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992891",
+      "properties": {
+        "@id": "node/3258992891",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7136064,
+          48.1213459
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992892",
+      "properties": {
+        "@id": "node/3258992892",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134743,
+          48.1213196
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992893",
+      "properties": {
+        "@id": "node/3258992893",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134811,
+          48.1208326
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992894",
+      "properties": {
+        "@id": "node/3258992894",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.713291,
+          48.1205531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992895",
+      "properties": {
+        "@id": "node/3258992895",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134892,
+          48.1198854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992896",
+      "properties": {
+        "@id": "node/3258992896",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7112382,
+          48.1205374
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3266582541",
+      "properties": {
+        "@id": "node/3266582541",
+        "highway": "bus_stop",
+        "name": "J.F. Kennedy",
+        "ref": "5001",
+        "source": "Keolis novembre 2014"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.710943,
+          48.121295
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3320914502",
+      "properties": {
+        "@id": "node/3320914502",
+        "crossing": "zebra",
+        "highway": "crossing"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134262,
+          48.1226074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1138076498",
+      "properties": {
+        "@id": "node/1138076498"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7120118,
+          48.1205497
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992863",
+      "properties": {
+        "@id": "node/3258992863"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.713473,
+          48.1214342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992888",
+      "properties": {
+        "@id": "node/3258992888"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7135777,
+          48.1226471
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992889",
+      "properties": {
+        "@id": "node/3258992889"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7132913,
+          48.1221732
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992890",
+      "properties": {
+        "@id": "node/3258992890"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7136078,
+          48.1214042
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992891",
+      "properties": {
+        "@id": "node/3258992891"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7136064,
+          48.1213459
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992892",
+      "properties": {
+        "@id": "node/3258992892"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134743,
+          48.1213196
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992893",
+      "properties": {
+        "@id": "node/3258992893"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134811,
+          48.1208326
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992894",
+      "properties": {
+        "@id": "node/3258992894"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.713291,
+          48.1205531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992895",
+      "properties": {
+        "@id": "node/3258992895"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134892,
+          48.1198854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992896",
+      "properties": {
+        "@id": "node/3258992896"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7112382,
+          48.1205374
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3320914502",
+      "properties": {
+        "@id": "node/3320914502"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7134262,
+          48.1226074
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/34958217",
+      "properties": {
+        "@id": "node/34958217"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.70861,
+          48.1213008
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309960",
+      "properties": {
+        "@id": "node/2356309960"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084417,
+          48.1212922
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309971",
+      "properties": {
+        "@id": "node/2356309971"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7086458,
+          48.1215062
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1497848693",
+      "properties": {
+        "@id": "node/1497848693"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084098,
+          48.1202404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309946",
+      "properties": {
+        "@id": "node/2356309946"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084665,
+          48.120589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992781",
+      "properties": {
+        "@id": "node/3258992781"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7099057,
+          48.120513
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992782",
+      "properties": {
+        "@id": "node/3258992782"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7101176,
+          48.1205142
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992861",
+      "properties": {
+        "@id": "node/3258992861"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.708865,
+          48.1220121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3258992862",
+      "properties": {
+        "@id": "node/3258992862"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7086299,
+          48.1214149
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/34210270",
+      "properties": {
+        "@id": "node/34210270"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7084547,
+          48.1205024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2731320682",
+      "properties": {
+        "@id": "node/2731320682"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7085953,
+          48.1205032
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2356309957",
+      "properties": {
+        "@id": "node/2356309957"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7085935,
+          48.1212051
+        ]
+      }
+    }
+  ]
+}

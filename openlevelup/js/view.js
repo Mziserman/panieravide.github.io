@@ -494,11 +494,14 @@ var MapView = function(main) {
 			//Add data to map
 			if(fullData != null) {
 				//Create data layer
-				this._dataLayer = L.layerGroup();
+				this._dataLayer = L.mapboxGL({
+					accessToken: 'nope',
+					style: 'map_styles/base.json'
+				});
 				this._dataLayer.addTo(this._map);
 				
 				//Order layers
-				var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
+				/*var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
 				for(var i=0; i < featureLayersKeys.length; i++) {
 					var featureLayerGroup = fullData[featureLayersKeys[i]];
 					this._dataLayer.addLayer(featureLayerGroup);
@@ -510,7 +513,7 @@ var MapView = function(main) {
 					if(notesLayer != null) {
 						this._dataLayer.addLayer(notesLayer);
 					}
-				}
+				}*/
 			}
 			else {
 				this._mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");
