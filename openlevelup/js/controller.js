@@ -47,6 +47,13 @@ $.ajax({
        dataType: 'json',
        success: function(data) { STYLE = data; }
 }).fail(function() { console.error("[Controller] Error while retrieving STYLE"); });
+var STYLE_NEW;
+$.ajax({
+	url: 'map_styles/base.json',
+       async: false,
+       dataType: 'json',
+       success: function(data) { STYLE_NEW = data; }
+}).fail(function() { console.error("[Controller] Error while retrieving STYLE"); });
 
 //Load PolygonFeatures file
 var POLYGON_FEATURES;

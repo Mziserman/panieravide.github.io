@@ -489,31 +489,39 @@ var MapView = function(main) {
 		var zoom = this._map.getZoom();
 		
 		if(zoom >= CONFIG.view.map.data_min_zoom) {
-			var fullData = this._createFullData();
-			
 			//Add data to map
-			if(fullData != null) {
+			if(this._mainView.getData().getOriginalFeatures().features.length > 0) {
 				//Create data layer
 				this._dataLayer = L.mapboxGL({
 					accessToken: 'nope',
-					style: 'map_styles/base.json'
+					maxZoom: CONFIG.view.map.max_zoom,
+					style: { "version": 8, "sources": {}, "layers": [] }
 				});
 				this._dataLayer.addTo(this._map);
 				
-				//Order layers
-				/*var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
-				for(var i=0; i < featureLayersKeys.length; i++) {
-					var featureLayerGroup = fullData[featureLayersKeys[i]];
-					this._dataLayer.addLayer(featureLayerGroup);
-				}
-				
-				//Show OSM notes if needed
-				if(this._mainView.getOptionsView().showNotes()) {
-					var notesLayer = this._createNotesLayer();
-					if(notesLayer != null) {
-						this._dataLayer.addLayer(notesLayer);
-					}
-				}*/
+				this._dataLayer.getGL().on("style.load", function() {
+					this._dataLayer.getGL().addSource("data", {
+						"type": "geojson",
+						"data": this._mainView.getData().getOriginalFeatures()
+					});
+					
+					//Order layers
+					/*var featureLayersKeys = Object.keys(fullData).sort(function(a,b) { return parseInt(a) - parseInt(b); });
+					for(var i=0; i < featureLayersKeys.length; i++) {
+						var featureLayerGroup = fullData[featureLayersKeys[i]];
+						this._dataLayer.getGL().addLayer(featureLayerGroup);
+					}*/
+					
+					//Show OSM notes if needed
+					/*if(this._mainView.getOptionsView().showNotes()) {
+						var notesLayer = this._createNotesLayer();
+						if(notesLayer != null) {
+							this._dataLayer.getGL().addLayer(notesLayer);
+						}
+					}*/
+					
+					this._dataLayer.getGL().addLayer(STYLE_NEW.layers[0]);
+				}.bind(this));
 			}
 			else {
 				this._mainView.getMessagesView().displayMessage("There is no available data in this area", "alert");

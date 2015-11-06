@@ -1,27 +1,48 @@
 {
-    "version": 8,
-    "sources": {
-        "roads": {
-            "type": "geojson",
-            "data": "roads.geojson"
-        }
-    },
-    "layers": [
-        {
-            "id": "roads",
-            "type": "line",
-            "source": "roads",
-            "layout": {
-                "line-join": "round",
-                "line-cap": "round"
-            },
-            "paint": {
-                "line-color": "#888",
-                "line-width": {
-			"base": 1,
-			"stops": [[10, 1], [17, 5], [20, 100]]
+	"version": 8,
+	"layers": [
+		{
+			"id": "Room",
+			"type": "fill",
+			"source": "data",
+			"paint": {
+				"fill-color": "#E0E0E0",
+				"fill-outline-color": "#AAAAAA"
+			},
+			"filter": [
+				"any",
+				[
+					"==",
+					"indoor",
+					"room"
+				],
+				[
+					"==",
+					"buildingpart",
+					"room"
+				]
+			]
+		},
+		{
+			"id": "Wall",
+			"type": "line",
+			"source": "data",
+			"paint": {
+				"line-color": "#999999"
+			},
+			"filter": [
+				"any",
+				[
+					"==",
+					"indoor",
+					"room"
+				],
+				[
+					"==",
+					"buildingpart",
+					"room"
+				]
+			]
 		}
-            }
-        }
-    ]
+	]
 }

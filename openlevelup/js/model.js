@@ -38,6 +38,9 @@ var OSMData = function(bbox, data) {
 	/** The bounding box of the data **/
 	this._bbox = bbox;
 	
+	/** The features as GeoJSON **/
+	this._geojson = null;
+	
 	/** The names of objects, by level **/
 	this._names = new Object();
 
@@ -45,14 +48,14 @@ var OSMData = function(bbox, data) {
 	var timeStart = new Date().getTime();
 	
 	//Parse OSM data
-	var geojson = parseOsmData(data);
+	this._geojson = parseOsmData(data);
 	
 	//Create features
 	this._features = new Object();
 
 	var id, f, i, currentFeature, ftLevels, lvlId, lvl;
-	for(i=0; i < geojson.features.length; i++) {
-		f = geojson.features[i];
+	for(i=0; i < this._geojson.features.length; i++) {
+		f = this._geojson.features[i];
 		id = f.id;
 		currentFeature = new Feature(f);
 		
@@ -76,6 +79,11 @@ var OSMData = function(bbox, data) {
 					this._names[lvl][currentFeature.getTag("name")] = currentFeature;
 				}
 			}
+			
+			//Copy tags into GeoJSON properties
+			for(var k in currentFeature.getTags()) {
+				f.properties[k] = currentFeature.getTag(k);
+			}
 		}
 		// else {
 			// console.log("Duplicate: "+id);
@@ -87,7 +95,6 @@ var OSMData = function(bbox, data) {
 	this._levels = this._levels.sort(sortNumberArray).filter(rmDuplicatesSortedArray);
 
 	//Clear tmp objects
-	geojson = null;
 	id = null;
 	f = null;
 	i = null;
@@ -141,6 +148,10 @@ var OSMData = function(bbox, data) {
 	 */
 	OSMData.prototype.getFeatures = function() {
 		return this._features;
+	};
+	
+	OSMData.prototype.getOriginalFeatures = function() {
+		return this._geojson;
 	};
 	
 	/**
