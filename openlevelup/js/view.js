@@ -498,6 +498,7 @@ var MapView = function(main) {
 					style: { "version": 8, "sources": {}, "layers": [] }
 				});
 				this._dataLayer.addTo(this._map);
+				$(".leaflet-gl-layer").css("z-index", CONFIG.tiles.length + 5);
 				
 				this._dataLayer.getGL().on("style.load", function() {
 					this._dataLayer.getGL().addSource("data", {
@@ -520,7 +521,9 @@ var MapView = function(main) {
 						}
 					}*/
 					
-					this._dataLayer.getGL().addLayer(STYLE_NEW.layers[0]);
+					for(var layerId=0, layersLength=STYLE_NEW.layers.length; layerId < layersLength; layerId++) {
+						this._dataLayer.getGL().addLayer(STYLE_NEW.layers[layerId]);
+					}
 				}.bind(this));
 			}
 			else {

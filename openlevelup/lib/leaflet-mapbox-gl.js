@@ -38,8 +38,8 @@ L.MapboxGL = L.Class.extend({
     },
     
     getGL: function() {
-		return this._glMap;
-	},
+        return this._glMap;
+    },
 
     _initContainer: function () {
         var container = this._glContainer = L.DomUtil.create('div', 'leaflet-gl-layer');

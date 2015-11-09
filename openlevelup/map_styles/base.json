@@ -6,8 +6,7 @@
 			"type": "fill",
 			"source": "data",
 			"paint": {
-				"fill-color": "#E0E0E0",
-				"fill-outline-color": "#AAAAAA"
+				"fill-color": "#E0E0E0"
 			},
 			"filter": [
 				"any",
@@ -28,19 +27,20 @@
 			"type": "line",
 			"source": "data",
 			"paint": {
-				"line-color": "#999999"
+				"line-color": "#999999",
+				"line-width": 2.5
 			},
 			"filter": [
 				"any",
 				[
-					"==",
+					"in",
 					"indoor",
-					"room"
+					"wall", "room"
 				],
 				[
-					"==",
+					"in",
 					"buildingpart",
-					"room"
+					"wall", "room"
 				]
 			]
 		}
