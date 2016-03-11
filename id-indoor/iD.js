@@ -19660,6 +19660,9 @@ iD.services.mapillary = function() {
         var enter = thumbnail.enter().append('div')
             .attr('class', 'mapillary-image ar');
 
+        enter.append('div')
+            .attr('class', 'fillD mapillary-img-key');
+
         enter.append('button')
             .on('click', function () {
                 mapillary.hideThumbnail();
@@ -19679,6 +19682,9 @@ iD.services.mapillary = function() {
         // Update
         thumbnail.selectAll('img')
             .attr('src', urlThumb + imageKey + '/thumb-320.jpg');
+
+        thumbnail.selectAll('.mapillary-img-key')
+            .text(imageKey);
 
         var link = thumbnail.selectAll('a')
             .attr('href', urlImage + imageKey);
