@@ -3588,6 +3588,29 @@ div.full-screen > button:hover {
     border-radius: 4px 0 0 0;
 }
 
+/* Level */
+
+.level-control button.lvl-up {
+	border-radius: 4px 0 0 0;
+}
+
+.level-control button.lvl-down {
+	border-radius: 0 0 0 4px;
+	margin-bottom: 10px;
+}
+
+input.lvl-value {
+	border-radius: 0px;
+	border: 0px;
+	background-color: rgba(0,0,0,0.5);
+	color: white;
+	padding-left: 5px;
+}
+
+input.lvl-value:hover {
+	background-color: rgba(0,0,0,0.8);
+}
+
 /* Background / Map Data Settings */
 
 
@@ -4756,8 +4779,8 @@ div.full-screen > button:hover {
     color: rgba(40,40,40,.5);
 }
 
-.lasso-box {
-    fill-opacity:0.1;
+.lasso-path {
+    fill-opacity:0.3;
     stroke: #fff;
     stroke-width: 1;
     stroke-opacity: 1;

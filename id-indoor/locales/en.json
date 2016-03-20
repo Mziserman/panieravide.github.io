@@ -496,6 +496,10 @@
     },
     "cannot_zoom": "Cannot zoom out further in current mode.",
     "full_screen": "Toggle Full Screen",
+    "level": {
+        "up": "Go up",
+        "down": "Go down"
+    },
     "gpx": {
         "local_layer": "Local GPX file",
         "drag_drop": "Drag and drop a .gpx file on the page, or click the button to the right to browse",
@@ -2654,7 +2658,7 @@
                 "terms": "cul-de-sac"
             },
             "highway/unclassified": {
-                "name": "Minor Road",
+                "name": "Minor/Unclassified Road",
                 "terms": ""
             },
             "historic": {
@@ -2816,6 +2820,10 @@
             "leisure/adult_gaming_centre": {
                 "name": "Adult Gaming Center",
                 "terms": "gambling,slot machine"
+            },
+            "leisure/bird_hide": {
+                "name": "Bird Hide",
+                "terms": "machan,ornithology"
             },
             "leisure/bowling_alley": {
                 "name": "Bowling Alley",
@@ -2995,7 +3003,7 @@
             },
             "man_made/pier": {
                 "name": "Pier",
-                "terms": ""
+                "terms": "dock"
             },
             "man_made/pipeline": {
                 "name": "Pipeline",
@@ -4074,8 +4082,8 @@
                 "terms": ""
             },
             "waterway/dock": {
-                "name": "Dock",
-                "terms": ""
+                "name": "Wet Dock / Dry Dock",
+                "terms": "boat,ship,vessel,marine"
             },
             "waterway/drain": {
                 "name": "Drain",
