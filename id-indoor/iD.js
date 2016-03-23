@@ -6218,7 +6218,8 @@ d3.xml = d3_xhrType(function(request) {
   else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-d3.combobox = function() {
+d3.combobox = function(isSmall) {
+    isSmall = isSmall || false;
     var event = d3.dispatch('accept'),
         data = [],
         suggestions = [],
@@ -6256,7 +6257,7 @@ d3.combobox = function() {
                     .data([input.node()]);
 
                 caret.enter().insert('div', function() { return sibling; })
-                    .attr('class', 'combobox-caret');
+                    .attr('class', 'combobox-caret'+((isSmall) ? ' small' : ''));
 
                 caret
                     .on('mousedown', function () {
@@ -6286,7 +6287,7 @@ d3.combobox = function() {
                 container = d3.select(document.body)
                     .insert('div', ':first-child')
                     .datum(input.node())
-                    .attr('class', 'combobox')
+                    .attr('class', 'combobox'+((isSmall) ? ' small' : ''))
                     .style({
                         position: 'absolute',
                         display: 'block',
@@ -19228,8 +19229,10 @@ window.iD = function () {
 	    var levels = d3.set([ 0 ]);
 	    for(var i in entities) {
 		    var entity = entities[i];
-		    for(var l in entity.getLevels()) {
-			    levels.add(entity.getLevels()[l]);
+		    if(entity != undefined) {
+			for(var l in entity.getLevels()) {
+				levels.add(entity.getLevels()[l]);
+			}
 		    }
 	    }
 	    levels = levels.values();
@@ -24429,7 +24432,7 @@ iD.modes.AddArea = function(context) {
     function start(loc) {
         var graph = context.graph(),
             node = iD.Node({loc: loc}),
-            way = iD.Way({tags: defaultTags});
+            way = iD.Way({tags: defaultTags}).mergeTags({ level: context.level().toString() });
 
         context.perform(
             iD.actions.AddEntity(node),
@@ -24443,7 +24446,7 @@ iD.modes.AddArea = function(context) {
     function startFromWay(loc, edge) {
         var graph = context.graph(),
             node = iD.Node({loc: loc}),
-            way = iD.Way({tags: defaultTags});
+            way = iD.Way({tags: defaultTags}).mergeTags({ level: context.level().toString() });
 
         context.perform(
             iD.actions.AddEntity(node),
@@ -24457,7 +24460,7 @@ iD.modes.AddArea = function(context) {
 
     function startFromNode(node) {
         var graph = context.graph(),
-            way = iD.Way({tags: defaultTags});
+            way = iD.Way({tags: defaultTags}).mergeTags({ level: context.level().toString() });
 
         context.perform(
             iD.actions.AddEntity(way),
@@ -24495,7 +24498,7 @@ iD.modes.AddLine = function(context) {
     function start(loc) {
         var baseGraph = context.graph(),
             node = iD.Node({loc: loc}),
-            way = iD.Way();
+            way = iD.Way({ tags: { level: context.level().toString() } });
 
         context.perform(
             iD.actions.AddEntity(node),
@@ -24508,7 +24511,7 @@ iD.modes.AddLine = function(context) {
     function startFromWay(loc, edge) {
         var baseGraph = context.graph(),
             node = iD.Node({loc: loc}),
-            way = iD.Way();
+            way = iD.Way({ tags: { level: context.level().toString() } });
 
         context.perform(
             iD.actions.AddEntity(node),
@@ -24521,7 +24524,7 @@ iD.modes.AddLine = function(context) {
 
     function startFromNode(node) {
         var baseGraph = context.graph(),
-            way = iD.Way();
+            way = iD.Way({ tags: { level: context.level().toString() } });
 
         context.perform(
             iD.actions.AddEntity(way),
@@ -24558,7 +24561,7 @@ iD.modes.AddPoint = function(context) {
         .on('finish', cancel);
 
     function add(loc) {
-        var node = iD.Node({loc: loc});
+        var node = iD.Node({loc: loc, tags: { level: context.level().toString() } });
 
         context.perform(
             iD.actions.AddEntity(node),
@@ -26912,7 +26915,6 @@ iD.Entity.key = function(entity) {
 
 iD.Entity.prototype = {
     tags: {},
-    levels: [],
 
     initialize: function(sources) {
         for (var i = 0; i < sources.length; ++i) {
@@ -26943,8 +26945,6 @@ iD.Entity.prototype = {
             if (this.nodes) Object.freeze(this.nodes);
             if (this.members) Object.freeze(this.members);
         }
-        
-        this.initLevels();
 
         return this;
     },
@@ -27022,10 +27022,6 @@ iD.Entity.prototype = {
     },
 
 	getLevels: function() {
-		return this.levels;
-	},
-	
-	initLevels: function() {
 		//try to find levels for this feature
 		var currentLevel = null;
 		
@@ -27054,10 +27050,10 @@ iD.Entity.prototype = {
 		//Save found levels
 		if(currentLevel != null) {
 			currentLevel.sort(iD.util.sortNumberArray);
-			this.levels = currentLevel;
+			return currentLevel;
 		}
 		else {
-			this.levels = [ 0 ];
+			return [ 0 ];
 		}
 	},
     
@@ -34941,7 +34937,7 @@ iD.ui.Level = function(context) {
 		d3.select('input.lvl-value')
 			.attr('placeholder', context.level)
 			.property('value', '')
-			.call(d3.combobox().data(context.availableLevels().map(comboValues))
+			.call(d3.combobox(true).data(context.availableLevels().map(comboValues))
 			.on('accept', setLevel));
 	}
 	
@@ -34962,7 +34958,7 @@ iD.ui.Level = function(context) {
 			.attr('type', 'text')
 			.value('')
 			.attr('placeholder', context.level)
-			.call(d3.combobox().data(context.availableLevels().map(comboValues))
+			.call(d3.combobox(true).data(context.availableLevels().map(comboValues))
 			.on('accept', context.setLevel));
 		
 		selection.append('button')
