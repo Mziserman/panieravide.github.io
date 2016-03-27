@@ -19225,22 +19225,22 @@ window.iD = function () {
     context.level = function() { return level; }
     context.availableLevels = function() { return availableLevels; }
     context.updateAvailableLevels = function() {
-	    var entities = context.graph().entities;
-	    var levels = d3.set([ 0 ]);
-	    for(var i in entities) {
-		    var entity = entities[i];
-		    if(entity != undefined) {
-			for(var l in entity.getLevels()) {
-				levels.add(entity.getLevels()[l]);
+		var entities = context.graph().entities;
+		var levels = d3.set([ 0 ]);
+		for(var i in entities) {
+			var entity = entities[i];
+			if(entity != undefined) {
+				for(var l in entity.levels) {
+					levels.add(entity.levels[l]);
+				}
 			}
-		    }
-	    }
-	    levels = levels.values();
-	    for(var l in levels) {
-		    levels[l] = parseFloat(levels[l]);
-	    }
-	    levels.sort(iD.util.sortNumberArray);
-	    availableLevels = levels;
+		}
+		levels = levels.values();
+		for(var l in levels) {
+			levels[l] = parseFloat(levels[l]);
+		}
+		levels.sort(iD.util.sortNumberArray);
+		availableLevels = levels;
     }
     context.levelUp = function() {
 	    var al = context.availableLevels();
@@ -26956,7 +26956,6 @@ iD.Entity.parseLevelString = function(str) {
 		for(var i=0; i < result.length; i++) {
 			result[i] = parseFloat(result[i]);
 		}
-		result.sort(iD.util.sortNumberArray);
 	}
 	//Level values separated by ','
 	else if(/^-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)*$/.test(str)) {
@@ -26964,7 +26963,6 @@ iD.Entity.parseLevelString = function(str) {
 		for(var i=0; i < result.length; i++) {
 			result[i] = parseFloat(result[i]);
 		}
-		result.sort(iD.util.sortNumberArray);
 	}
 	//Level intervals
 	else {
@@ -27026,6 +27024,9 @@ iD.Entity.prototype = {
         if (!this.hasOwnProperty('visible')) {
             this.visible = true;
         }
+        
+        //try to find levels for this feature
+		this.levels = iD.Entity.parseLevelsTags(this.tags);
 
         if (iD.debug) {
             Object.freeze(this);
@@ -27110,28 +27111,9 @@ iD.Entity.prototype = {
 
         return deprecated;
     },
-
-	getLevels: function(resolver) {
-		//try to find levels for this feature
-		var currentLevel = iD.Entity.parseLevelsTags(this.tags);
-		
-		//Levels defined in parent relations
-		if(currentLevel.length == 0 && resolver != undefined && resolver.parentRelations(this).length > 0) {
-			var parentRels = resolver.parentRelations(this);
-			for(var i=0; i < parentRels.length; i++) {
-				currentLevel = currentLevel.concat(iD.Entity.parseLevelsTags(parentRels[i].tags));
-			}
-		}
-		
-		//Save found levels
-		if(currentLevel.length > 0) {
-			currentLevel.sort(iD.util.sortNumberArray);
-		}
-		else {
-			currentLevel = [ 0 ];
-		}
-		
-		return currentLevel;
+	
+	isOnLevel: function(lvl) {
+		return this.levels.indexOf(lvl) >= 0 || (this.levels.length == 0 && lvl == 0);
 	}
 };
 iD.Graph = function(other, mutable) {
@@ -29330,6 +29312,21 @@ iD.Features = function(context) {
         var fn = (geometry === 'vertex' ? features.isHiddenChild : features.isHiddenFeature);
         return fn(entity, resolver, geometry);
     };
+	
+	features.isOnCurrentLevel = function(entity, resolver, geometry) {
+		var onLevel = entity.isOnLevel(context.level());
+		if (context.level() != 0 && onLevel) return true;
+		
+		var parents = features.getParents(entity, resolver, geometry);
+		if (!parents.length) return onLevel;
+		
+		for (var i = 0; i < parents.length; i++) {
+			if (features.isOnCurrentLevel(parents[i], resolver, parents[i].geometry(resolver))) {
+				return true;
+			}
+		}
+		return false;
+	};
 
     features.filter = function(d, resolver) {
         //if (!_hidden.length) return d;
@@ -29337,7 +29334,7 @@ iD.Features = function(context) {
         var result = [];
         for (var i = 0; i < d.length; i++) {
             var entity = d[i];
-	    if ((!_hidden.length || !features.isHidden(entity, resolver, entity.geometry(resolver))) && entity.getLevels(resolver).indexOf(context.level()) >= 0) {
+			if ((!_hidden.length || !features.isHidden(entity, resolver, entity.geometry(resolver))) && features.isOnCurrentLevel(entity, resolver, entity.geometry(resolver))) {
                 result.push(entity);
             }
         }
