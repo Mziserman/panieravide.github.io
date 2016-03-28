@@ -796,6 +796,9 @@
             "building_area": {
                 "label": "Building"
             },
+            "buildingpart": {
+                "label": "Type"
+            },
             "capacity": {
                 "label": "Capacity",
                 "placeholder": "50, 100, 200..."
@@ -1135,6 +1138,10 @@
             },
             "man_made": {
                 "label": "Type"
+            },
+            "mapillary": {
+                "label": "Mapillary image",
+                "placeholder": "aMapillary_key-Example123"
             },
             "maxspeed": {
                 "label": "Speed Limit",
@@ -2235,6 +2242,10 @@
             },
             "building/warehouse": {
                 "name": "Warehouse",
+                "terms": ""
+            },
+            "buildingpart": {
+                "name": "Indoor (buildingpart)",
                 "terms": ""
             },
             "craft": {
