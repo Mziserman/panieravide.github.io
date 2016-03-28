@@ -19224,6 +19224,7 @@ window.iD = function () {
     var availableLevels = [ 0 ];
     context.level = function() { return level; }
     context.availableLevels = function() { return availableLevels; }
+    context.hasLevelsDefined = function(id) { return context.graph().entities[id].levels.length > 0; }
     context.updateAvailableLevels = function() {
 		var entities = context.graph().entities;
 		var levels = d3.set([ 0 ]);
@@ -19256,6 +19257,7 @@ window.iD = function () {
 	    var al = context.availableLevels();
 	    if(al.indexOf(l) >= 0 && level != l) {
 		    level = l;
+			context.enter(iD.modes.Browse(context));
 		    context.pan([0,0]);
 		    dispatch.levelchange();
 	    }
@@ -25589,7 +25591,7 @@ iD.modes.Select = function(context, selectedIDs) {
 
             if (datum instanceof iD.Way && !target.classed('fill')) {
                 var choice = iD.geo.chooseEdge(context.childNodes(datum), context.mouse(), context.projection),
-                    node = iD.Node();
+                    node = iD.Node();//{tags: {level: context.level().toString()} });
 
                 var prev = datum.nodes[choice.index - 1],
                     next = datum.nodes[choice.index];
@@ -29313,7 +29315,7 @@ iD.Features = function(context) {
         return fn(entity, resolver, geometry);
     };
 	
-	features.isOnLevel = function(entity, resolver, geometry, level, selectedIDs) {
+	features.showOnLevel = function(entity, resolver, geometry, level, selectedIDs) {
 		var onLevel = entity.isOnLevel(level);
 		if (level != 0 && onLevel) return true;
 		if (level == 0 && entity.levels.indexOf(0) >= 0) return true;
@@ -29322,8 +29324,13 @@ iD.Features = function(context) {
 		if (!parents.length) return onLevel;
 		
 		for (var i = 0; i < parents.length; i++) {
-			if (features.isOnLevel(parents[i], resolver, parents[i].geometry(resolver), level, selectedIDs)) {
-				return (geometry !== 'vertex' || selectedIDs.indexOf(parents[i].id) >= 0);
+			if (selectedIDs.indexOf(parents[i].id) >= 0) {
+				return true;
+			}
+			else if (features.showOnLevel(parents[i], resolver, parents[i].geometry(resolver), level, selectedIDs)) {
+				if (geometry !== 'vertex' || onLevel) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -29337,7 +29344,7 @@ iD.Features = function(context) {
             var entity = d[i];
 			if (
 				(!_hidden.length || !features.isHidden(entity, resolver, entity.geometry(resolver)))
-				&& features.isOnLevel(entity, resolver, entity.geometry(resolver), context.level(), context.selectedIDs())
+				&& (context.selectedIDs().indexOf(entity.id) >= 0 || features.showOnLevel(entity, resolver, entity.geometry(resolver), context.level(), context.selectedIDs()))
 			) {
                 result.push(entity);
             }
@@ -36453,6 +36460,17 @@ iD.ui.PresetList = function(context) {
 
         item.choose = function() {
             context.presets().choose(preset);
+
+			//Add level to object if no one already defined
+			if(!context.hasLevelsDefined(id)) {
+				var entity = context.entity(id),
+					annotation = t('operations.change_tags.annotation'),
+					tags = _.extend({}, entity.tags, { level: context.level().toString() });
+				
+				if (!_.isEqual(entity.tags, tags)) {
+					context.perform(iD.actions.ChangeTags(id, tags), annotation);
+				}
+			}
 
             context.perform(
                 iD.actions.ChangePreset(id, currentPreset, preset),
