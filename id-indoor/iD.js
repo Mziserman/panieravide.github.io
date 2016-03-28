@@ -19242,7 +19242,20 @@ window.iD = function () {
 		}
 		levels.sort(iD.util.sortNumberArray);
 		availableLevels = levels;
+		
+		context.updateLevelFromHash();
     }
+    context.updateLevelFromHash = function() {
+		if (context.storage('level') !== null) {
+			var storedLevel = parseFloat(context.storage('level'));
+			if(availableLevels.indexOf(storedLevel) >= 0) {
+				if(storedLevel != level) {
+					context.setLevel(storedLevel);
+				}
+				context.storage('level', null);
+			}
+		}
+	};
     context.levelUp = function() {
 	    var al = context.availableLevels();
 	    var lvlId = al.indexOf(level);
@@ -23919,6 +23932,8 @@ iD.behavior.Hash = function(context) {
         } else if (s !== formatter(map).slice(1)) {
             map.centerZoom([args[1],
                 Math.min(lat, Math.max(-lat, args[2]))], args[0]);
+			context.storage('level', parseFloat(q.level));
+			context.updateLevelFromHash();
         }
     };
 
@@ -23940,6 +23955,8 @@ iD.behavior.Hash = function(context) {
                 newParams.id = selected.join(',');
             }
         }
+        
+        newParams.level = context.level();
 
         newParams.map = zoom.toFixed(2) +
                 '/' + center[0].toFixed(precision) +
@@ -23977,6 +23994,7 @@ iD.behavior.Hash = function(context) {
             var q = iD.util.stringQs(location.hash.substring(1));
             if (q.id) context.zoomToEntity(q.id.split(',')[0], !q.map);
             if (q.comment) context.storage('comment', q.comment);
+			if (q.level && context.storage('level') === null) context.storage('level', parseFloat(q.level));
             hashchange();
             if (q.map) hash.hadHash = true;
         }
@@ -25591,7 +25609,7 @@ iD.modes.Select = function(context, selectedIDs) {
 
             if (datum instanceof iD.Way && !target.classed('fill')) {
                 var choice = iD.geo.chooseEdge(context.childNodes(datum), context.mouse(), context.projection),
-                    node = iD.Node();//{tags: {level: context.level().toString()} });
+                    node = iD.Node();
 
                 var prev = datum.nodes[choice.index - 1],
                     next = datum.nodes[choice.index];
