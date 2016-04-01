@@ -19251,6 +19251,12 @@ window.iD = function () {
 			if(availableLevels.indexOf(storedLevel) >= 0) {
 				if(storedLevel != level) {
 					context.setLevel(storedLevel);
+					
+					//Restore selection if needed
+					if (context.storage('id-level') !== null) {
+						context.zoomToEntity(context.storage('id-level'), true);
+						context.storage('id-level', null);
+					}
 				}
 				context.storage('level', null);
 			}
@@ -23995,6 +24001,7 @@ iD.behavior.Hash = function(context) {
             if (q.id) context.zoomToEntity(q.id.split(',')[0], !q.map);
             if (q.comment) context.storage('comment', q.comment);
 			if (q.level && context.storage('level') === null) context.storage('level', parseFloat(q.level));
+			if (q.id && context.storage('id-level') === null) context.storage('id-level', q.id.split(',')[0]);
             hashchange();
             if (q.map) hash.hadHash = true;
         }
@@ -29791,7 +29798,7 @@ iD.Map = function(context) {
         if (!isFinite(extent.area())) return;
 
         var zoom = map.trimmedExtentZoom(extent);
-        zoomLimits = zoomLimits || [context.minEditableZoom(), 20];
+        zoomLimits = zoomLimits || [context.minEditableZoom(), 23];
         map.centerZoom(extent.center(), Math.min(Math.max(zoom, zoomLimits[0]), zoomLimits[1]));
     };
 
