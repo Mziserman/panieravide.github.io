@@ -274,6 +274,8 @@ MapController = function() {
 			}, function(err, res) {
 				if(err) {
 					this._view.setUser(null);
+					this._auth.logout();
+					this._auth = null;
 					this._view.getMessagesView().display("error", "Error when retrieving user data");
 				}
 				else {
