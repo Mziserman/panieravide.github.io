@@ -1,0 +1,58 @@
+<!DOCTYPE html5>
+<html>
+<!--
+	This file is part of Pic4Carto.
+
+	Pic4Carto is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Affero General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	any later version.
+
+	Pic4Carto is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Affero General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with Pic4Carto.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+	Pic4Carto
+	Efficient pictures viewer for micro-mapping in OpenStreetMap
+	Author: Adrien PAVIE
+	
+	Main page
+-->
+<head>
+	<!-- General definitions -->
+	<title>Pic4Carto</title>
+	<meta charset="utf-8" />
+	<meta name="description" content="Efficient pictures viewer for micro-mapping in OpenStreetMap" />
+	<meta name="keywords" content="pic4carto, openstreetmap, osm, picture, viewer, efficient, mapillary" />
+	<meta name="author" content="Adrien PAVIE (PanierAvide)" />
+	<meta name="copyright" content="&copy; Adrien PAVIE 2016, under AGPL v3" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="icon" type="image/png" href="img/logo.32.png" />
+	
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="P4C.min.css" />
+</head>
+<body>
+	<!-- Header -->
+	<header>
+		<a href="index.html" title="Back to main page"><img src="img/logo_full_light.512.png" class="logo" alt="Pic4Carto" /></a>
+		<span class="catch">Photo-mapping made easy !</span>
+	</header>
+	
+	<!-- Player div -->
+	<div id="player"></div>
+	
+	<!-- JS libraries -->
+	<script src="P4C.Player.min.js"></script>
+	
+	<!-- Init code -->
+	<script>
+		var main = Player.init("player");
+	</script>
+</body>
+</html>
