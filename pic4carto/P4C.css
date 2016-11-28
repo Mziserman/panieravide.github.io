@@ -936,7 +936,7 @@
 .p4c-loading .table {
 	display: table;
 	width: 100%;
-	height: 100%;
+	height: 85%;
 	border-collapse: separate;
 	border-spacing: 50px;
 }
@@ -994,6 +994,28 @@
 
 .p4c-loading .table .row .source .source-status img {
 	max-width: 80%;
+}
+
+.p4c-loading .pass {
+	width: 100%;
+	height: 15%;
+	text-align: center;
+	position: relative;
+}
+
+.p4c-loading .pass a {
+	background-color: white;
+	border-radius: 10px;
+	padding: 10px;
+	height: 90%;
+	cursor: pointer;
+	font-size: 1.3em;
+}
+
+.p4c-loading .pass a img {
+	height: 64px;
+	max-height: 100%;
+	vertical-align: middle;
 }
 
 /*
@@ -1165,6 +1187,27 @@
 	height: 20%;
 	border-radius: 7px;
 	border: 2px solid #22313f;
+}
+
+.p4c-player .p4c-location.enlarge {
+	width: 40%;
+	height: 40%;
+}
+
+.p4c-player .p4c-location .expand-button {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+}
+
+.p4c-player .p4c-location .expand-button img {
+	height: 28px;
+	cursor: pointer;
+}
+
+.p4c-player .p4c-location .expand-button img.hide {
+	display: none;
 }
 
 .p4c-player .p4c-control {
