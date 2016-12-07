@@ -692,6 +692,14 @@ var HoursInputView = function(main) {
 	//Get opening_hours from URL
 	var urlOh = this._vUrl.getOpeningHours();
 	if(urlOh != undefined) {
+		//Handle special case of parameter passed with '+' instead of ' ' delimiter
+		if(urlOh.split("+").length > urlOh.split(" ").length) {
+			urlOh = urlOh.replace(/([0-9]{2})\+$/g, "$1#ownplus#"); //Things like "22:00+" at the end of the line
+			urlOh = urlOh.replace(/([0-9]{2})\+([^A-Za-z0-9])/g, "$1#ownplus#$2"); //Things like "22:00+" followed by any not alpha-numeric char
+			urlOh = urlOh.replace(/\+\+([0-9])/g, " #ownplus#$1"); //Things like " +2 days"
+			urlOh = urlOh.replace(/\+/g, " "); //All remaining spaces
+			urlOh = urlOh.replace("#ownplus#", "+"); //Custom '+'
+		}
 		this.setValue(urlOh);
 	}
 	else {
