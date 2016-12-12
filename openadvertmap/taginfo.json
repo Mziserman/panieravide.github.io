@@ -1,0 +1,20 @@
+{
+	"data_format": 1,
+	"data_url": "http://projets.pavie.info/openadvertmap/taginfo.json",
+	"project": {
+		"name": "OpenAdvertMap",
+		"description": "An interactive map of advertisements",
+		"project_url": "http://projets.pavie.info/openadvertmap/",
+		"icon_url": "http://projets.pavie.info/openadvertmap/img/icon.png",
+		"contact_name": "Adrien Pavie",
+		"contact_email": "panieravide@riseup.net"
+	},
+	"tags": [
+		{ "key": "advertisement" },
+		{ "key": "support" },
+		{ "key": "animated" },
+		{ "key": "direction" },
+		{ "key": "faces" },
+		{ "key": "sides" }
+	]
+}
