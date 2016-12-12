@@ -1,0 +1,59 @@
+<!DOCTYPE html5>
+<html>
+<!--
+	This file is part of OpenAdvertMap.
+
+	OpenAdvertMap is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Affero General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	any later version.
+
+	OpenAdvertMap is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Affero General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with OpenAdvertMap.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+	OpenAdvertMap
+	Interactive map showing advertisement data from OpenStreetMap
+	Author: Adrien PAVIE
+	
+	Main page
+-->
+<head>
+	<!-- General definitions -->
+	<title>OpenAdvertMap</title>
+	<meta charset="utf-8" />
+	<meta name="description" content="Interactive map showing advertisement data from OpenStreetMap" />
+	<meta name="keywords" content="ad, advert, advertisement, map, openstreetmap" />
+	<meta name="author" content="Adrien PAVIE (PanierAvide)" />
+	<meta name="copyright" content="&copy; Adrien PAVIE 2016, under AGPL v3" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="icon" type="image/png" href="img/icon.png" />
+	
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="OAM.min.css" />
+</head>
+<body>
+	<!-- Header -->
+	<header>
+		<a href="./" title="OpenAdvertMap"><img src="img/logo.png" class="logo" alt="OpenAdvertMap" /></a>
+		<span class="catch">Check advertisement location !</span>
+	</header>
+
+	<!-- OpenAdvertMap div -->
+	<div id="openadvertmap"></div>
+	
+	<!-- JS libraries -->
+	<script src="OAM.js"></script>
+	<!--script src="OAM.min.js"></script-->
+	
+	<!-- Init code -->
+	<script>
+		var main = OAM.init("openadvertmap");
+	</script>
+</body>
+</html>
