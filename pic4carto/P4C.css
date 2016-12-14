@@ -1222,6 +1222,10 @@
  * along with Pic4Carto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.p4c-player {
+	overflow: hidden;
+}
+
 .p4c-player .image {
 	width: 100%;
 	height: 100%;
